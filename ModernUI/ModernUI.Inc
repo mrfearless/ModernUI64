@@ -69,7 +69,7 @@ MUIAllocStructureMemory         PROTO :QWORD, :QWORD, :QWORD           ; dqPtrSt
 ; LTLI ModernUI Constants
 ;--------------------------------------------------------------------------------------------------------------------------------------
 MUI_INTERNAL_PROPERTIES         EQU 0
-MUI_EXTERNAL_PROPERTIES         EQU 4
+MUI_EXTERNAL_PROPERTIES         EQU 8
 
 
 ; ModernUI Custom Messages - each control should handle these

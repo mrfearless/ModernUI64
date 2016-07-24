@@ -28,7 +28,7 @@ WINVER equ 0501h
 
 MUI_USEGDIPLUS EQU 1 ; comment out of you dont require png (gdiplus) support
 
-DEBUG64 EQU 1
+;DEBUG64 EQU 1
 
 IFDEF DEBUG64
     PRESERVEXMMREGS equ 1
@@ -222,7 +222,7 @@ MUIFreeMemProperties ENDP
 ; Gets external property value and returns it in rax
 ;-------------------------------------------------------------------------------------
 MUIGetExtProperty PROC FRAME hControl:QWORD, dqProperty:QWORD
-    Invoke _MUIGetProperty, hControl, 4, dqProperty ; get external properties
+    Invoke _MUIGetProperty, hControl, 8, dqProperty ; get external properties
     ret
 MUIGetExtProperty ENDP
 
@@ -231,7 +231,7 @@ MUIGetExtProperty ENDP
 ; Sets external property value and returns previous value in rax.
 ;-------------------------------------------------------------------------------------
 MUISetExtProperty PROC FRAME hControl:QWORD, dqProperty:QWORD, dqPropertyValue:QWORD
-    Invoke _MUISetProperty, hControl, 4, dqProperty, dqPropertyValue ; set external properties
+    Invoke _MUISetProperty, hControl, 8, dqProperty, dqPropertyValue ; set external properties
     ret
 MUISetExtProperty ENDP
 
