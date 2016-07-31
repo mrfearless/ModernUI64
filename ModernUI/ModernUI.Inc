@@ -42,6 +42,7 @@ MUISetIntProperty               PROTO :QWORD, :QWORD, :QWORD           ; hContro
 
 MUIPointSizeToLogicalUnit       PROTO :QWORD, :QWORD                   ; hControl, dqPointSize
 MUIApplyToDialog                PROTO :QWORD, :QWORD                   ; hDialogWindow, dqDropShadow (true to set drop shadow)
+MUICenterWindow                 PROTO :QWORD, :QWORD                   ; hWndChild, hWndParent
 MUIPaintBackground              PROTO :QWORD, :QWORD, :QWORD           ; hDialogWindow, dqBackColor, dqBorderColor
 MUIPaintBackgroundImage         PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD ; hDialogWindow, dqBackColor, dqBorderColor, hImage, dqImageType, dqImageLocation
 

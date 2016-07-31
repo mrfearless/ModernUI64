@@ -296,6 +296,8 @@ _MUI_CaptionBarWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, 
     .ELSEIF eax == WM_NCDESTROY
         Invoke MUIFreeMemProperties, hWin, 0
 		Invoke MUIFreeMemProperties, hWin, 8
+		mov rax, 0
+		ret    		
 
     .ELSEIF eax == WM_COMMAND
         mov rax, wParam
@@ -541,12 +543,12 @@ _MUI_CaptionBarInit PROC FRAME hCaptionBar:QWORD
 
     Invoke _MUI_CreateCaptionBarSysButtons, hCaptionBar, hParent
     
-    mov rax, dqStyle
-    and rax, MUICS_NOMAXBUTTON
-    .IF rax != MUICS_NOMAXBUTTON
+    ;mov rax, dqStyle
+    ;and rax, MUICS_NOMAXBUTTON
+    ;.IF rax != MUICS_NOMAXBUTTON
         ; only need to subclass to handle catching restore/maximize - no need if max/res button is not present 
         Invoke SetWindowSubclass, hParent, Addr _MUI_CaptionBarParentSubClassProc, hCaptionBar, hCaptionBar
-    .ENDIF
+    ;.ENDIF
 
     ret
 
