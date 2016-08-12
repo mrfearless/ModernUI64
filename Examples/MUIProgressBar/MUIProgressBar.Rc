@@ -1,0 +1,3 @@
+#include "Res/MUIProgressBarMnu.rc"
+#include "Res/MUIProgressBarDlg.rc"
+#include "Res/MUIProgressBarRes.rc"
