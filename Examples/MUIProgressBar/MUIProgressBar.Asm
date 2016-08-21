@@ -11,18 +11,18 @@ option stackbase : rsp
 _WIN64 EQU 1
 WINVER equ 0501h
 
-DEBUG64 EQU 1
-
-IFDEF DEBUG64
-    PRESERVEXMMREGS equ 1
-    includelib \JWasm\lib\x64\Debug64.lib
-    DBG64LIB equ 1
-    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
-    include \JWasm\include\debug64.inc
-    .DATA
-    RDBG_DbgWin	DB DEBUGEXE,0
-    .CODE
-ENDIF
+;DEBUG64 EQU 1
+;
+;IFDEF DEBUG64
+;    PRESERVEXMMREGS equ 1
+;    includelib \JWasm\lib\x64\Debug64.lib
+;    DBG64LIB equ 1
+;    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
+;    include \JWasm\include\debug64.inc
+;    .DATA
+;    RDBG_DbgWin	DB DEBUGEXE,0
+;    .CODE
+;ENDIF
 
 include MUIProgressBar.inc
 
@@ -94,10 +94,10 @@ WinMain endp
 ;-------------------------------------------------------------------------------------
 ; WndProc - Main Window Message Loop
 ;-------------------------------------------------------------------------------------
-WndProc proc FRAME hWin:HWND, uMsg:UINT_PTR, wParam:WPARAM, lParam:LPARAM
+WndProc proc FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	
-	mov rax, uMsg
-	.IF rax == WM_INITDIALOG
+	mov eax, uMsg
+	.IF eax == WM_INITDIALOG
 		push hWin
 		pop hWnd
 		
@@ -142,19 +142,20 @@ WndProc proc FRAME hWin:HWND, uMsg:UINT_PTR, wParam:WPARAM, lParam:LPARAM
 		mov eax, 0
 		ret
 
-	.ELSEIF rax == WM_COMMAND
-		.IF wParam == IDM_FILE_EXIT
+	.ELSEIF eax == WM_COMMAND
+	    mov rax, wParam
+		.IF rax == IDM_FILE_EXIT
 			Invoke SendMessage, hWin, WM_CLOSE, 0, 0
 			
-		.ELSEIF wParam == IDM_HELP_ABOUT
+		.ELSEIF rax == IDM_HELP_ABOUT
 			Invoke ShellAbout, hWin, Addr AppName, Addr AboutMsg, NULL
 
-		.ELSEIF eax == IDC_STARTBUTTON
+		.ELSEIF rax == IDC_STARTBUTTON
 		    Invoke KillTimer, hWin, hWin
 		    Invoke MUIProgressBarSetPercent, hPB, 0
 		    Invoke SetTimer, hWin, hWin, 200, 0
 		
-		.ELSEIF eax == IDC_EXITBUTTON
+		.ELSEIF rax == IDC_EXITBUTTON
 		    Invoke KillTimer, hWin, hWin
             Invoke SendMessage,hWin,WM_CLOSE,0,0
 		.ENDIF
@@ -162,10 +163,10 @@ WndProc proc FRAME hWin:HWND, uMsg:UINT_PTR, wParam:WPARAM, lParam:LPARAM
     .ELSEIF eax == WM_TIMER
          Invoke MUIProgressBarStep, hPB
          
-	.ELSEIF rax == WM_CLOSE
+	.ELSEIF eax == WM_CLOSE
 		Invoke DestroyWindow, hWin
 		
-	.ELSEIF rax == WM_DESTROY
+	.ELSEIF eax == WM_DESTROY
 		Invoke PostQuitMessage, NULL
 		
 	.ELSE

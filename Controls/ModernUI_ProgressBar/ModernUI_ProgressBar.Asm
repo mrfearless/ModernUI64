@@ -24,18 +24,18 @@ option stackbase : rsp
 _WIN64 EQU 1
 WINVER equ 0501h
 
-DEBUG64 EQU 1
+;DEBUG64 EQU 1
 
-IFDEF DEBUG64
-    PRESERVEXMMREGS equ 1
-    includelib \JWasm\lib\x64\Debug64.lib
-    DBG64LIB equ 1
-    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
-    include \JWasm\include\debug64.inc
-    .DATA
-    RDBG_DbgWin	DB DEBUGEXE,0
-    .CODE
-ENDIF
+;IFDEF DEBUG64
+;    PRESERVEXMMREGS equ 1
+;    includelib \JWasm\lib\x64\Debug64.lib
+;    DBG64LIB equ 1
+;    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
+;    include \JWasm\include\debug64.inc
+;    .DATA
+;    RDBG_DbgWin	DB DEBUGEXE,0
+;    .CODE
+;ENDIF
 
 include windows.inc
 includelib user32.lib

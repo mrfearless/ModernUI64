@@ -26,16 +26,16 @@ WINVER equ 0501h
 
 ;DEBUG64 EQU 1
 
-IFDEF DEBUG64
-    PRESERVEXMMREGS equ 1
-    includelib \JWasm\lib\x64\Debug64.lib
-    DBG64LIB equ 1
-    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
-    include \JWasm\include\debug64.inc
-    .DATA
-    RDBG_DbgWin	DB DEBUGEXE,0
-    .CODE
-ENDIF
+;IFDEF DEBUG64
+;    PRESERVEXMMREGS equ 1
+;    includelib \JWasm\lib\x64\Debug64.lib
+;    DBG64LIB equ 1
+;    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
+;    include \JWasm\include\debug64.inc
+;    .DATA
+;    RDBG_DbgWin	DB DEBUGEXE,0
+;    .CODE
+;ENDIF
 
 include windows.inc
 includelib user32.lib
@@ -126,6 +126,7 @@ _MUI_SYSBUTTON_PROPERTIES                   ENDS
 
 .CONST
 align 8
+WM_DWMCOMPOSITIONCHANGED                    EQU 031Eh ; 0x031E
 MUI_SYSBUTTON_WIDTH                         EQU 32d
 MUI_SYSBUTTON_HEIGHT                        EQU 28d
 
@@ -431,7 +432,7 @@ _MUI_CaptionBarParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM
     .ELSEIF eax == WM_NCCALCSIZE
         Invoke InvalidateRect, hWin, NULL, TRUE
     
-    .ELSEIF eax == WM_THEMECHANGED
+    .ELSEIF eax == WM_THEMECHANGED  || eax == WM_DWMCOMPOSITIONCHANGED ;  0x031E
         Invoke GetWindowLongPtr, dqRefData, GWL_STYLE
         mov dqStyle, rax
         and rax, MUICS_WINNOMUISTYLE
@@ -444,6 +445,8 @@ _MUI_CaptionBarParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM
             .ELSE
                 Invoke _MUI_ApplyMUIStyleToDialog, hWin, TRUE
             .ENDIF
+            Invoke InvalidateRect, hWin, NULL, TRUE
+            Invoke UpdateWindow, hWin            
         .ENDIF
     
     ; If user pulls caption down whilst maximized this will be caught by this handler and we can adjust the CaptionBar control to reflect the 

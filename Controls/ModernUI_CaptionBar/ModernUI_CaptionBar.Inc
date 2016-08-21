@@ -8,7 +8,7 @@
 ;
 ; http://www.LetTheLight.in
 ;
-; http://github.com/mrfearless/ModernUI
+; http://github.com/mrfearless/ModernUI64
 ;
 ;
 ; This software is provided 'as-is', without any express or implied warranty. In no event will the author be held liable for any 

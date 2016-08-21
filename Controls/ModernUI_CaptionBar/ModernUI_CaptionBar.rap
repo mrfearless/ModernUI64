@@ -61,16 +61,16 @@ AutoLoad=2,1
 1=
 2=
 [Find]
-1="_MUI_ApplyMUIStyleToDialog"
-2="PUBLIC "
-3="PUBLIC"
-4="edx"
-5="ecx"
-6="ebx"
-7="eax"
-8="SetClassLong"
-9="GetClassLong"
-10="SetWindowLong"
+1="DrawText"
+2="ImageHeight"
+3="_MUI_ApplyMUIStyleToDialog"
+4="PUBLIC "
+5="PUBLIC"
+6="edx"
+7="ecx"
+8="ebx"
+9="eax"
+10="SetClassLong"
 [VersionControl]
 Settings=1278
 Milestones=129
@@ -81,7 +81,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=27
+MilestoneOnDateDate=21
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=23
@@ -105,13 +105,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=13374933
+PTimer=204168072
 [Collapse]
-1=67112960,155320384,134221825,16781344,
+1=4096,21102656,134221825,17305632,16
 2=
 [Size]
-1=0,0,0,0,601
-2=0,0,0,0,4250
+1=0,0,0,0,617
+2=0,0,0,0,1789
 [GroupExpand]
 GroupExpand=1,0,1,0,0,0
 [BookMark]

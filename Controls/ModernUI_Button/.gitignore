@@ -8,6 +8,7 @@ Distribution/
 *.pdb
 *.ilk
 *.exp
+*.err
 template/
 downloads/
 screenshots/
