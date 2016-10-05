@@ -393,13 +393,12 @@ _MUI_ButtonWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lPar
         and rax, MUIBS_HAND
         .IF rax == MUIBS_HAND
 		    invoke LoadCursor, NULL, IDC_HAND
-		    Invoke SetCursor, rax
-        ;.ELSE
-        ;    invoke LoadCursor, NULL, IDC_ARROW
+        .ELSE
+            invoke LoadCursor, NULL, IDC_ARROW
         .ENDIF
+        Invoke SetCursor, rax
         mov rax, 0
         ret
-        ;Invoke SetCursor, eax
 
     .ELSEIF eax == WM_LBUTTONUP
         ;PrintText 'WM_LBUTTONUP'
