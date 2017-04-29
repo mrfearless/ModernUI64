@@ -58,7 +58,7 @@ MUIAllocMemProperties           PROTO :QWORD, :QWORD, :QWORD           ; hContro
 MUIFreeMemProperties            PROTO :QWORD, :QWORD                   ; hControl, cbWndExtraOffset
 
 MUIAllocStructureMemory         PROTO :QWORD, :QWORD, :QWORD           ; dqPtrStructMem, TotalItems, ItemSize
-
+MUICreateIconFromMemory         PROTO :QWORD, :QWORD                   ; pIconData, iIcon
 
 ;--------------------------------------------------------------------------------------------------------------------------------------
 ; LTLI ModernUI Structures

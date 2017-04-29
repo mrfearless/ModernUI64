@@ -145,7 +145,6 @@ MUI_BUTTON_PROPERTIES				        ENDS
 ENDIF
 
 ; Internal properties
-; Internal properties
 _MUI_BUTTON_PROPERTIES				        STRUCT
 	dqEnabledState						    DQ ?
 	dqMouseOver							    DQ ?
@@ -249,7 +248,7 @@ hMUIButtonNoteFont                          DQ 0
 
 
 .DATA?
-IFDEF DEBUG32
+IFDEF DEBUG64
 DbgVar                                      DQ ?
 ENDIF
 
@@ -735,9 +734,17 @@ _MUI_ButtonCleanup PROC FRAME hControl:QWORD
     ENDIF
     ; cleanup any stream handles if png where loaded as resources
 
+    ; cleanup any stream handles if png where loaded as resources
+    Invoke MUIGetExtProperty, hControl, @ButtonImageType
+    mov dqImageType, rax
+
+    .IF dqImageType == 0
+        ret
+    .ENDIF
+
     .IF dqImageType == 3
         IFDEF MUI_USEGDIPLUS
-        Invoke MUIGetIntProperty, hControl, @ButtonImageStream
+        Invoke MUIGetIntProperty, hControl, @ButtonImageStream 
         mov hIStreamImage, rax
         .IF rax != 0
             Invoke _MUI_ButtonPngReleaseIStream, rax

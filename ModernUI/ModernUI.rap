@@ -33,7 +33,7 @@ Debug=0
 [MakeDef]
 Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
-2=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"M:\JWASM\Include" ModernUI.asm
+2=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"M:\JWASM\Include" ModernUI.asm
 3=9,O,$B\LIB.EXE *.obj /out:ModernUI.lib
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
@@ -62,7 +62,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=21
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=23
@@ -86,13 +86,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=9855300
+PTimer=10530831
 [Collapse]
-1=67113024,1430355984,2
+1=151003264,713228320,1
 2=
 [Size]
-1=0,0,0,0,22034
-2=0,0,0,0,2774
+1=0,0,0,0,35486
+2=0,0,0,0,4162
 [GroupExpand]
 GroupExpand=1,0,0,0
 [BookMark]

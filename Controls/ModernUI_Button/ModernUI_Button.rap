@@ -5,6 +5,7 @@ Description=ModernUI_Button
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
+Debug=0
 [Files]
 1=ModernUI_Button.Asm
 2=ModernUI_Button.Inc
@@ -31,7 +32,7 @@ GroupExpand=1
 [MakeDef]
 Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
-2=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
+2=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
 3=7,O,$B\LIB.EXE,3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
@@ -56,7 +57,7 @@ Group=Distribution,Modules,Assembly,Resources,Misc
 4=1
 5=2
 [AutoLoad]
-AutoLoad=2,1
+AutoLoad=2,1,3,4
 [VersionControl]
 Settings=1278
 Milestones=129
@@ -67,7 +68,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=23
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=27
@@ -91,9 +92,9 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=12129890
+PTimer=25334361
 [GroupExpand]
-GroupExpand=1,0,0,0,0,0
+GroupExpand=1,1,1,0,0,0
 [BookMark]
 0=
 1=
@@ -108,11 +109,15 @@ GroupExpand=1,0,0,0,0,0
 [BreakPoint]
 0=
 [Collapse]
-1=585,68153344,896,67109888,524288,524288,2048,40992,1152,116
+1=576,68153344,896,67109888,,524288,2048,32,2304,232
 2=
+4=
+3=
 [Size]
-1=0,0,0,0,15255
-2=0,0,0,0,22306
+1=0,0,0,0,14188
+2=0,0,0,0,30127
+4=0,0,0,0,366
+3=0,0,0,0,0
 [Find]
 1="DD"
 2="ImageType"
