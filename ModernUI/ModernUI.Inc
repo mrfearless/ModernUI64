@@ -45,7 +45,7 @@ MUIApplyToDialog                PROTO :QWORD, :QWORD                   ; hDialog
 MUICenterWindow                 PROTO :QWORD, :QWORD                   ; hWndChild, hWndParent
 MUIPaintBackground              PROTO :QWORD, :QWORD, :QWORD           ; hDialogWindow, dqBackColor, dqBorderColor
 MUIPaintBackgroundImage         PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD ; hDialogWindow, dqBackColor, dqBorderColor, hImage, dqImageType, dqImageLocation
-
+MUIGetParentBackgroundColor     PROTO :QWORD                           ; hControl
 MUIGetImageSize                 PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hImage, dqImageType, lpdqImageWidth, lpdqImageHeight
 
 ;--------------------------------------------------------------------------------------------------------------------------------------

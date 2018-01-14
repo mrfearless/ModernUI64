@@ -127,6 +127,7 @@ _MUI_SYSBUTTON_PROPERTIES                   ENDS
 .CONST
 align 8
 WM_DWMCOMPOSITIONCHANGED                    EQU 031Eh ; 0x031E
+MUI_DEFAULT_CAPTION_HEIGHT                  EQU 32d
 MUI_SYSBUTTON_WIDTH                         EQU 32d
 MUI_SYSBUTTON_HEIGHT                        EQU 28d
 
@@ -305,21 +306,25 @@ _MUI_CaptionBarWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, 
         and rax, 0FFFFh
         .IF eax == 1 ; close button
             Invoke GetParent, hWin
-            Invoke SendMessage, rax, WM_CLOSE, 0, 0
+            Invoke SendMessage, rax, WM_SYSCOMMAND, SC_CLOSE, 0
+            ;Invoke SendMessage, rax, WM_CLOSE, 0, 0
             ret
         .ELSEIF eax == 2 ; max button
             Invoke GetParent, hWin
-            Invoke ShowWindow, rax, SW_MAXIMIZE
+            Invoke SendMessage, rax, WM_SYSCOMMAND, SC_MAXIMIZE, 0
+            ;Invoke ShowWindow, rax, SW_MAXIMIZE
             Invoke _MUI_CaptionBarReposition, hWin
             ret            
         .ELSEIF eax == 3 ; res button
             Invoke GetParent, hWin
-            Invoke ShowWindow, rax, SW_RESTORE
+            Invoke SendMessage, rax, WM_SYSCOMMAND, SC_RESTORE, 0
+            ;Invoke ShowWindow, rax, SW_RESTORE
             Invoke _MUI_CaptionBarReposition, hWin
             ret
         .ELSEIF eax == 4 ; min button
             Invoke GetParent, hWin
-            Invoke ShowWindow, rax, SW_MINIMIZE
+            Invoke SendMessage, rax, WM_SYSCOMMAND, SC_MINIMIZE, 0
+            ;Invoke ShowWindow, rax, SW_MINIMIZE
             ret
         .ENDIF
         xor rax, rax
@@ -391,6 +396,17 @@ _MUI_CaptionBarWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, 
 	    Invoke _MUI_CaptionBarReposition, hWin
 	    mov rax, 0
 	    ret
+
+    .ELSEIF eax == WM_SETTEXT
+        Invoke GetParent, hWin
+        mov hParent, rax
+         ; sets text of our CaptionBar
+        Invoke DefWindowProc, hWin, uMsg, wParam, lParam
+        ; Set main window title
+        Invoke SetWindowText, hParent, lParam
+        Invoke InvalidateRect, hWin, NULL, FALSE
+        mov eax, TRUE
+        ret
 	
 	; custom messages start here
 	.ELSEIF eax == MUI_GETPROPERTY
@@ -426,6 +442,7 @@ _MUI_CaptionBarParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM
     mov eax, uMsg
     .IF eax == WM_NCDESTROY
         Invoke RemoveWindowSubclass, hWin, Addr _MUI_CaptionBarParentSubClassProc, uIdSubclass ; remove subclass before control destroyed.
+        Invoke DefSubclassProc, hWin, uMsg, wParam, lParam
         ret
     
     ; Handle resize of dialog/window and invalidate it if we are painting a border via MUIPaintBackground
@@ -841,6 +858,10 @@ _MUI_CaptionBarReposition PROC FRAME USES rbx hCaptionBar:QWORD
     LOCAL dqSysButtonHeight:QWORD    
     LOCAL hParent:QWORD
     LOCAL rect:RECT
+    LOCAL dqStyle:QWORD
+
+    Invoke GetWindowLong, hCaptionBar, GWL_STYLE
+    mov dqStyle, rax
 
     Invoke GetParent, hCaptionBar
     mov hParent, rax
@@ -854,10 +875,19 @@ _MUI_CaptionBarReposition PROC FRAME USES rbx hCaptionBar:QWORD
     Invoke GetClientRect, hCaptionBar, Addr rect
     mov eax, rect.bottom
     mov dqCaptionHeight, rax
+    .IF sqword ptr rax < 6
+        mov dqCaptionHeight, MUI_DEFAULT_CAPTION_HEIGHT
+    .ENDIF
 
     Invoke GetWindowPlacement, hParent, Addr wp
     
-    Invoke GetWindowRect, hParent, Addr rect
+    mov rax, dqStyle
+    and rax, MUICS_WINNOMUISTYLE
+    .IF rax == MUICS_WINNOMUISTYLE
+        Invoke GetClientRect, hParent, Addr rect
+    .ELSE       
+        Invoke GetWindowRect, hParent, Addr rect
+    .ENDIF    
     xor rax, rax
     mov eax, rect.right
     mov ebx, rect.left
@@ -906,7 +936,8 @@ _MUI_CaptionBarReposition PROC FRAME USES rbx hCaptionBar:QWORD
         .IF hDefer == NULL
             Invoke SetWindowPos, hSysButtonClose, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER  or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	;or SWP_NOCOPYBITS
         .ELSE
-            Invoke DeferWindowPos, hDefer, hSysButtonClose, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	
+            Invoke DeferWindowPos, hDefer, hSysButtonClose, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING
+            mov hDefer, rax
         .ENDIF
         mov rax, dqSysButtonWidth
         add dqLeftOffset, rax ;32d
@@ -918,7 +949,8 @@ _MUI_CaptionBarReposition PROC FRAME USES rbx hCaptionBar:QWORD
         .IF hDefer == NULL
             Invoke SetWindowPos, hSysButtonMax, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	
         .ELSE
-            Invoke DeferWindowPos, hDefer, hSysButtonMax, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER  or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	
+            Invoke DeferWindowPos, hDefer, hSysButtonMax, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER  or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING
+            mov hDefer, rax	
         .ENDIF
 
         mov rax, dqClientWidth
@@ -926,7 +958,8 @@ _MUI_CaptionBarReposition PROC FRAME USES rbx hCaptionBar:QWORD
         .IF hDefer == NULL
             Invoke SetWindowPos, hSysButtonRes, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	
         .ELSE
-            Invoke DeferWindowPos, hDefer, hSysButtonRes, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	
+            Invoke DeferWindowPos, hDefer, hSysButtonRes, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING
+            mov hDefer, rax	
         .ENDIF
         mov rax, dqSysButtonWidth
         add dqLeftOffset, rax ;32d
@@ -938,7 +971,8 @@ _MUI_CaptionBarReposition PROC FRAME USES rbx hCaptionBar:QWORD
         .IF hDefer == NULL
             Invoke SetWindowPos, hSysButtonMin, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	
         .ELSE
-            Invoke DeferWindowPos, hDefer, hSysButtonMin, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	
+            Invoke DeferWindowPos, hDefer, hSysButtonMin, NULL, rax, 0, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING
+            mov hDefer, rax	
         .ENDIF
     .ENDIF
 

@@ -37,7 +37,7 @@ IFDEF DEBUG64
     DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
     include \JWasm\include\debug64.inc
     .DATA
-    RDBG_DbgWin	DB DEBUGEXE,0
+    RDBG_DbgWin DB DEBUGEXE,0
     .CODE
 ENDIF
 
@@ -74,8 +74,8 @@ IFDEF MUI_USEGDIPLUS
 MUI_GDIPLUS                     DQ 0 ; controls that use gdiplus check this first, if 0 they call gdi startup and inc the value
                                      ; controls that use gdiplus when destroyed decrement this value and check if 0. If 0 they call gdi finish
 
-MUI_GDIPlusToken	            DQ 0
-MUI_gdipsi	                    GdiplusStartupInput	<1,0,0,0>
+MUI_GDIPlusToken                DQ 0
+MUI_gdipsi                      GdiplusStartupInput <1,0,0,0>
 ENDIF
 
 .CODE
@@ -102,11 +102,11 @@ IFDEF MUI_USEGDIPLUS
 MUIGDIPlusStart PROC FRAME
     .IF MUI_GDIPLUS == 0
         ;PrintText 'GdiplusStartup'
-	    Invoke GdiplusStartup, Addr MUI_GDIPlusToken, Addr MUI_gdipsi, NULL
-	.ENDIF
-	inc MUI_GDIPLUS
-	;PrintDec MUI_GDIPLUS
-	xor rax, rax
+        Invoke GdiplusStartup, Addr MUI_GDIPlusToken, Addr MUI_gdipsi, NULL
+    .ENDIF
+    inc MUI_GDIPLUS
+    ;PrintDec MUI_GDIPLUS
+    xor rax, rax
     ret
 MUIGDIPlusStart ENDP
 ENDIF
@@ -258,22 +258,24 @@ MUISetIntProperty ENDP
 ; Convert font point size eg '12' to logical unit size for use with CreateFont,
 ; CreateFontIndirect
 ;-------------------------------------------------------------------------------------
-MUIPointSizeToLogicalUnit PROC FRAME hWin:QWORD, dqPointSize:QWORD
+MUIPointSizeToLogicalUnit PROC FRAME USES RBX RCX RDX hWin:QWORD, dqPointSize:QWORD
     LOCAL hdc:HDC
-    LOCAL dwLogicalUnit:QWORD
+    LOCAL dwLogicalUnit:DWORD
     
     Invoke GetDC, hWin
     mov hdc, rax
     Invoke GetDeviceCaps, hdc, LOGPIXELSY
     xor rdx, rdx
-    mov rbx, dqPointSize
-    mul rbx
-    mov rcx, 72d
-    div rcx 
+    xor rcx, rcx
+    mov ebx, dword ptr dqPointSize
+    mul ebx
+    mov ecx, 72d
+    div ecx
+    neg eax
     ;Invoke MulDiv, dqPointSize, rax, 72d
-    mov dwLogicalUnit, rax
+    mov dwLogicalUnit, eax
     Invoke ReleaseDC, hWin, hdc
-    mov rax, dwLogicalUnit
+    mov eax, dwLogicalUnit
     ret
 MUIPointSizeToLogicalUnit ENDP
 
@@ -331,35 +333,35 @@ MUIApplyToDialog PROC FRAME hWin:QWORD, dqDropShadow:QWORD
     
     or dqNewStyle, WS_CLIPCHILDREN
 
-	Invoke SetWindowLongPtr, hWin, GWL_STYLE, dqNewStyle
-	
-	; Set dropshadow on or off on our dialog
-	
-	Invoke GetClassLongPtr, hWin, GCL_STYLE
-	mov dqClassStyle, rax
-	
-	.IF dqDropShadow == TRUE
-	    mov rax, dqClassStyle
-	    and rax, CS_DROPSHADOW
-	    .IF rax != CS_DROPSHADOW
-	        or dqClassStyle, CS_DROPSHADOW
-	        Invoke SetClassLongPtr, hWin, GCL_STYLE, dqClassStyle
-	    .ENDIF
-	.ELSE    
-	    mov rax, dqClassStyle
-	    and rax, CS_DROPSHADOW
-	    .IF rax == CS_DROPSHADOW
-	        and dqClassStyle,(-1 xor CS_DROPSHADOW)
+    Invoke SetWindowLongPtr, hWin, GWL_STYLE, dqNewStyle
+    
+    ; Set dropshadow on or off on our dialog
+    
+    Invoke GetClassLongPtr, hWin, GCL_STYLE
+    mov dqClassStyle, rax
+    
+    .IF dqDropShadow == TRUE
+        mov rax, dqClassStyle
+        and rax, CS_DROPSHADOW
+        .IF rax != CS_DROPSHADOW
+            or dqClassStyle, CS_DROPSHADOW
             Invoke SetClassLongPtr, hWin, GCL_STYLE, dqClassStyle
-	    .ENDIF
-	.ENDIF
+        .ENDIF
+    .ELSE    
+        mov rax, dqClassStyle
+        and rax, CS_DROPSHADOW
+        .IF rax == CS_DROPSHADOW
+            and dqClassStyle,(-1 xor CS_DROPSHADOW)
+            Invoke SetClassLongPtr, hWin, GCL_STYLE, dqClassStyle
+        .ENDIF
+    .ENDIF
 
-	; remove any menu that might have been assigned via class registration - for modern ui look
-	Invoke GetMenu, hWin
-	.IF rax != NULL
-	    Invoke SetMenu, hWin, NULL
-	.ENDIF
-	
+    ; remove any menu that might have been assigned via class registration - for modern ui look
+    Invoke GetMenu, hWin
+    .IF rax != NULL
+        Invoke SetMenu, hWin, NULL
+    .ENDIF
+    
     ret
 
 MUIApplyToDialog ENDP
@@ -490,23 +492,23 @@ MUICenterWindow ENDP
 ; 
 ;-------------------------------------------------------------------------------------
 MUIPaintBackground PROC FRAME hWin:QWORD, dqBackcolor:QWORD, dqBorderColor:QWORD
-	LOCAL ps:PAINTSTRUCT
-	LOCAL hdc:HDC
+    LOCAL ps:PAINTSTRUCT
+    LOCAL hdc:HDC
     LOCAL rect:RECT
     LOCAL hdcMem:QWORD
     LOCAL hbmMem:QWORD
     LOCAL hOldBitmap:QWORD
     LOCAL hBrush:QWORD
 
-	invoke BeginPaint, hWin, addr ps
-	mov	hdc, rax
+    invoke BeginPaint, hWin, addr ps
+    mov hdc, rax
     Invoke GetClientRect, hWin, Addr rect
     Invoke CreateCompatibleDC, hdc
     mov hdcMem, rax
-   	Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
-   	mov hbmMem, rax
-   	Invoke SelectObject, hdcMem, hbmMem
-  	mov hOldBitmap, rax 
+    Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
+    mov hbmMem, rax
+    Invoke SelectObject, hdcMem, hbmMem
+    mov hOldBitmap, rax 
 
     Invoke GetStockObject, DC_BRUSH
     mov hBrush, rax
@@ -553,8 +555,8 @@ MUIPaintBackground ENDP
 ; 4=top right, 5=center top, 6=center bottom
 ;-------------------------------------------------------------------------------------
 MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, dqBackcolor:QWORD, dqBorderColor:QWORD, hImage:QWORD, dqImageType:QWORD, dqImageLocation:QWORD
-	LOCAL ps:PAINTSTRUCT
-	LOCAL hdc:HDC
+    LOCAL ps:PAINTSTRUCT
+    LOCAL hdc:HDC
     LOCAL rect:RECT
     LOCAL pt:POINT
     LOCAL hdcMem:QWORD
@@ -575,15 +577,15 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, dqBackcolor:QWORD, dqBor
         mov pBitmap, 0
     .ENDIF
     
-	invoke BeginPaint, hWin, addr ps
-	mov	hdc, rax
+    invoke BeginPaint, hWin, addr ps
+    mov hdc, rax
     Invoke GetClientRect, hWin, Addr rect
     Invoke CreateCompatibleDC, hdc
     mov hdcMem, rax
-   	Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
-   	mov hbmMem, rax
-   	Invoke SelectObject, hdcMem, hbmMem
-  	mov hOldBitmap, rax 
+    Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
+    mov hbmMem, rax
+    Invoke SelectObject, hdcMem, hbmMem
+    mov hOldBitmap, rax 
 
     Invoke GetStockObject, DC_BRUSH
     mov hBrush, rax
@@ -759,6 +761,36 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, dqBackcolor:QWORD, dqBor
 
 MUIPaintBackgroundImage ENDP
 
+
+;-------------------------------------------------------------------------------------
+; Gets parent background color
+; returns in eax, MUI_RGBCOLOR or -1 if NULL brush is set
+; Useful for certain controls to retrieve the parents background color and then to 
+; set their own background color based on the same value.
+;-------------------------------------------------------------------------------------
+MUIGetParentBackgroundColor PROC FRAME hControl:QWORD
+    LOCAL hParent:QWORD
+    LOCAL hBrush:QWORD
+    LOCAL logbrush:LOGBRUSH
+    
+    Invoke GetParent, hControl
+    mov hParent, rax
+    
+    Invoke GetClassLongPtr, hParent, GCL_HBRBACKGROUND
+    .IF rax == NULL
+        mov eax, -1
+        ret
+    .ENDIF
+    
+    mov hBrush, rax
+    Invoke GetObject, hBrush, SIZEOF logbrush, Addr logbrush
+    .IF rax == 0
+        mov eax, -1
+        ret
+    .ENDIF
+    mov eax, logbrush.lbColor
+    ret
+MUIGetParentBackgroundColor ENDP
 
 
 ;-------------------------------------------------------------------------------------
@@ -961,8 +993,8 @@ MUIAllocStructureMemory endp
 ; (The icon data is an ICO file stored directly in the executable)
 ;
 ; Parameters
-;	pIconData = Pointer to the ico file data
-;	iIcon = zero based index of the icon to load
+;   pIconData = Pointer to the ico file data
+;   iIcon = zero based index of the icon to load
 ;
 ; If successful will return an icon handle, this handle must be freed
 ; using DestroyIcon when it is no longer needed. The size of the icon
@@ -977,48 +1009,48 @@ MUIAllocStructureMemory endp
 ;http://www.masmforum.com/board/index.php?topic=16267.msg134434#msg134434
 ;--------------------------------------------------------------------------------------------------------------------
 MUICreateIconFromMemory PROC FRAME pIconData:QWORD, iIcon:QWORD
-	LOCAL sz[2]:DWORD
+    LOCAL sz[2]:DWORD
 
 
 
-	xor rax, rax
-	mov rdx, [pIconData]
-	or rdx, rdx
-	jz ERRORCATCH
+    xor rax, rax
+    mov rdx, [pIconData]
+    or rdx, rdx
+    jz ERRORCATCH
 
-	movzx rax, WORD PTR [rdx+4]
-	cmp rax, [iIcon]
-	ja @F
-		ERRORCATCH:
-		push rax
-		invoke SetLastError, ERROR_RESOURCE_NAME_NOT_FOUND
-		pop rdx
-		xor rax, rax
-		ret
-	@@:
+    movzx rax, WORD PTR [rdx+4]
+    cmp rax, [iIcon]
+    ja @F
+        ERRORCATCH:
+        push rax
+        invoke SetLastError, ERROR_RESOURCE_NAME_NOT_FOUND
+        pop rdx
+        xor rax, rax
+        ret
+    @@:
 
-	mov rax, [iIcon]
-	shl rax, 4
-	add rdx, rax
-	add rdx, 6
+    mov rax, [iIcon]
+    shl rax, 4
+    add rdx, rax
+    add rdx, 6
 
-	movzx rax, BYTE PTR [rdx]
-	mov [sz], eax
-	movzx eax, BYTE PTR [rdx+1]
-	mov [sz+4], eax
+    movzx rax, BYTE PTR [rdx]
+    mov [sz], eax
+    movzx eax, BYTE PTR [rdx+1]
+    mov [sz+4], eax
 
-	mov rax, [rdx+12]
-	add rax, [pIconData]
-	mov rdx, [rdx+8]
+    mov rax, [rdx+12]
+    add rax, [pIconData]
+    mov rdx, [rdx+8]
 
-	invoke CreateIconFromResourceEx, rax, edx, 1, 030000h, [sz], [sz+4], 0
+    invoke CreateIconFromResourceEx, rax, edx, 1, 030000h, [sz], [sz+4], 0
     
     xor rdx, rdx
-	mov edx,[sz]
-	shl edx,16
-	mov dx, word ptr [sz+4]
+    mov edx,[sz]
+    shl edx,16
+    mov dx, word ptr [sz+4]
 
-	RET
+    RET
 
 
 MUICreateIconFromMemory ENDP
