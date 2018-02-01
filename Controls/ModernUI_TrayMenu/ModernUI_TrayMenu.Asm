@@ -243,12 +243,12 @@ MUITrayMenuCreate PROC FRAME hWndParent:QWORD, hTrayMenuIcon:QWORD, lpszTooltip:
             Invoke MUISetExtProperty, hControl, @TrayMenuExtraWndHandle, hWndExtra
         .ENDIF
         
-        .IF dqMenuType != NULL
-            Invoke MUISetExtProperty, hControl, @TrayMenuType, dqMenuType
-        .ENDIF
-        .IF dqMenu != NULL
-            Invoke MUISetExtProperty, hControl, @TrayMenuHandleMenu, dqMenu
-        .ENDIF
+;        .IF dqMenuType != NULL
+;            Invoke MUISetExtProperty, hControl, @TrayMenuType, dqMenuType
+;        .ENDIF
+;        .IF dqMenu != NULL
+;            Invoke MUISetExtProperty, hControl, @TrayMenuHandleMenu, dqMenu
+;        .ENDIF
 
         Invoke _MUI_TM_AddIconAndTooltip, hControl, hWndParent, hTrayMenuIcon, lpszTooltip
         

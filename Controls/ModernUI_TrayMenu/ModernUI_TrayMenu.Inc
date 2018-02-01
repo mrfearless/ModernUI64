@@ -44,10 +44,12 @@ MUITrayMenuSetTrayIcon      PROTO :QWORD, :QWORD                                
 MUITrayMenuSetTooltipText   PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, lpszTooltip
 MUITrayMenuEnableMenuItem   PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, MenuItemID
 MUITrayMenuDisableMenuItem  PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, MenuItemID
+MUITrayMenuChangeMenuItemState PROTO :QWORD, :QWORD, :QWORD                                      ; hModernUI_TrayMenu, MenuItemID, MenuItemState
 MUITrayMenuSetMenuItemText  PROTO :QWORD, :QWORD, :QWORD                                         ; hModernUI_TrayMenu, MenuItemID, lpszMenuItemText
 MUITrayMenuHideTrayIcon     PROTO :QWORD                                                         ; hModernUI_TrayMenu
 MUITrayMenuShowTrayIcon     PROTO :QWORD                                                         ; hModernUI_TrayMenu
 MUITrayMenuShowNotification PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD                         ; hModernUI_TrayMenu, lpszNotificationMessage, lpszNotificationTitle, dwTimeout, dwStyle
+MUITrayMenuSetTrayIconText  PROTO :QWORD, :QWORD, :QWORD, :QWORD                                 ; hModernUI_TrayIcon, lpszText, lpszFont, qwTextColorRGB
 
 ; Tray Icon Functions (standalone - no menu)
 MUITrayIconCreate           PROTO :QWORD, :QWORD, :QWORD, :QWORD                                 ; hWndParent, dwTrayIconResID, hTrayIcon, lpszTooltip - Returns in eax hModernUI_TrayIcon
