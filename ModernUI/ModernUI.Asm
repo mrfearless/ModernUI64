@@ -781,14 +781,21 @@ MUIGetParentBackgroundColor PROC FRAME hControl:QWORD
         mov eax, -1
         ret
     .ENDIF
-    
-    mov hBrush, rax
-    Invoke GetObject, hBrush, SIZEOF logbrush, Addr logbrush
-    .IF rax == 0
-        mov eax, -1
+
+    .IF rax > 32d
+        mov hBrush, rax
+        Invoke GetObject, hBrush, SIZEOF LOGBRUSH, Addr logbrush
+        .IF rax == 0
+            mov eax, -1
+            ret
+        .ENDIF
+        mov eax, logbrush.lbColor
+    .ELSE
+        dec eax ; to adjust for initial value being COLOR_X+1
+        Invoke GetSysColor, eax
         ret
     .ENDIF
-    mov eax, logbrush.lbColor
+    
     ret
 MUIGetParentBackgroundColor ENDP
 
