@@ -1,0 +1,17 @@
+bak/
+Help/
+Images/
+Distribution/
+*.bat
+*.undo
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.err
+template/
+downloads/
+screenshots/
+releases/
+wiki/
+_archive/
