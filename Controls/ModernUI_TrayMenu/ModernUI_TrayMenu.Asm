@@ -408,7 +408,7 @@ _MUI_TrayMenuWindowSubClass_Proc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wPara
         Invoke DefSubclassProc, hWin, uMsg, wParam, lParam 
         ret
     
-    .ELSEIF rax == WM_SYSCOMMAND
+    .ELSEIF eax == WM_SYSCOMMAND
         ;PrintText 'WM_SYSCOMMAND'
         .IF wParam == SC_CLOSE
             Invoke GetWindowLong, dqRefData, GWL_STYLE
