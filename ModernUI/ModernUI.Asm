@@ -1063,4 +1063,111 @@ MUICreateIconFromMemory PROC FRAME pIconData:QWORD, iIcon:QWORD
 MUICreateIconFromMemory ENDP
 
 
+;-------------------------------------------------------------------------------------
+; MUILoadRegionFromResource - Loads region from a resource
+;-------------------------------------------------------------------------------------
+MUILoadRegionFromResource PROC FRAME USES RBX hInst:QWORD, idRgnRes:QWORD, lpRegion:QWORD, lpqwSizeRegion:QWORD
+    LOCAL hRes:QWORD
+    ; Load region
+    Invoke FindResource, hInst, idRgnRes, RT_RCDATA ; load rng image as raw data
+    .IF eax != NULL
+        mov hRes, rax
+        Invoke SizeofResource, hInst, hRes
+        .IF rax != 0
+            .IF lpqwSizeRegion != NULL
+                mov rbx, lpqwSizeRegion
+                mov [rbx], rax
+            .ELSE
+                mov rax, FALSE
+                ret
+            .ENDIF
+            Invoke LoadResource, hInst, hRes
+            .IF rax != NULL
+                Invoke LockResource, rax
+                .IF rax != NULL
+                    .IF lpRegion != NULL
+                        mov rbx, lpRegion
+                        mov [rbx], rax
+                        mov rax, TRUE
+                    .ELSE
+                        mov rax, FALSE
+                    .ENDIF
+                .ELSE
+                    ;PrintText 'Failed to lock resource'
+                    mov rax, FALSE
+                .ENDIF
+            .ELSE
+                ;PrintText 'Failed to load resource'
+                mov rax, FALSE
+            .ENDIF
+        .ELSE
+            ;PrintText 'Failed to get resource size'
+            mov rax, FALSE
+        .ENDIF
+    .ELSE
+        ;PrintText 'Failed to find resource'
+        mov rax, FALSE
+    .ENDIF    
+    ret
+MUILoadRegionFromResource ENDP
+
+
+;-------------------------------------------------------------------------------------
+; Sets a window/controls region from a region stored as an RC_DATA resource: idRgnRes
+; if lpdwCopyRgn != NULL a copy of region handle is provided (for FrameRgn for example)
+;-------------------------------------------------------------------------------------
+MUISetRegionFromResource PROC FRAME USES RBX hWin:QWORD, idRgnRes:QWORD, lpqwCopyRgn:QWORD, bRedraw:QWORD
+    LOCAL hinstance:QWORD
+    LOCAL ptrRegionData:QWORD
+    LOCAL qwRegionDataSize:QWORD
+    LOCAL hRgn:QWORD
+    
+    .IF idRgnRes == NULL
+        Invoke SetWindowRgn, hWin, NULL, FALSE
+        ret
+    .ENDIF
+ 
+    Invoke GetModuleHandle, NULL
+    mov hinstance, rax
+    
+    Invoke MUILoadRegionFromResource, hinstance, idRgnRes, Addr ptrRegionData, Addr qwRegionDataSize
+    .IF rax == FALSE
+        .IF lpqwCopyRgn != NULL
+            mov rax, NULL
+            mov rbx, lpqwCopyRgn
+            mov [rbx], rax
+        .ENDIF
+        mov rax, FALSE    
+        ret
+    .ENDIF
+    
+    Invoke SetWindowRgn, hWin, NULL, FALSE
+    Invoke ExtCreateRegion, NULL, dword ptr qwRegionDataSize, ptrRegionData
+    mov hRgn, rax
+    .IF rax == NULL
+        .IF lpqwCopyRgn != NULL
+            mov rax, NULL
+            mov rbx, lpqwCopyRgn
+            mov [rbx], rax
+        .ENDIF
+        mov rax, FALSE
+        ret
+    .ENDIF
+    Invoke SetWindowRgn, hWin, hRgn, dword ptr bRedraw
+    
+    .IF lpqwCopyRgn != NULL
+        Invoke ExtCreateRegion, NULL, dword ptr qwRegionDataSize, ptrRegionData
+        mov hRgn, rax
+        mov rbx, lpqwCopyRgn
+        mov [ebx], rax
+    .ENDIF
+
+    mov rax, TRUE    
+    ret
+
+MUISetRegionFromResource ENDP
+
+
+
+
 END

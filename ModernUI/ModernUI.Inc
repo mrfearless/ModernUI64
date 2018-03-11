@@ -48,6 +48,9 @@ MUIPaintBackgroundImage         PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :Q
 MUIGetParentBackgroundColor     PROTO :QWORD                           ; hControl
 MUIGetImageSize                 PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hImage, dqImageType, lpdqImageWidth, lpdqImageHeight
 
+MUILoadRegionFromResource       PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hInstance, idRgnRes, lpRegion, lpqwSizeRegion
+MUISetRegionFromResource        PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hWin, idRgnRes, lpqwCopyRgn, bRedraw
+
 ;--------------------------------------------------------------------------------------------------------------------------------------
 ; PRIVATE ModernUI Prototypes for control creators to use with their controls
 ;--------------------------------------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 [Project]
-Assembler=JWasm
+Assembler=UASM64
 Type=LIB Project
 Description=ModernUI
 Backup=$P\Bak\
@@ -33,18 +33,18 @@ Debug=0
 [MakeDef]
 Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
-2=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"M:\JWASM\Include" ModernUI.asm
+2=3,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"M:\JWASM\Include" ModernUI.asm
 3=9,O,$B\LIB.EXE *.obj /out:ModernUI.lib
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x32\x32dbg",5
 11=4,O,$B\RC.EXE /v,1
-12=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"M:\JWASM\Include" ModernUI.asm
+12=3,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"M:\JWASM\Include" ModernUI.asm
 13=9,O,$B\LIB.EXE *.obj /out:ModernUI.lib
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-16=*.obj,O,$B\JWASM.EXE /c -win64 -Zp8 /Zi /Zd /win64 /D_WIN64 /Cp /nologo /W2 /I"$I" *.asm
+16=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /Zd /win64 /D_WIN64 /Cp /nologo /W2 /I"$I" *.asm
 17=0,0,"$E\x32\x32dbg",5
 [Group]
 Group=Assembly,Resources,Misc
@@ -62,7 +62,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=12
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=23
@@ -70,7 +70,7 @@ MilestoneOnDateTimeHour=17
 MilestoneOnDateTimeMin=48
 MilestoneOnDateTimeSec=40
 MilestoneOnDateTimeStatus=0
-BackupLocation=M:\radasm\JWasm\Projects\VCBackups\
+BackupLocation=M:\radasm\UASM64\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project $N, $Z, Backup Created On $D At $T.
 ExcludeExt1=\
@@ -86,13 +86,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=11061032
+PTimer=11610186
 [Collapse]
-1=268443776,674234881,21
+1=136331328,8407040,349208
 2=
 [Size]
-1=0,0,0,0,27666
-2=0,0,0,0,3184
+1=0,0,0,0,37361
+2=0,0,0,0,3129
 [GroupExpand]
 GroupExpand=1,0,0,0
 [BookMark]
