@@ -84,20 +84,20 @@ MUICS_HAND                      EQU 20h     ; Show a hand instead of an arrow wh
 ; ModernUI_Checkbox Properties: Use with MUICheckboxSetProperty / MUICheckboxGetProperty or MUI_SETPROPERTY / MUI_GETPROPERTY msgs
 ;--------------------------------------------------------------------------------------------------------------------------------------
 @CheckboxTextFont	            EQU 0       ; Font for checkbox text
-@CheckboxTextColor              EQU 4       ; Colorref Text color for checkbox
-@CheckboxTextColorAlt           EQU 8       ; Colorref
-@CheckboxTextColorSel           EQU 12      ; Colorref
-@CheckboxTextColorSelAlt        EQU 16      ; Colorref
-@CheckboxTextColorDisabled      EQU 20      ; Colorref
-@CheckboxBackColor              EQU 24      ; Colorref
-@CheckboxImageType              EQU 28     ; Button Image Types - One of the following: MUICIT_NONE, MUICIT_BMP, MUICIT_ICO or MUICIT_PNG
-@CheckboxImage                  EQU 32     ; hImage
-@CheckboxImageAlt               EQU 36     ; hImage
-@CheckboxImageSel               EQU 40     ; hImage
-@CheckboxImageSelAlt            EQU 44     ; hImage
-@CheckboxImageDisabled          EQU 48     ; hImage
-@CheckboxImageDisabledSel       EQU 52     ; hImage
-@CheckboxDllInstance            EQU 56     ; Set to hInstance of dll before calling MUICheckboxLoadImages if used within a dll
+@CheckboxTextColor              EQU 8       ; Colorref Text color for checkbox
+@CheckboxTextColorAlt           EQU 16       ; Colorref
+@CheckboxTextColorSel           EQU 24      ; Colorref
+@CheckboxTextColorSelAlt        EQU 32      ; Colorref
+@CheckboxTextColorDisabled      EQU 40      ; Colorref
+@CheckboxBackColor              EQU 48      ; Colorref
+@CheckboxImageType              EQU 56     ; Button Image Types - One of the following: MUICIT_NONE, MUICIT_BMP, MUICIT_ICO or MUICIT_PNG
+@CheckboxImage                  EQU 64     ; hImage
+@CheckboxImageAlt               EQU 72     ; hImage
+@CheckboxImageSel               EQU 80     ; hImage
+@CheckboxImageSelAlt            EQU 88     ; hImage
+@CheckboxImageDisabled          EQU 96     ; hImage
+@CheckboxImageDisabledSel       EQU 104     ; hImage
+@CheckboxDllInstance            EQU 112     ; Set to hInstance of dll before calling MUICheckboxLoadImages if used within a dll
 
 
 ; Checkbox Image Types
