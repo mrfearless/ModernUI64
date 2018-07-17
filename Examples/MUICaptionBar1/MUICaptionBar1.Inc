@@ -44,12 +44,9 @@ IDM_HELP_ABOUT			EQU 10101
 ; MUICaptionBar1 Initialized Data
 ;-----------------------------------------------------------------------------------------
 align 01
-szClass					db 'DLGCLASS', 0
-szAppName				db 'First Window', 0
-
 ClassName				DB 'DLGCLASS',0
-AppName					DB 'LTLI Dialog',0
-AboutMsg				DB 'www.LetTheLight.in',13,10,'Copyright © fearless 2016',0
+AppName					DB 'MUICaptionBar1',0
+AboutMsg				DB 'www.LetTheLight.in',13,10,'Copyright © fearless 2017',0
 
 
 

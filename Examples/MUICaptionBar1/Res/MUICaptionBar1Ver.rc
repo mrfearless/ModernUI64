@@ -10,6 +10,10 @@ BEGIN
     BLOCK "040904B0"
     BEGIN
       VALUE "FileVersion", "0.0.4.3\0"
+      VALUE "FileDescription", "MUICaptionBar1\0"
+      VALUE "InternalName", "MUICaptionBar1\0"
+      VALUE "OriginalFilename", "MUICaptionBar1\0"
+      VALUE "ProductName", "MUICaptionBar1\0"
       VALUE "ProductVersion", "0.0.4.3\0"
     END
   END
