@@ -142,14 +142,14 @@ ENDIF
 ; cbWndExtraOffset is usually going to be 0 for custom registered window controls
 ; and some other offset for superclassed window control
 ;-------------------------------------------------------------------------------------
-_MUIGetProperty PROC FRAME USES RBX hControl:QWORD, cbWndExtraOffset:QWORD, dqProperty:QWORD
+_MUIGetProperty PROC FRAME USES RBX hControl:QWORD, cbWndExtraOffset:QWORD, qwProperty:QWORD
     
     Invoke GetWindowLongPtr, hControl, cbWndExtraOffset
     .IF rax == 0
         ret
     .ENDIF
     mov rbx, rax
-    add rbx, dqProperty
+    add rbx, qwProperty
     mov rax, [rbx]
     
     ret
@@ -160,19 +160,19 @@ _MUIGetProperty ENDP
 ;-------------------------------------------------------------------------------------
 ; Sets property value and returns previous value in eax.
 ;-------------------------------------------------------------------------------------
-_MUISetProperty PROC FRAME USES RBX hControl:QWORD, cbWndExtraOffset:QWORD, dqProperty:QWORD, dqPropertyValue:QWORD
-    LOCAL dqPrevValue:QWORD
+_MUISetProperty PROC FRAME USES RBX hControl:QWORD, cbWndExtraOffset:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
+    LOCAL qwPrevValue:QWORD
     Invoke GetWindowLongPtr, hControl, cbWndExtraOffset
     .IF rax == 0
         ret
     .ENDIF    
     mov rbx, rax
-    add rbx, dqProperty
+    add rbx, qwProperty
     mov rax, [rbx]
-    mov dqPrevValue, rax    
-    mov rax, dqPropertyValue
+    mov qwPrevValue, rax    
+    mov rax, qwPropertyValue
     mov [rbx], rax
-    mov rax, dqPrevValue
+    mov rax, qwPrevValue
     ret
 
 _MUISetProperty ENDP
@@ -181,9 +181,9 @@ _MUISetProperty ENDP
 ;-------------------------------------------------------------------------------------
 ; Allocs memory for the properties of a control
 ;-------------------------------------------------------------------------------------
-MUIAllocMemProperties PROC FRAME hControl:QWORD, cbWndExtraOffset:QWORD, dqSize:QWORD
+MUIAllocMemProperties PROC FRAME hControl:QWORD, cbWndExtraOffset:QWORD, qwSize:QWORD
     LOCAL pMem:QWORD
-    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, dqSize
+    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, qwSize
     .IF rax == NULL
         mov rax, FALSE
         ret
@@ -221,8 +221,8 @@ MUIFreeMemProperties ENDP
 ;-------------------------------------------------------------------------------------
 ; Gets external property value and returns it in rax
 ;-------------------------------------------------------------------------------------
-MUIGetExtProperty PROC FRAME hControl:QWORD, dqProperty:QWORD
-    Invoke _MUIGetProperty, hControl, 8, dqProperty ; get external properties
+MUIGetExtProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
+    Invoke _MUIGetProperty, hControl, 8, qwProperty ; get external properties
     ret
 MUIGetExtProperty ENDP
 
@@ -230,8 +230,8 @@ MUIGetExtProperty ENDP
 ;-------------------------------------------------------------------------------------
 ; Sets external property value and returns previous value in rax.
 ;-------------------------------------------------------------------------------------
-MUISetExtProperty PROC FRAME hControl:QWORD, dqProperty:QWORD, dqPropertyValue:QWORD
-    Invoke _MUISetProperty, hControl, 8, dqProperty, dqPropertyValue ; set external properties
+MUISetExtProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
+    Invoke _MUISetProperty, hControl, 8, qwProperty, qwPropertyValue ; set external properties
     ret
 MUISetExtProperty ENDP
 
@@ -239,8 +239,8 @@ MUISetExtProperty ENDP
 ;-------------------------------------------------------------------------------------
 ; Gets internal property value and returns it in rax
 ;-------------------------------------------------------------------------------------
-MUIGetIntProperty PROC FRAME hControl:QWORD, dqProperty:QWORD
-    Invoke _MUIGetProperty, hControl, 0, dqProperty ; get internal properties
+MUIGetIntProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
+    Invoke _MUIGetProperty, hControl, 0, qwProperty ; get internal properties
     ret
 MUIGetIntProperty ENDP
 
@@ -248,8 +248,8 @@ MUIGetIntProperty ENDP
 ;-------------------------------------------------------------------------------------
 ; Sets internal property value and returns previous value in eax.
 ;-------------------------------------------------------------------------------------
-MUISetIntProperty PROC FRAME hControl:QWORD, dqProperty:QWORD, dqPropertyValue:QWORD
-    Invoke _MUISetProperty, hControl, 0, dqProperty, dqPropertyValue ; set internal properties
+MUISetIntProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
+    Invoke _MUISetProperty, hControl, 0, qwProperty, qwPropertyValue ; set internal properties
     ret
 MUISetIntProperty ENDP
 
@@ -258,7 +258,7 @@ MUISetIntProperty ENDP
 ; Convert font point size eg '12' to logical unit size for use with CreateFont,
 ; CreateFontIndirect
 ;-------------------------------------------------------------------------------------
-MUIPointSizeToLogicalUnit PROC FRAME USES RBX RCX RDX hWin:QWORD, dqPointSize:QWORD
+MUIPointSizeToLogicalUnit PROC FRAME USES RBX RCX RDX hWin:QWORD, qwPointSize:QWORD
     LOCAL hdc:HDC
     LOCAL dwLogicalUnit:DWORD
     
@@ -267,7 +267,7 @@ MUIPointSizeToLogicalUnit PROC FRAME USES RBX RCX RDX hWin:QWORD, dqPointSize:QW
     Invoke GetDeviceCaps, hdc, LOGPIXELSY
     xor rdx, rdx
     xor rcx, rcx
-    mov ebx, dword ptr dqPointSize
+    mov ebx, dword ptr qwPointSize
     mul ebx
     mov ecx, 72d
     div ecx
@@ -286,73 +286,80 @@ MUIPointSizeToLogicalUnit ENDP
 ; flags: WS_POPUP or WS_VISIBLE and optionally with DS_CENTER /DS_CENTERMOUSE / 
 ; WS_CLIPCHILDREN / WS_CLIPSIBLINGS / WS_MINIMIZE / WS_MAXIMIZE
 ;-------------------------------------------------------------------------------------
-MUIApplyToDialog PROC FRAME hWin:QWORD, dqDropShadow:QWORD
-    LOCAL dqStyle:QWORD
-    LOCAL dqNewStyle:QWORD
-    LOCAL dqClassStyle:QWORD
+MUIApplyToDialog PROC FRAME hWin:QWORD, qwDropShadow:QWORD, qwClipping:QWORD
+    LOCAL qwStyle:QWORD
+    LOCAL qwNewStyle:QWORD
+    LOCAL qwClassStyle:QWORD
     
-    mov dqNewStyle, WS_POPUP
+    mov qwNewStyle, WS_POPUP
     
     Invoke GetWindowLongPtr, hWin, GWL_STYLE
-    mov dqStyle, rax
+    mov qwStyle, rax
     
     and rax, DS_CENTER
     .IF rax == DS_CENTER
-        or dqNewStyle, DS_CENTER
+        or qwNewStyle, DS_CENTER
     .ENDIF
     
-    mov rax, dqStyle
+    mov rax, qwStyle
     and rax, DS_CENTERMOUSE
     .IF rax == DS_CENTERMOUSE
-        or dqNewStyle, DS_CENTERMOUSE
+        or qwNewStyle, DS_CENTERMOUSE
     .ENDIF
     
-    mov rax, dqStyle
+    mov rax, qwStyle
     and rax, WS_VISIBLE
     .IF rax == WS_VISIBLE
-        or dqNewStyle, WS_VISIBLE
+        or qwNewStyle, WS_VISIBLE
     .ENDIF
     
-    mov rax, dqStyle
+    mov rax, qwStyle
     and rax, WS_MINIMIZE
     .IF rax == WS_MINIMIZE
-        or dqNewStyle, WS_MINIMIZE
+        or qwNewStyle, WS_MINIMIZE
     .ENDIF
     
-    mov rax, dqStyle
+    mov rax, qwStyle
     and rax, WS_MAXIMIZE
     .IF rax == WS_MAXIMIZE
-        or dqNewStyle, WS_MAXIMIZE
+        or qwNewStyle, WS_MAXIMIZE
     .ENDIF        
 
-    mov rax, dqStyle
+    mov rax, qwStyle
     and rax, WS_CLIPSIBLINGS
     .IF rax == WS_CLIPSIBLINGS
-        or dqNewStyle, WS_CLIPSIBLINGS
+        or qwNewStyle, WS_CLIPSIBLINGS
     .ENDIF        
     
-    or dqNewStyle, WS_CLIPCHILDREN
+    .IF qwClipping == TRUE
+        mov rax, qwStyle
+        and rax, WS_CLIPSIBLINGS
+        .IF rax == WS_CLIPSIBLINGS
+            or qwNewStyle, WS_CLIPSIBLINGS
+        .ENDIF        
+        or qwNewStyle, WS_CLIPCHILDREN
+    .ENDIF
 
-    Invoke SetWindowLongPtr, hWin, GWL_STYLE, dqNewStyle
+    Invoke SetWindowLongPtr, hWin, GWL_STYLE, qwNewStyle
     
     ; Set dropshadow on or off on our dialog
     
     Invoke GetClassLongPtr, hWin, GCL_STYLE
-    mov dqClassStyle, rax
+    mov qwClassStyle, rax
     
-    .IF dqDropShadow == TRUE
-        mov rax, dqClassStyle
+    .IF qwDropShadow == TRUE
+        mov rax, qwClassStyle
         and rax, CS_DROPSHADOW
         .IF rax != CS_DROPSHADOW
-            or dqClassStyle, CS_DROPSHADOW
-            Invoke SetClassLongPtr, hWin, GCL_STYLE, dqClassStyle
+            or qwClassStyle, CS_DROPSHADOW
+            Invoke SetClassLongPtr, hWin, GCL_STYLE, qwClassStyle
         .ENDIF
     .ELSE    
-        mov rax, dqClassStyle
+        mov rax, qwClassStyle
         and rax, CS_DROPSHADOW
         .IF rax == CS_DROPSHADOW
-            and dqClassStyle,(-1 xor CS_DROPSHADOW)
-            Invoke SetClassLongPtr, hWin, GCL_STYLE, dqClassStyle
+            and qwClassStyle,(-1 xor CS_DROPSHADOW)
+            Invoke SetClassLongPtr, hWin, GCL_STYLE, qwClassStyle
         .ENDIF
     .ENDIF
 
@@ -491,7 +498,7 @@ MUICenterWindow ENDP
 ;        Invoke InvalidateRect, hWin, NULL, TRUE
 ; 
 ;-------------------------------------------------------------------------------------
-MUIPaintBackground PROC FRAME hWin:QWORD, dqBackcolor:QWORD, dqBorderColor:QWORD
+MUIPaintBackground PROC FRAME hWin:QWORD, qwBackcolor:QWORD, qwBorderColor:QWORD
     LOCAL ps:PAINTSTRUCT
     LOCAL hdc:HDC
     LOCAL rect:RECT
@@ -513,14 +520,14 @@ MUIPaintBackground PROC FRAME hWin:QWORD, dqBackcolor:QWORD, dqBorderColor:QWORD
     Invoke GetStockObject, DC_BRUSH
     mov hBrush, rax
     Invoke SelectObject, hdcMem, rax
-    Invoke SetDCBrushColor, hdcMem, dword ptr dqBackcolor
+    Invoke SetDCBrushColor, hdcMem, dword ptr qwBackcolor
     Invoke FillRect, hdcMem, Addr rect, hBrush
 
-    .IF dqBorderColor != 0
+    .IF qwBorderColor != 0
         Invoke GetStockObject, DC_BRUSH
         mov hBrush, rax
         Invoke SelectObject, hdcMem, rax
-        Invoke SetDCBrushColor, hdcMem, dword ptr dqBorderColor
+        Invoke SetDCBrushColor, hdcMem, dword ptr qwBorderColor
         Invoke FrameRect, hdcMem, Addr rect, hBrush
     .ENDIF
     
@@ -554,7 +561,7 @@ MUIPaintBackground ENDP
 ; dwImageLocation: 0=center center, 1=bottom left, 2=bottom right, 3=top left, 
 ; 4=top right, 5=center top, 6=center bottom
 ;-------------------------------------------------------------------------------------
-MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, dqBackcolor:QWORD, dqBorderColor:QWORD, hImage:QWORD, dqImageType:QWORD, dqImageLocation:QWORD
+MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBorderColor:QWORD, hImage:QWORD, qwImageType:QWORD, qwImageLocation:QWORD
     LOCAL ps:PAINTSTRUCT
     LOCAL hdc:HDC
     LOCAL rect:RECT
@@ -571,7 +578,7 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, dqBackcolor:QWORD, dqBor
     LOCAL pGraphicsBuffer:QWORD
     LOCAL pBitmap:QWORD
     
-    .IF dqImageType == MUIIT_PNG
+    .IF qwImageType == MUIIT_PNG
         mov pGraphics, 0
         mov pGraphicsBuffer, 0
         mov pBitmap, 0
@@ -590,14 +597,14 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, dqBackcolor:QWORD, dqBor
     Invoke GetStockObject, DC_BRUSH
     mov hBrush, rax
     Invoke SelectObject, hdcMem, rax
-    Invoke SetDCBrushColor, hdcMem, dword ptr dqBackcolor
+    Invoke SetDCBrushColor, hdcMem, dword ptr qwBackcolor
     Invoke FillRect, hdcMem, Addr rect, hBrush
 
-    .IF dqBorderColor != 0
+    .IF qwBorderColor != 0
         Invoke GetStockObject, DC_BRUSH
         mov hBrush, rax
         Invoke SelectObject, hdcMem, rax
-        Invoke SetDCBrushColor, hdcMem, dword ptr dqBorderColor
+        Invoke SetDCBrushColor, hdcMem, dword ptr qwBorderColor
         Invoke FrameRect, hdcMem, Addr rect, hBrush
     .ENDIF
     
@@ -606,9 +613,9 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, dqBackcolor:QWORD, dqBor
         ; Calc left and top of image based on 
         ; client rect and image width and height
         ;----------------------------------------
-        Invoke MUIGetImageSize, hImage, dqImageType, Addr ImageWidth, Addr ImageHeight
+        Invoke MUIGetImageSize, hImage, qwImageType, Addr ImageWidth, Addr ImageHeight
 
-        mov rax, dqImageLocation
+        mov rax, qwImageLocation
         .IF rax == MUIIL_CENTER
             xor rax, rax
             xor rbx, rbx
@@ -696,7 +703,7 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, dqBackcolor:QWORD, dqBor
         ;----------------------------------------
         ; Draw image depending on what type it is
         ;----------------------------------------
-        mov rax, dqImageType
+        mov rax, qwImageType
         .IF rax == MUIIT_NONE
             
         .ELSEIF rax == MUIIT_BMP
@@ -803,18 +810,18 @@ MUIGetParentBackgroundColor ENDP
 ;-------------------------------------------------------------------------------------
 ; MUIGetImageSize
 ;-------------------------------------------------------------------------------------
-MUIGetImageSize PROC FRAME USES RBX hImage:QWORD, dqImageType:QWORD, lpdqImageWidth:QWORD, lpdqImageHeight:QWORD
+MUIGetImageSize PROC FRAME USES RBX hImage:QWORD, qwImageType:QWORD, lpqwImageWidth:QWORD, lpqwImageHeight:QWORD
     LOCAL bm:BITMAP
     LOCAL iinfo:ICONINFO
     LOCAL nImageWidth:QWORD
     LOCAL nImageHeight:QWORD
 
-    mov rax, dqImageType
+    mov rax, qwImageType
     .IF rax == MUIIT_NONE
         mov rax, 0
-        mov rbx, lpdqImageWidth
+        mov rbx, lpqwImageWidth
         mov [rbx], rax
-        mov rbx, lpdqImageHeight
+        mov rbx, lpqwImageHeight
         mov [rbx], rax    
         mov rax, FALSE
         ret
@@ -823,10 +830,10 @@ MUIGetImageSize PROC FRAME USES RBX hImage:QWORD, dqImageType:QWORD, lpdqImageWi
         Invoke GetObject, hImage, SIZEOF bm, Addr bm
         xor rax, rax
         mov eax, bm.bmWidth
-        mov rbx, lpdqImageWidth
+        mov rbx, lpqwImageWidth
         mov [rbx], rax
         mov eax, bm.bmHeight
-        mov rbx, lpdqImageHeight
+        mov rbx, lpqwImageHeight
         mov [rbx], rax
     
     .ELSEIF rax == MUIIT_ICO ; icon    
@@ -836,10 +843,10 @@ MUIGetImageSize PROC FRAME USES RBX hImage:QWORD, dqImageType:QWORD, lpdqImageWi
             Invoke GetObject, iinfo.hbmColor, SIZEOF bm, Addr bm
             xor rax, rax
             mov eax, bm.bmWidth
-            mov rbx, lpdqImageWidth
+            mov rbx, lpqwImageWidth
             mov [rbx], rax
             mov eax, bm.bmHeight
-            mov rbx, lpdqImageHeight
+            mov rbx, lpqwImageHeight
             mov [rbx], rax
         .ELSE ; Icon has no color plane, image width/height data stored in mask
             mov rax, iinfo.hbmMask
@@ -847,11 +854,11 @@ MUIGetImageSize PROC FRAME USES RBX hImage:QWORD, dqImageType:QWORD, lpdqImageWi
                 Invoke GetObject, iinfo.hbmMask, SIZEOF bm, Addr bm
                 xor rax, rax
                 mov eax, bm.bmWidth
-                mov rbx, lpdqImageWidth
+                mov rbx, lpqwImageWidth
                 mov [rbx], rax
                 mov eax, bm.bmHeight
                 shr rax, 1 ;bmp.bmHeight / 2;
-                mov rbx, lpdqImageHeight
+                mov rbx, lpqwImageHeight
                 mov [rbx], rax                
             .ENDIF
         .ENDIF
@@ -870,10 +877,10 @@ MUIGetImageSize PROC FRAME USES RBX hImage:QWORD, dqImageType:QWORD, lpdqImageWi
         Invoke GdipGetImageWidth, hImage, Addr nImageWidth
         Invoke GdipGetImageHeight, hImage, Addr nImageHeight
         mov rax, nImageWidth
-        mov rbx, lpdqImageWidth
+        mov rbx, lpqwImageWidth
         mov [rbx], rax
         mov rax, nImageHeight
-        mov rbx, lpdqImageHeight
+        mov rbx, lpqwImageHeight
         mov [rbx], rax
         ENDIF
     .ENDIF
@@ -895,7 +902,7 @@ MUIGetImageSize ENDP
 ; is returned in eax.
 ; On return eax contains the pointer to the new structure item or -1 if there was a problem alloc'ing memory.
 ;--------------------------------------------------------------------------------------------------------------------
-MUIAllocStructureMemory PROC FRAME USES RBX dqPtrStructMem:QWORD, TotalItems:QWORD, ItemSize:QWORD
+MUIAllocStructureMemory PROC FRAME USES RBX qwPtrStructMem:QWORD, TotalItems:QWORD, ItemSize:QWORD
     LOCAL StructDataOffset:QWORD
     LOCAL StructSize:QWORD
     LOCAL StructData:QWORD
@@ -905,7 +912,7 @@ MUIAllocStructureMemory PROC FRAME USES RBX dqPtrStructMem:QWORD, TotalItems:QWO
         Invoke GlobalAlloc, GMEM_FIXED+GMEM_ZEROINIT, ItemSize ;
         .IF rax != NULL
             mov StructData, rax
-            mov rbx, dqPtrStructMem
+            mov rbx, qwPtrStructMem
             mov [rbx], rax ; save pointer to memory alloc'd for structure
             mov StructDataOffset, 0 ; save offset for new entry
             ;IFDEF DEBUG32
@@ -920,7 +927,7 @@ MUIAllocStructureMemory PROC FRAME USES RBX dqPtrStructMem:QWORD, TotalItems:QWO
         .ENDIF
     .ELSE
         
-        .IF dqPtrStructMem != NULL
+        .IF qwPtrStructMem != NULL
         
             ; calc new size to grow structure and offset to new entry
             mov rax, TotalItems
@@ -932,7 +939,7 @@ MUIAllocStructureMemory PROC FRAME USES RBX dqPtrStructMem:QWORD, TotalItems:QWO
             sub rax, rbx
             mov StructDataOffset, rax ; save offset for new entry
             
-            mov rbx, dqPtrStructMem ; get value from addr of passed dword dwPtrStructMem into eax, this is our pointer to previous mem location of structure
+            mov rbx, qwPtrStructMem ; get value from addr of passed dword dwPtrStructMem into eax, this is our pointer to previous mem location of structure
             mov rax, [rbx]
             mov StructData, rax
             ;IFDEF DEBUG32
@@ -949,7 +956,7 @@ MUIAllocStructureMemory PROC FRAME USES RBX dqPtrStructMem:QWORD, TotalItems:QWO
                 Invoke GlobalLock, rax
                 mov StructData, rax
                 
-                mov rbx, dqPtrStructMem
+                mov rbx, qwPtrStructMem
                 mov [rbx], rax ; save new pointer to memory alloc'd for structure back to dword address passed as dwPtrStructMem
             .ELSE
                 IFDEF DEBUG64
@@ -1015,10 +1022,12 @@ MUIAllocStructureMemory endp
 ;
 ;http://www.masmforum.com/board/index.php?topic=16267.msg134434#msg134434
 ;--------------------------------------------------------------------------------------------------------------------
-MUICreateIconFromMemory PROC FRAME pIconData:QWORD, iIcon:QWORD
+MUICreateIconFromMemory PROC FRAME USES RDX pIconData:QWORD, iIcon:QWORD
     LOCAL sz[2]:DWORD
-
-
+    LOCAL pbIconBits:QWORD
+    LOCAL cbIconBits:DWORD
+    LOCAL cxDesired:DWORD
+    LOCAL cyDesired:DWORD
 
     xor rax, rax
     mov rdx, [pIconData]
@@ -1041,16 +1050,33 @@ MUICreateIconFromMemory PROC FRAME pIconData:QWORD, iIcon:QWORD
     add rdx, rax
     add rdx, 6
 
-    movzx rax, BYTE PTR [rdx]
+    movzx eax, BYTE PTR [rdx]
     mov [sz], eax
+    mov cxDesired, eax
     movzx eax, BYTE PTR [rdx+1]
     mov [sz+4], eax
+    mov cyDesired, eax
 
-    mov rax, [rdx+12]
+    mov rdx, [pIconData]
+    mov rax, [iIcon]
+    shl rax, 4
+    add rdx, rax
+    add rdx, 6
+    xor eax, eax
+    mov eax, dword ptr [rdx+8]
+    mov cbIconBits, eax
+    
+    mov rdx, [pIconData]
+    mov rax, [iIcon]
+    shl rax, 4
+    add rdx, rax
+    add rdx, 6
+    xor eax, eax
+    mov eax, dword ptr [rdx+12]
     add rax, [pIconData]
-    mov rdx, [rdx+8]
+    mov pbIconBits, rax
 
-    invoke CreateIconFromResourceEx, rax, edx, 1, 030000h, [sz], [sz+4], 0
+    Invoke CreateIconFromResourceEx, pbIconBits, cbIconBits, 1, 030000h, cxDesired, cyDesired, 0
     
     xor rdx, rdx
     mov edx,[sz]

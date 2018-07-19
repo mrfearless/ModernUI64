@@ -1,14 +1,14 @@
 ;======================================================================================================================================
 ;
-; ModernUI x64 Library v0.0.0.5
+; ModernUI x64 Library v0.0.0.6
 ;
-; Copyright (c) 2016 by fearless
+; Copyright (c) 2018 by fearless
 ;
 ; All Rights Reserved
 ;
 ; http://www.LetTheLight.in
 ;
-; http://github.com/mrfearless/ModernUI
+; http://github.com/mrfearless/ModernUI64
 ;
 ;
 ; This software is provided 'as-is', without any express or implied warranty. In no event will the author be held liable for any 
@@ -35,18 +35,18 @@
 ;--------------------------------------------------------------------------------------------------------------------------------------
 ; PUBLIC ModernUI Prototypes for users of controls
 ;--------------------------------------------------------------------------------------------------------------------------------------
-MUIGetExtProperty               PROTO :QWORD, :QWORD                   ; hControl, dqProperty
-MUISetExtProperty               PROTO :QWORD, :QWORD, :QWORD           ; hControl, dqProperty, dqPropertyValue
-MUIGetIntProperty               PROTO :QWORD, :QWORD                   ; hControl, dqProperty
-MUISetIntProperty               PROTO :QWORD, :QWORD, :QWORD           ; hControl, dqProperty, dqPropertyValue
+MUIGetExtProperty               PROTO :QWORD, :QWORD                   ; hControl, qwProperty
+MUISetExtProperty               PROTO :QWORD, :QWORD, :QWORD           ; hControl, qwProperty, qwPropertyValue
+MUIGetIntProperty               PROTO :QWORD, :QWORD                   ; hControl, qwProperty
+MUISetIntProperty               PROTO :QWORD, :QWORD, :QWORD           ; hControl, qwProperty, qwPropertyValue
 
-MUIPointSizeToLogicalUnit       PROTO :QWORD, :QWORD                   ; hControl, dqPointSize
-MUIApplyToDialog                PROTO :QWORD, :QWORD                   ; hDialogWindow, dqDropShadow (true to set drop shadow)
+MUIPointSizeToLogicalUnit       PROTO :QWORD, :QWORD                   ; hControl, qwPointSize
+MUIApplyToDialog                PROTO :QWORD, :QWORD, :QWORD           ; hDialogWindow, qwDropShadow (true to set drop shadow), qwClipping (true to set clipping on)
 MUICenterWindow                 PROTO :QWORD, :QWORD                   ; hWndChild, hWndParent
-MUIPaintBackground              PROTO :QWORD, :QWORD, :QWORD           ; hDialogWindow, dqBackColor, dqBorderColor
-MUIPaintBackgroundImage         PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD ; hDialogWindow, dqBackColor, dqBorderColor, hImage, dqImageType, dqImageLocation
+MUIPaintBackground              PROTO :QWORD, :QWORD, :QWORD           ; hDialogWindow, qwBackColor, qwBorderColor
+MUIPaintBackgroundImage         PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD ; hDialogWindow, qwBackColor, qwBorderColor, hImage, qwImageType, qwImageLocation
 MUIGetParentBackgroundColor     PROTO :QWORD                           ; hControl
-MUIGetImageSize                 PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hImage, dqImageType, lpdqImageWidth, lpdqImageHeight
+MUIGetImageSize                 PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hImage, qwImageType, lpqwImageWidth, lpqwImageHeight
 
 MUILoadRegionFromResource       PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hInstance, idRgnRes, lpRegion, lpqwSizeRegion
 MUISetRegionFromResource        PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hWin, idRgnRes, lpqwCopyRgn, bRedraw
@@ -57,10 +57,10 @@ MUISetRegionFromResource        PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hWin, i
 MUIGDIPlusStart                 PROTO                                  ; Wrapper for GDIPlus startup
 MUIGDIPlusFinish                PROTO                                  ; Wrapper for GDIPlus shutdown
 
-MUIAllocMemProperties           PROTO :QWORD, :QWORD, :QWORD           ; hControl, cbWndExtraOffset, dqSizeToAllocate
+MUIAllocMemProperties           PROTO :QWORD, :QWORD, :QWORD           ; hControl, cbWndExtraOffset, qwSizeToAllocate
 MUIFreeMemProperties            PROTO :QWORD, :QWORD                   ; hControl, cbWndExtraOffset
 
-MUIAllocStructureMemory         PROTO :QWORD, :QWORD, :QWORD           ; dqPtrStructMem, TotalItems, ItemSize
+MUIAllocStructureMemory         PROTO :QWORD, :QWORD, :QWORD           ; qwPtrStructMem, TotalItems, ItemSize
 MUICreateIconFromMemory         PROTO :QWORD, :QWORD                   ; pIconData, iIcon
 
 ;--------------------------------------------------------------------------------------------------------------------------------------
