@@ -25,7 +25,7 @@ _WIN64 EQU 1
 WINVER equ 0501h
 
 ;MUI_USEGDIPLUS EQU 1 ; comment out of you dont require png (gdiplus) support
-
+;
 ;DEBUG64 EQU 1
 ;
 ;IFDEF DEBUG64
@@ -1296,6 +1296,90 @@ _MUI_CheckboxLoadIcon PROC FRAME hWin:QWORD, dqProperty:QWORD, idResIcon:QWORD
     ret
 
 _MUI_CheckboxLoadIcon ENDP
+
+
+
+;MUICreateIconFromMemoryTest PROC FRAME USES RDX pIconData:QWORD, iIcon:QWORD
+;    LOCAL sz[2]:DWORD
+;    LOCAL pbIconBits:QWORD
+;    LOCAL cbIconBits:DWORD
+;    LOCAL cxDesired:DWORD
+;    LOCAL cyDesired:DWORD
+;
+;    xor rax, rax
+;    mov rdx, [pIconData]
+;    or rdx, rdx
+;    jz ERRORCATCH
+;
+;    movzx rax, WORD PTR [rdx+4]
+;    cmp rax, [iIcon]
+;    ja @F
+;        ERRORCATCH:
+;        push rax
+;        invoke SetLastError, ERROR_RESOURCE_NAME_NOT_FOUND
+;        pop rdx
+;        xor rax, rax
+;        ret
+;    @@:
+;
+;    mov rax, [iIcon]
+;    shl rax, 4
+;    add rdx, rax
+;    add rdx, 6
+;
+;    movzx eax, BYTE PTR [rdx]
+;    mov [sz], eax
+;    mov cxDesired, eax
+;    movzx eax, BYTE PTR [rdx+1]
+;    mov [sz+4], eax
+;    mov cyDesired, eax
+;
+;    mov rdx, [pIconData]
+;    mov rax, [iIcon]
+;    shl rax, 4
+;    add rdx, rax
+;    add rdx, 6
+;    xor eax, eax
+;    mov eax, dword ptr [rdx+8]
+;    mov cbIconBits, eax
+;    
+;    mov rdx, [pIconData]
+;    mov rax, [iIcon]
+;    shl rax, 4
+;    add rdx, rax
+;    add rdx, 6
+;    xor eax, eax
+;    mov eax, dword ptr [rdx+12]
+;    add rax, [pIconData]
+;    mov pbIconBits, rax
+;
+;    mov rax, pbIconBits
+;    PrintQWORD rax
+;    
+;    xor rax, rax
+;    mov eax, cbIconBits
+;    PrintQWORD rax
+;    
+;    xor rax, rax
+;    mov eax, cxDesired
+;    PrintQWORD rax
+;    
+;    xor rax, rax
+;    mov eax, cyDesired
+;    PrintQWORD rax
+;
+;    Invoke CreateIconFromResourceEx, pbIconBits, cbIconBits, 1, 030000h, cxDesired, cyDesired, 0
+;    PrintQWORD rax
+;    
+;    xor rdx, rdx
+;    mov edx,[sz]
+;    shl edx,16
+;    mov dx, word ptr [sz+4]
+;
+;    RET
+;
+;
+;MUICreateIconFromMemoryTest ENDP
 
 
 
