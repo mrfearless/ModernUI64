@@ -1,0 +1,3 @@
+#include "Res/MUICheckboxVer.rc"
+#include "Res/MUICheckboxDlg.rc"
+#include "Res/MUICheckboxRes.rc"
