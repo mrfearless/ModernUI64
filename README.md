@@ -1,5 +1,7 @@
+# ![](ModernUI.png) 
 # ModernUI64
-Modern UI controls for win64 assembler
+
+ModernUI is a framework library and a collection of custom controls for win64 assembler, created to help modernize the  standard win32 controls (in x64), and to add or emulate new control types and features of modern UX/UI designs and other graphical frameworks.
 
 For the x86 version of this project, visit [here](https://github.com/mrfearless/ModernUI)
 
