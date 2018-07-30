@@ -42,7 +42,7 @@ MUISmartPanelGetCurrentPanel   PROTO :QWORD                                     
 MUISmartPanelSetCurrentPanel   PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_SmartPanel, PanelIndex, bNotify
 MUISmartPanelNextPanel         PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, bNotify
 MUISmartPanelPrevPanel         PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, bNotify
-MUISmartPanelSetIsDlgMsgVar    PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, Addr lpdwVar
+MUISmartPanelSetIsDlgMsgVar    PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, Addr lpqwVar
 MUISmartPanelRegisterPanel     PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_SmartPanel, qwResIdPanelDlg, lpqwPanelProc
 
 

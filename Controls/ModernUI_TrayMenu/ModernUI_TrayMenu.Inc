@@ -52,7 +52,7 @@ MUITrayMenuShowNotification PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD        
 MUITrayMenuSetTrayIconText  PROTO :QWORD, :QWORD, :QWORD, :QWORD                                 ; hModernUI_TrayIcon, lpszText, lpszFont, qwTextColorRGB
 
 ; Tray Icon Functions (standalone - no menu)
-MUITrayIconCreate           PROTO :QWORD, :QWORD, :QWORD, :QWORD                                 ; hWndParent, dwTrayIconResID, hTrayIcon, lpszTooltip - Returns in eax hModernUI_TrayIcon
+MUITrayIconCreate           PROTO :QWORD, :QWORD, :QWORD, :QWORD                                 ; hWndParent, qwTrayIconResID, hTrayIcon, lpszTooltip - Returns in eax hModernUI_TrayIcon
 MUITrayIconDestroy          PROTO :QWORD                                                         ; hModernUI_TrayIcon
 MUITrayIconSetTrayIcon      PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayIcon, hTrayIcon
 MUITrayIconSetTooltipText   PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayIcon, lpszTooltip
@@ -79,10 +79,10 @@ ENDIF
 ;--------------------------------------------------------------------------------------------------------------------------------------
 
 ; ModernUI_TrayMenu Styles
-; Tray Menu Type: dwMenuType of TrayMenuCreate and TrayMenuAssignMenu functions
-MUITMT_MENUDEFER            EQU 0 ; Specified that dwMenu is ignored.
-MUITMT_POPUPMENU            EQU 1 ; Specifies that dwMenu is a handle to a menu created with CreatePopupMenu
-MUITMT_MENUITEMS            EQU 2 ; Specifies that dwMenu is a pointer to a list of TMITEM structures used to build menu from
+; Tray Menu Type: qwMenuType of TrayMenuCreate and TrayMenuAssignMenu functions
+MUITMT_MENUDEFER            EQU 0 ; Specified that qwMenu is ignored.
+MUITMT_POPUPMENU            EQU 1 ; Specifies that qwMenu is a handle to a menu created with CreatePopupMenu
+MUITMT_MENUITEMS            EQU 2 ; Specifies that qwMenu is a pointer to a list of TMITEM structures used to build menu from
 MUITMT_NOMENUEVER           EQU 3 ; Specified that no menu is ever added to the icon at any point.
 
 ; Tray Menu Style
@@ -102,7 +102,7 @@ MUITMNI_ERROR               EQU 3 ; An error icon.
 ;--------------------------------------------------------------------------------------------------------------------------------------
 @TrayMenuIcon               EQU 0   ; hIcon to display in tray
 @TrayMenuTooltipText        EQU 8   ; lpszText to display over icon in tray
-@TrayMenuVisible            EQU 16   ; bool visible = TRUE/FALSE
+@TrayMenuVisible            EQU 16  ; bool visible = TRUE/FALSE
 @TrayMenuType               EQU 24  ; Tray Menu Type: TMT_MENUDEFER, TMT_POPUPMENU, TMT_MENUITEMS, TMT_NOMENUEVER
 @TrayMenuHandleMenu         EQU 32  ; hMenu
 @TrayMenuExtraWndHandle     EQU 40  ; hWnd Extra window handle to use for restoring a main window that isnt parent to current child window that hTM is based on

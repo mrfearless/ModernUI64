@@ -414,7 +414,7 @@ _MUI_TrayMenuWindowSubClass_Proc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wPara
             Invoke GetWindowLong, qwRefData, GWL_STYLE
             mov qwStyle, rax
             ;PrintText 'MinOnClose'
-            ;PrintDec dwStyle
+            ;PrintDec qwStyle
             AND rax, MUITMS_MINONCLOSE
             .IF rax == MUITMS_MINONCLOSE ; MinimizeOnClose is ON
                 mov rax, qwStyle
@@ -435,7 +435,7 @@ _MUI_TrayMenuWindowSubClass_Proc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wPara
             Invoke GetWindowLong, qwRefData, GWL_STYLE
             mov qwStyle, rax
             ;PrintText 'HideIfMin'
-            ;PrintDec dwStyle
+            ;PrintDec qwStyle
             AND rax, MUITMS_HIDEIFMIN
             .IF rax == MUITMS_HIDEIFMIN         
                 Invoke _MUI_TM_MinimizeToTray, hWin, TRUE
@@ -510,9 +510,9 @@ _MUI_TrayMenuCleanup ENDP
 ;-------------------------------------------------------------------------------------
 ; Assigns a menu to the ModernUI_TrayMenu control, using a popup menu created with 
 ; CreatePopupMenu or by building a menu from a block of MUITRAYMENUITEM structures
-; qwMenuType determines which dwMenu contains
-; if qwMenuType == MUITMT_POPUPMENU, dwMenu is a handle to a popup menu
-; if qwMenuType == MUITMT_MENUITEMS, dwMenu is pointer to array of structures
+; qwMenuType determines which qwMenu contains
+; if qwMenuType == MUITMT_POPUPMENU, qwMenu is a handle to a popup menu
+; if qwMenuType == MUITMT_MENUITEMS, qwMenu is pointer to array of structures
 ; Returns in rax TRUE of succesful or FALSE otherwise.
 ;-------------------------------------------------------------------------------------
 MUITrayMenuAssignMenu PROC FRAME USES RBX hControl:QWORD, qwMenuType:QWORD, qwMenu:QWORD
@@ -1133,7 +1133,7 @@ MUITrayIconCreate PROC FRAME USES RBX hWndParent:QWORD, qwTrayIconResID:QWORD, h
     mov [rbx].NOTIFYICONDATA.hWnd, rax  
     
 
-    mov rax, qwTrayIconResID ; use hControl has unique id for each tryamenu icon ; dwTrayMenuResID
+    mov rax, qwTrayIconResID ; use hControl has unique id for each tryamenu icon ; qwTrayMenuResID
     mov [rbx].NOTIFYICONDATA.uID, eax ; Tray ID
     mov rax,  NIF_ICON + NIF_TIP
     mov [rbx].NOTIFYICONDATA.uFlags, eax
@@ -1436,12 +1436,12 @@ _MUI_TM_AddIconAndTooltip PROC FRAME USES RBX hControl:QWORD, hWndParent:QWORD, 
     mov [rbx].NOTIFYICONDATA.cbSize, eax
     mov rax, hWndParent
     mov [rbx].NOTIFYICONDATA.hWnd, rax
-;   .IF dwTrayMenuResID == NULL
+;   .IF qwTrayMenuResID == NULL
 ;       mov eax, FALSE
 ;       ret
 ;   .ENDIF
-    ;PrintText 'dwTrayMenuResID'
-    mov rax, hControl ; use hControl has unique id for each tryamenu icon ; dwTrayMenuResID
+    ;PrintText 'qwTrayMenuResID'
+    mov rax, hControl ; use hControl has unique id for each tryamenu icon ; qwTrayMenuResID
     mov [rbx].NOTIFYICONDATA.uID, eax ; Tray ID
     mov rax,  NIF_ICON + NIF_MESSAGE + NIF_TIP
     mov [rbx].NOTIFYICONDATA.uFlags, eax
@@ -1506,7 +1506,7 @@ _MUI_TM_ShowTrayMenu PROC FRAME hWin:QWORD, hControl:QWORD
     
     ;Invoke _MUI_TM_RestoreFromTray, hWin, hControl
     
-    Invoke GetCursorPos, Addr TrayMenuPoint ;lpdwTrayMenuPoint
+    Invoke GetCursorPos, Addr TrayMenuPoint ;lpqwTrayMenuPoint
     ; Focus Main Window - ; Fix for shortcut menu not popping up right
     Invoke SetForegroundWindow, hWin
     Invoke TrackPopupMenu, hTrayMenu, TPM_RIGHTALIGN + TPM_LEFTBUTTON + TPM_RIGHTBUTTON, TrayMenuPoint.x, TrayMenuPoint.y, NULL, hWin, NULL
@@ -1520,14 +1520,14 @@ _MUI_TM_ShowTrayMenu ENDP
 ;-------------------------------------------------------------------------------------
 _MUI_TM_RestoreFromTray PROC FRAME hWin:QWORD, hControl:QWORD
     LOCAL hParent:QWORD
-    ;LOCAL dwStyle:DWORD
+    ;LOCAL qwStyle:DWORD
     LOCAL wp:WINDOWPLACEMENT
     IFDEF DEBUG32
         PrintText 'TM_RestoreFromTray'
     ENDIF
 
 ;    Invoke GetWindowLong, hControl, GWL_STYLE
-;    mov dwStyle, eax
+;    mov qwStyle, eax
 
     Invoke MUIGetExtProperty, hControl, @TrayMenuExtraWndHandle
     .IF eax != NULL

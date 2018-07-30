@@ -133,8 +133,8 @@ MUIBM_GETSTATE                  EQU WM_USER + 1779 ; wParam = NULL, lParam = NUL
 MUIBM_SETSTATE                  EQU WM_USER + 1778 ; wParam = TRUE/FALSE, lParam = NULL
 
 MUIBM_NOTIFYSETTEXT             EQU WM_USER + 1777 ; wParam = lpszNotifyText, lParam = Redraw TRUE/FALSE
-MUIBM_NOTIFYSETIMAGE            EQU WM_USER + 1776 ; wParam = dwImageType, lParam = Handle of Image
-MUIBM_NOTIFYLOADIMAGE           EQU WM_USER + 1775 ; wParam = dwImageType, lParam = ResourceID
+MUIBM_NOTIFYSETIMAGE            EQU WM_USER + 1776 ; wParam = qwImageType, lParam = Handle of Image
+MUIBM_NOTIFYLOADIMAGE           EQU WM_USER + 1775 ; wParam = qwImageType, lParam = ResourceID
 MUIBM_NOTIFYSETFONT             EQU WM_USER + 1774 ; wParam = hFont, lParam = TRUE/FALSE to redraw control
 MUIBM_NOTIFY                    EQU WM_USER + 1773 ; wParam = TRUE/FALSE to notify or clear notification, lParam = NULL
 
@@ -196,16 +196,16 @@ MUIBS_DROPDOWN                  EQU 80h     ; Show dropdown arrow right side of 
 @ButtonNotifyTextFont           EQU 288     ; hFont
 @ButtonNotifyTextColor          EQU 296     ; Colorref
 @ButtonNotifyBackColor          EQU 304     ; Colorref
-@ButtonNotifyRound              EQU 312     ; dwPixels - Roundrect x,y value
+@ButtonNotifyRound              EQU 312     ; qwPixels - Roundrect x,y value
 @ButtonNotifyImageType          EQU 320     ; Button Image Types - One of the following: MUIBIT_NONE, MUIBIT_BMP, MUIBIT_ICO or MUIBIT_PNG
 @ButtonNotifyImage              EQU 328     ; hImage
 @ButtonNoteTextFont             EQU 336     ; hFont
 @ButtonNoteTextColor            EQU 344     ; Colorref
 @ButtonNoteTextColorDisabled    EQU 352     ; Colorref
-@ButtonPaddingLeftIndent        EQU 360     ; dwPixels - No of pixels to indent images + text (or just text if no images). Defaults to 0 when control is created
-@ButtonPaddingGeneral           EQU 368     ; dwPixels - No of pixels of padding to apply based on @ButtonPaddingStyle: Defaults to 4px when control is created.
+@ButtonPaddingLeftIndent        EQU 360     ; qwPixels - No of pixels to indent images + text (or just text if no images). Defaults to 0 when control is created
+@ButtonPaddingGeneral           EQU 368     ; qwPixels - No of pixels of padding to apply based on @ButtonPaddingStyle: Defaults to 4px when control is created.
 @ButtonPaddingStyle             EQU 376     ; Button Padding Style - Where to apply @ButtonPaddingGeneral: defaults to MUIBPS_ALL when control is created
-@ButtonPaddingTextImage         EQU 384     ; dwPixels - No of pixels between left images and text. Defaults to 8 when control is created
+@ButtonPaddingTextImage         EQU 384     ; qwPixels - No of pixels between left images and text. Defaults to 8 when control is created
 @ButtonDllInstance              EQU 392     ; Set to hInstance of dll before calling MUIButtonLoadImages or MUIButtonNotifyLoadImage if used within a dll
 @ButtonParam                    EQU 400     ; Custom user data
 

@@ -92,13 +92,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=12277373
+PTimer=12391644
 [Collapse]
 2=
-1=16384,4096,1141113104,2097288,16777232
+1=,4096,67371280,2097152,16777232
 [Size]
-2=0,0,0,0,5608
-1=0,0,0,0,53586
+2=0,0,0,0,4428
+1=0,0,0,0,53576
 [GroupExpand]
 GroupExpand=1,0,0,0,0,0
 [BookMark]
@@ -115,11 +115,12 @@ GroupExpand=1,0,0,0,0,0
 [BreakPoint]
 0=
 [Find]
-1="dq"
-2="Shell_NotifyIcon"
-3="DD 0"
-4="DD ?"
-5="DWORD"
+1="dw"
+2="dq"
+3="Shell_NotifyIcon"
+4="DD 0"
+5="DD ?"
+6="DWORD"
 [RADebugBP]
 2=
 1=

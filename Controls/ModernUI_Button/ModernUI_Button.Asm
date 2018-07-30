@@ -551,7 +551,7 @@ _MUI_ButtonWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lPar
 	    .ENDIF
 	    ret
 	    
-	.ELSEIF eax == MUIBM_NOTIFYSETIMAGE ; wParam = dwImageType, lParam = Handle of Image
+	.ELSEIF eax == MUIBM_NOTIFYSETIMAGE ; wParam = qwImageType, lParam = Handle of Image
         .IF wParam == 0
             ret
         .ENDIF
@@ -562,7 +562,7 @@ _MUI_ButtonWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lPar
         Invoke InvalidateRect, hWin, NULL, TRUE
         ret
     
-	.ELSEIF eax == MUIBM_NOTIFYLOADIMAGE ; wParam = dwImageType, lParam = ResourceID
+	.ELSEIF eax == MUIBM_NOTIFYLOADIMAGE ; wParam = qwImageType, lParam = ResourceID
         .IF wParam == 0
             ret
         .ENDIF

@@ -768,8 +768,8 @@ _MUI_CheckboxPaintBackground ENDP
 _MUI_CheckboxPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD, bSelectedState:QWORD
     LOCAL TextColor:QWORD
     LOCAL BackColor:QWORD
-    LOCAL dwStyle:QWORD
-    LOCAL dwTextStyle:QWORD
+    LOCAL qwStyle:QWORD
+    LOCAL qwTextStyle:QWORD
     LOCAL hFont:QWORD
     LOCAL hOldFont:QWORD
     LOCAL hBrush:QWORD
@@ -789,7 +789,7 @@ _MUI_CheckboxPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, 
     ;PrintDec BackColor
     
     Invoke GetWindowLongPtr, hWin, GWL_STYLE
-    mov dwStyle, rax
+    mov qwStyle, rax
     
     Invoke MUIGetExtProperty, hWin, @CheckboxTextFont        
     mov hFont, rax
@@ -881,7 +881,7 @@ _MUI_CheckboxPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, 
     Invoke SetTextColor, hdc, dword ptr TextColor
     
     ;PrintDec rect.right
-    ;mov dwTextStyle, 
+    ;mov qwTextStyle, 
     
     Invoke DrawText, hdc, Addr szText, -1, Addr rect, DT_SINGLELINE or DT_LEFT or DT_VCENTER
     
@@ -1477,8 +1477,8 @@ _MUI_CheckboxLoadPng PROC FRAME hWin:QWORD, qwProperty:QWORD, idResPng:QWORD
 	invoke	GlobalUnlock, hbuffer
 	invoke	GlobalFree, hbuffer
 
-    Invoke MUISetExtProperty, hWin, dwProperty, pBitmapFromStream
-    ;PrintDec dwProperty
+    Invoke MUISetExtProperty, hWin, qwProperty, pBitmapFromStream
+    ;PrintDec qwProperty
     ;PrintDec pBitmapFromStream
     
     mov rax, qwProperty
