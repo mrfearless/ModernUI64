@@ -34,18 +34,18 @@
 ; ModernUI_Button Prototypes
 ;--------------------------------------------------------------------------------------------------------------------------------------
 MUIButtonRegister		        PROTO																	; Use 'ModernUI_Button' as class in RadASM custom class control
-MUIButtonCreate		            PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD	; hWndParent, lpszText, xpos, ypos, dqWidth, dqHeight, dqResourceID, dqStyle
-MUIButtonSetProperty	        PROTO :QWORD, :QWORD, :QWORD											; hModernUI_Button, dqProperty, dqPropertyValue
-MUIButtonGetProperty	        PROTO :QWORD, :QWORD													; hModernUI_Button, dqProperty
+MUIButtonCreate		            PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD	; hWndParent, lpszText, xpos, ypos, qwWidth, qwHeight, qwResourceID, qwStyle
+MUIButtonSetProperty	        PROTO :QWORD, :QWORD, :QWORD											; hModernUI_Button, qwProperty, qwPropertyValue
+MUIButtonGetProperty	        PROTO :QWORD, :QWORD													; hModernUI_Button, qwProperty
 MUIButtonGetState               PROTO :QWORD                                                            ; hModernUI_Button
 MUIButtonSetState               PROTO :QWORD, :QWORD                                                    ; hModernUI_Button, bState
 
-MUIButtonLoadImages             PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD            ; hModernUI_Button, dqImageType, dqResIDImage, dqResIDImageAlt, dqResIDImageSel, dqResIDImageSelAlt, dqResIDImageDisabled
-MUIButtonSetImages              PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD            ; hModernUI_Button, dqImageType, hImage, hImageAlt, hImageSel, hImageSelAlt, hImageDisabled
+MUIButtonLoadImages             PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD            ; hModernUI_Button, qwImageType, qwResIDImage, qwResIDImageAlt, qwResIDImageSel, qwResIDImageSelAlt, qwResIDImageDisabled
+MUIButtonSetImages              PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD            ; hModernUI_Button, qwImageType, hImage, hImageAlt, hImageSel, hImageSelAlt, hImageDisabled
 
 MUIButtonNotifySetText          PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_Button, lpszNotifyText, bRedraw
-MUIButtonNotifyLoadImage        PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_Button, dqImageType, dqResIDNotifyImage
-MUIButtonNotifySetImage         PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_Button, dqImageType, hNotifyImage
+MUIButtonNotifyLoadImage        PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_Button, qwImageType, qwResIDNotifyImage
+MUIButtonNotifySetImage         PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_Button, qwImageType, hNotifyImage
 MUIButtonNotifySetFont          PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_Button, hFont, bRedraw
 MUIButtonNotify                 PROTO :QWORD, :QWORD                                                    ; hModernUI_Button, bNotify
 
@@ -70,56 +70,56 @@ MUIButtonSetAllProperties       PROTO :QWORD, :QWORD, :QWORD                    
 ;--------------------------------------------------------------------------------------------------------------------------------------
 IFNDEF MUI_BUTTON_PROPERTIES
 MUI_BUTTON_PROPERTIES           STRUCT
-    dqTextFont                  DQ ?       ; hFont
-    dqTextColor                 DQ ?       ; Colorref
-    dqTextColorAlt              DQ ?       ; Colorref
-    dqTextColorSel              DQ ?       ; Colorref
-    dqTextColorSelAlt           DQ ?       ; Colorref
-    dqTextColorDisabled         DQ ?       ; Colorref
-    dqBackColor                 DQ ?       ; Colorref
-    dqBackColorAlt              DQ ?       ; Colorref
-    dqBackColorSel              DQ ?       ; Colorref
-    dqBackColorSelAlt           DQ ?       ; Colorref
-    dqBackColorDisabled         DQ ?       ; Colorref
-    dqBorderColor               DQ ?       ; Colorref
-    dqBorderColorAlt            DQ ?       ; Colorref
-    dqBorderColorSel            DQ ?       ; Colorref
-    dqBorderColorSelAlt         DQ ?       ; Colorref
-    dqBorderColorDisabled       DQ ?       ; Colorref
-    dqBorderStyle               DQ ?       ; Button Border Styles
-    dqAccentColor               DQ ?       ; Colorref
-    dqAccentColorAlt            DQ ?       ; Colorref
-    dqAccentColorSel            DQ ?       ; Colorref
-    dqAccentColorSelAlt         DQ ?       ; Colorref
-    dqAccentStyle               DQ ?       ; Button Accent Styles
-    dqAccentStyleAlt            DQ ?       ; Button Accent Styles
-    dqAccentStyleSel            DQ ?       ; Button Accent Styles
-    dqAccentStyleSelAlt         DQ ?       ; Button Accent Styles
-    dqImageType                 DQ ?       ; hImage
-    dqImage                     DQ ?       ; hImage - Left or center image
-    dqImageAlt                  DQ ?       ; hImage - Left or center image
-    dqImageSel                  DQ ?       ; hImage - Left or center image
-    dqImageSelAlt               DQ ?       ; hImage - Left or center image
-    dqImageDisabled             DQ ?       ; hImage - Left or center image
-	dqRightImage                DQ ?       ; hImage - Right side image
-	dqRightImageAlt             DQ ?       ; hImage - Right side image
-	dqRightImageSel             DQ ?       ; hImage - Right side image
-	dqRightImageSelAlt          DQ ?       ; hImage - Right side image
-	dqRightImageDisabled        DQ ?       ; hImage - Right side image
-    dqNotifyTextFont            DQ ?       ; hFont
-    dqNotifyTextColor           DQ ?       ; Colorref
-    dqNotifyBackColor           DQ ?       ; Colorref
-    dqNotifyRound               DQ ?       ; Roundrect x,y value
-    dqNotifyImageType           DQ ?       ; Button Image Types
-    dqNotifyImage               DQ ?       ; hImage
-    dqButtonNoteTextFont        DQ ?       ; hFont
-    dqButtonNoteTextColor       DQ ?       ; Colorref
-    dqButtonNoteTextColorDisabled DQ ?     ; Colorref
-    dqButtonPaddingLeftIndent   DQ ?       ; 
-    dqButtonPaddingGeneral      DQ ?       ; 
-    dqButtonPaddingStyle        DQ ?       ; 
-    dqButtonPaddingTextImage    DQ ?       ; 
-    dqButtonDllInstance         DQ ?
+    qwTextFont                  DQ ?       ; hFont
+    qwTextColor                 DQ ?       ; Colorref
+    qwTextColorAlt              DQ ?       ; Colorref
+    qwTextColorSel              DQ ?       ; Colorref
+    qwTextColorSelAlt           DQ ?       ; Colorref
+    qwTextColorDisabled         DQ ?       ; Colorref
+    qwBackColor                 DQ ?       ; Colorref
+    qwBackColorAlt              DQ ?       ; Colorref
+    qwBackColorSel              DQ ?       ; Colorref
+    qwBackColorSelAlt           DQ ?       ; Colorref
+    qwBackColorDisabled         DQ ?       ; Colorref
+    qwBorderColor               DQ ?       ; Colorref
+    qwBorderColorAlt            DQ ?       ; Colorref
+    qwBorderColorSel            DQ ?       ; Colorref
+    qwBorderColorSelAlt         DQ ?       ; Colorref
+    qwBorderColorDisabled       DQ ?       ; Colorref
+    qwBorderStyle               DQ ?       ; Button Border Styles
+    qwAccentColor               DQ ?       ; Colorref
+    qwAccentColorAlt            DQ ?       ; Colorref
+    qwAccentColorSel            DQ ?       ; Colorref
+    qwAccentColorSelAlt         DQ ?       ; Colorref
+    qwAccentStyle               DQ ?       ; Button Accent Styles
+    qwAccentStyleAlt            DQ ?       ; Button Accent Styles
+    qwAccentStyleSel            DQ ?       ; Button Accent Styles
+    qwAccentStyleSelAlt         DQ ?       ; Button Accent Styles
+    qwImageType                 DQ ?       ; hImage
+    qwImage                     DQ ?       ; hImage - Left or center image
+    qwImageAlt                  DQ ?       ; hImage - Left or center image
+    qwImageSel                  DQ ?       ; hImage - Left or center image
+    qwImageSelAlt               DQ ?       ; hImage - Left or center image
+    qwImageDisabled             DQ ?       ; hImage - Left or center image
+	qwRightImage                DQ ?       ; hImage - Right side image
+	qwRightImageAlt             DQ ?       ; hImage - Right side image
+	qwRightImageSel             DQ ?       ; hImage - Right side image
+	qwRightImageSelAlt          DQ ?       ; hImage - Right side image
+	qwRightImageDisabled        DQ ?       ; hImage - Right side image
+    qwNotifyTextFont            DQ ?       ; hFont
+    qwNotifyTextColor           DQ ?       ; Colorref
+    qwNotifyBackColor           DQ ?       ; Colorref
+    qwNotifyRound               DQ ?       ; Roundrect x,y value
+    qwNotifyImageType           DQ ?       ; Button Image Types
+    qwNotifyImage               DQ ?       ; hImage
+    qwButtonNoteTextFont        DQ ?       ; hFont
+    qwButtonNoteTextColor       DQ ?       ; Colorref
+    qwButtonNoteTextColorDisabled DQ ?     ; Colorref
+    qwButtonPaddingLeftIndent   DQ ?       ; 
+    qwButtonPaddingGeneral      DQ ?       ; 
+    qwButtonPaddingStyle        DQ ?       ; 
+    qwButtonPaddingTextImage    DQ ?       ; 
+    qwButtonDllInstance         DQ ?
 MUI_BUTTON_PROPERTIES			ENDS
 ENDIF
 
@@ -207,6 +207,7 @@ MUIBS_DROPDOWN                  EQU 80h     ; Show dropdown arrow right side of 
 @ButtonPaddingStyle             EQU 376     ; Button Padding Style - Where to apply @ButtonPaddingGeneral: defaults to MUIBPS_ALL when control is created
 @ButtonPaddingTextImage         EQU 384     ; dwPixels - No of pixels between left images and text. Defaults to 8 when control is created
 @ButtonDllInstance              EQU 392     ; Set to hInstance of dll before calling MUIButtonLoadImages or MUIButtonNotifyLoadImage if used within a dll
+@ButtonParam                    EQU 400     ; Custom user data
 
 ; Button Border Styles
 MUIBBS_NONE                     EQU 0

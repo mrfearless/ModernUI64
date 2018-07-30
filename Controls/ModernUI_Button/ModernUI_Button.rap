@@ -32,11 +32,11 @@ Debug=0
 [MakeDef]
 Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
-2=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
+2=3,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
 3=7,O,$B\LIB.EXE,3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
@@ -68,7 +68,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=27
@@ -92,7 +92,7 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=25334361
+PTimer=25848868
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0
 [BookMark]
@@ -109,23 +109,24 @@ GroupExpand=1,1,1,0,0,0
 [BreakPoint]
 0=
 [Collapse]
-1=576,68153344,896,67109888,,524288,2048,32,2304,232
+1=,647168,768,1024,524288,524288,2048,8224,,32
 2=
 4=
 3=
 [Size]
-1=0,0,0,0,14188
-2=0,0,0,0,30127
+1=0,0,0,0,10131
+2=0,0,0,0,14782
 4=0,0,0,0,366
 3=0,0,0,0,0
 [Find]
-1="DD"
-2="ImageType"
-3="ecx"
-4="ebx"
-5="eax"
-6="dw"
-7="DWORD"
+1="dq"
+2="DD"
+3="ImageType"
+4="ecx"
+5="ebx"
+6="eax"
+7="dw"
+8="DWORD"
 [RADebugBP]
 2=
 1=

@@ -91,90 +91,91 @@ _MUI_ButtonSetPropertyEx                    PROTO :QWORD, :QWORD, :QWORD
 ; External public properties
 IFNDEF MUI_BUTTON_PROPERTIES
 MUI_BUTTON_PROPERTIES				        STRUCT
-    dqTextFont                              DQ ?
-    dqTextColor                             DQ ? 
-    dqTextColorAlt                          DQ ? 
-    dqTextColorSel                          DQ ? 
-    dqTextColorSelAlt                       DQ ? 
-    dqTextColorDisabled                     DQ ? 
-    dqBackColor                             DQ ? 
-    dqBackColorAlt                          DQ ? 
-    dqBackColorSel                          DQ ? 
-    dqBackColorSelAlt                       DQ ? 
-    dqBackColorDisabled                     DQ ? 
-    dqBorderColor                           DQ ? 
-    dqBorderColorAlt                        DQ ? 
-    dqBorderColorSel                        DQ ? 
-    dqBorderColorSelAlt                     DQ ? 
-    dqBorderColorDisabled                   DQ ? 
-    dqBorderStyle                           DQ ? 
-    dqAccentColor                           DQ ? 
-    dqAccentColorAlt                        DQ ? 
-    dqAccentColorSel                        DQ ? 
-    dqAccentColorSelAlt                     DQ ? 
-    dqAccentStyle                           DQ ? 
-    dqAccentStyleAlt                        DQ ? 
-    dqAccentStyleSel                        DQ ? 
-    dqAccentStyleSelAlt                     DQ ? 
-    dqImageType                             DQ ? 
-    dqImage                                 DQ ? 
-    dqImageAlt                              DQ ? 
-    dqImageSel                              DQ ? 
-    dqImageSelAlt                           DQ ? 
-    dqImageDisabled                         DQ ?
-	dqRightImage                            DQ ?
-	dqRightImageAlt                         DQ ?
-	dqRightImageSel                         DQ ?
-	dqRightImageSelAlt                      DQ ?
-	dqRightImageDisabled                    DQ ?	    
-    dqNotifyTextFont                        DQ ? 
-    dqNotifyTextColor                       DQ ? 
-    dqNotifyBackColor                       DQ ? 
-    dqNotifyRound                           DQ ? 
-    dqNotifyImageType                       DQ ? 
-    dqNotifyImage                           DQ ? 
-    dqButtonNoteTextFont                    DQ ?
-    dqButtonNoteTextColor                   DQ ?
-    dqButtonNoteTextColorDisabled           DQ ?
-    dqButtonPaddingLeftIndent               DQ ?
-    dqButtonPaddingGeneral                  DQ ?
-    dqButtonPaddingStyle                    DQ ?
-    dqButtonPaddingTextImage                DQ ?  
-    dqButtonDllInstance                     DQ ? ; Set to hInstance of dll before calling MUIButtonLoadImages or MUIButtonNotifyLoadImage if used within a dll
+    qwTextFont                              DQ ?
+    qwTextColor                             DQ ? 
+    qwTextColorAlt                          DQ ? 
+    qwTextColorSel                          DQ ? 
+    qwTextColorSelAlt                       DQ ? 
+    qwTextColorDisabled                     DQ ? 
+    qwBackColor                             DQ ? 
+    qwBackColorAlt                          DQ ? 
+    qwBackColorSel                          DQ ? 
+    qwBackColorSelAlt                       DQ ? 
+    qwBackColorDisabled                     DQ ? 
+    qwBorderColor                           DQ ? 
+    qwBorderColorAlt                        DQ ? 
+    qwBorderColorSel                        DQ ? 
+    qwBorderColorSelAlt                     DQ ? 
+    qwBorderColorDisabled                   DQ ? 
+    qwBorderStyle                           DQ ? 
+    qwAccentColor                           DQ ? 
+    qwAccentColorAlt                        DQ ? 
+    qwAccentColorSel                        DQ ? 
+    qwAccentColorSelAlt                     DQ ? 
+    qwAccentStyle                           DQ ? 
+    qwAccentStyleAlt                        DQ ? 
+    qwAccentStyleSel                        DQ ? 
+    qwAccentStyleSelAlt                     DQ ? 
+    qwImageType                             DQ ? 
+    qwImage                                 DQ ? 
+    qwImageAlt                              DQ ? 
+    qwImageSel                              DQ ? 
+    qwImageSelAlt                           DQ ? 
+    qwImageDisabled                         DQ ?
+	qwRightImage                            DQ ?
+	qwRightImageAlt                         DQ ?
+	qwRightImageSel                         DQ ?
+	qwRightImageSelAlt                      DQ ?
+	qwRightImageDisabled                    DQ ?	    
+    qwNotifyTextFont                        DQ ? 
+    qwNotifyTextColor                       DQ ? 
+    qwNotifyBackColor                       DQ ? 
+    qwNotifyRound                           DQ ? 
+    qwNotifyImageType                       DQ ? 
+    qwNotifyImage                           DQ ? 
+    qwButtonNoteTextFont                    DQ ?
+    qwButtonNoteTextColor                   DQ ?
+    qwButtonNoteTextColorDisabled           DQ ?
+    qwButtonPaddingLeftIndent               DQ ?
+    qwButtonPaddingGeneral                  DQ ?
+    qwButtonPaddingStyle                    DQ ?
+    qwButtonPaddingTextImage                DQ ?  
+    qwButtonDllInstance                     DQ ? ; Set to hInstance of dll before calling MUIButtonLoadImages or MUIButtonNotifyLoadImage if used within a dll
+    qwButtonParam                           DD ?    
 MUI_BUTTON_PROPERTIES				        ENDS
 ENDIF
 
 ; Internal properties
 _MUI_BUTTON_PROPERTIES				        STRUCT
-	dqEnabledState						    DQ ?
-	dqMouseOver							    DQ ?
-	dqSelectedState                         DQ ?
-	dqMouseDown                             DQ ?
-	dqNotifyState                           DQ ?
+	qwEnabledState						    DQ ?
+	qwMouseOver							    DQ ?
+	qwSelectedState                         DQ ?
+	qwMouseDown                             DQ ?
+	qwNotifyState                           DQ ?
 	lpszNotifyText                          DQ ?
 	lpszNoteText                            DQ ?
-	dqImageStream                           DQ ?
-	dqImageAltStream                        DQ ?
-	dqImageSelStream                        DQ ?
-	dqImageSelAltStream                     DQ ?
-	dqImageDisabledStream                   DQ ?
-	dqRightImageStream                      DQ ?
-	dqRightImageAltStream                   DQ ?
-	dqRightImageSelStream                   DQ ?
-	dqRightImageSelAltStream                DQ ?
-	dqRightImageDisabledStream              DQ ?	
-	dqNotifyImageStream                     DQ ?
-	dqImageXposition                        DQ ?
-	dqImageYposition                        DQ ?
-	dqRightImageXposition                   DQ ?
-	dqRightImageYposition                   DQ ?
-	dqNotifyImageXposition                  DQ ?
-	dqNotifyImageYposition                  DQ ?
-	dqTextXposition                         DQ ?
-	dqTextYposition                         DQ ?
-	dqNoteXposition                         DQ ?
-	dqNoteYposition                         DQ ?
-    dqButtonRecalcPositions                 DQ ? ; set to TRUE in init and when properties change and/or wm_size, wm_settext, wm_setfont ? not sure if to implement or just calc on each wm_paint call
+	qwImageStream                           DQ ?
+	qwImageAltStream                        DQ ?
+	qwImageSelStream                        DQ ?
+	qwImageSelAltStream                     DQ ?
+	qwImageDisabledStream                   DQ ?
+	qwRightImageStream                      DQ ?
+	qwRightImageAltStream                   DQ ?
+	qwRightImageSelStream                   DQ ?
+	qwRightImageSelAltStream                DQ ?
+	qwRightImageDisabledStream              DQ ?	
+	qwNotifyImageStream                     DQ ?
+	qwImageXposition                        DQ ?
+	qwImageYposition                        DQ ?
+	qwRightImageXposition                   DQ ?
+	qwRightImageYposition                   DQ ?
+	qwNotifyImageXposition                  DQ ?
+	qwNotifyImageYposition                  DQ ?
+	qwTextXposition                         DQ ?
+	qwTextYposition                         DQ ?
+	qwNoteXposition                         DQ ?
+	qwNoteYposition                         DQ ?
+    qwButtonRecalcPositions                 DQ ? ; set to TRUE in init and when properties change and/or wm_size, wm_settext, wm_setfont ? not sure if to implement or just calc on each wm_paint call
 _MUI_BUTTON_PROPERTIES				        ENDS
 
 IFDEF MUI_USEGDIPLUS
@@ -253,11 +254,14 @@ DbgVar                                      DQ ?
 ENDIF
 
 .CODE
+
+ALIGN 8
+
 ;-------------------------------------------------------------------------------------
 ; Set property for ModernUI_Button control
 ;-------------------------------------------------------------------------------------
-MUIButtonSetProperty PROC FRAME hControl:QWORD, dqProperty:QWORD, dqPropertyValue:QWORD
-    Invoke SendMessage, hControl, MUI_SETPROPERTY, dqProperty, dqPropertyValue
+MUIButtonSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
+    Invoke SendMessage, hControl, MUI_SETPROPERTY, qwProperty, qwPropertyValue
     ret
 MUIButtonSetProperty ENDP
 
@@ -265,8 +269,8 @@ MUIButtonSetProperty ENDP
 ;-------------------------------------------------------------------------------------
 ; Get property for ModernUI_Button control
 ;-------------------------------------------------------------------------------------
-MUIButtonGetProperty PROC FRAME hControl:QWORD, dqProperty:QWORD
-    Invoke SendMessage, hControl, MUI_GETPROPERTY, dqProperty, NULL
+MUIButtonGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
+    Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUIButtonGetProperty ENDP
 
@@ -313,11 +317,11 @@ MUIButtonRegister ENDP
 ;-------------------------------------------------------------------------------------
 ; MUIButtonCreate - Returns handle in rax of newly created control
 ;-------------------------------------------------------------------------------------
-MUIButtonCreate PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QWORD, controlwidth:QWORD, controlheight:QWORD, dqResourceID:QWORD, dqStyle:QWORD
+MUIButtonCreate PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QWORD, controlwidth:QWORD, controlheight:QWORD, qwResourceID:QWORD, qwStyle:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
 	LOCAL hControl:QWORD
-	LOCAL dqNewStyle:QWORD
+	LOCAL qwNewStyle:QWORD
 	
     Invoke GetModuleHandle, NULL
     mov hinstance, rax
@@ -328,14 +332,14 @@ MUIButtonCreate PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QW
 	
     ; Modify styles appropriately - for visual controls no CS_HREDRAW CS_VREDRAW (causes flickering)
 	; probably need WS_CHILD, WS_VISIBLE. Needs WS_CLIPCHILDREN. Non visual prob dont need any of these.
-    mov rax, dqStyle
-    mov dqNewStyle, rax
+    mov rax, qwStyle
+    mov qwNewStyle, rax
     and rax, WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
     .IF rax != WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
-        or dqNewStyle, WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
+        or qwNewStyle, WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
     .ENDIF
 
-    Invoke CreateWindowEx, NULL, Addr szMUIButtonClass, lpszText, dword ptr dqNewStyle, dword ptr xpos, dword ptr ypos, dword ptr controlwidth, dword ptr controlheight, hWndParent, dqResourceID, hinstance, NULL
+    Invoke CreateWindowEx, NULL, Addr szMUIButtonClass, lpszText, dword ptr qwNewStyle, dword ptr xpos, dword ptr ypos, dword ptr controlwidth, dword ptr controlheight, hWndParent, qwResourceID, hinstance, NULL
 	mov hControl, rax
 	.IF rax != NULL
 		
@@ -617,22 +621,22 @@ _MUI_ButtonInit PROC FRAME hControl:QWORD
     LOCAL lfnt:LOGFONT
     LOCAL hFont:QWORD
     LOCAL hParent:QWORD
-    LOCAL dqStyle:QWORD
+    LOCAL qwStyle:QWORD
     
     Invoke GetParent, hControl
     mov hParent, rax
     
     ; get style and check it is our default at least
     Invoke GetWindowLongPtr, hControl, GWL_STYLE
-    mov dqStyle, rax
+    mov qwStyle, rax
     and rax, WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
     .IF rax != WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
-        mov rax, dqStyle
+        mov rax, qwStyle
         or rax, WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
-        mov dqStyle, rax
-        Invoke SetWindowLongPtr, hControl, GWL_STYLE, dqStyle
+        mov qwStyle, rax
+        Invoke SetWindowLongPtr, hControl, GWL_STYLE, qwStyle
     .ENDIF
-    ;PrintDec dqStyle
+    ;PrintDec qwStyle
     
     
     ; Set default initial external property values
@@ -707,7 +711,7 @@ _MUI_ButtonInit ENDP
 ; _MUI_ButtonCleanup - cleanup a few things before control is destroyed
 ;-------------------------------------------------------------------------------------
 _MUI_ButtonCleanup PROC FRAME hControl:QWORD
-    LOCAL dqImageType:QWORD
+    LOCAL qwImageType:QWORD
     LOCAL hIStreamImage:QWORD
     LOCAL hIStreamImageAlt:QWORD
     LOCAL hIStreamImageSel:QWORD
@@ -720,10 +724,10 @@ _MUI_ButtonCleanup PROC FRAME hControl:QWORD
     LOCAL hImageSelAlt:QWORD
     LOCAL hImageDisabled:QWORD
     LOCAL hImageNotify:QWORD
-    LOCAL dqStyle:QWORD
+    LOCAL qwStyle:QWORD
     
     Invoke GetWindowLongPtr, hControl, GWL_STYLE
-    mov dqStyle, rax
+    mov qwStyle, rax
     and rax, MUIBS_KEEPIMAGES
     .IF rax == MUIBS_KEEPIMAGES
         ret
@@ -736,13 +740,13 @@ _MUI_ButtonCleanup PROC FRAME hControl:QWORD
 
     ; cleanup any stream handles if png where loaded as resources
     Invoke MUIGetExtProperty, hControl, @ButtonImageType
-    mov dqImageType, rax
+    mov qwImageType, rax
 
-    .IF dqImageType == 0
+    .IF qwImageType == 0
         ret
     .ENDIF
 
-    .IF dqImageType == 3
+    .IF qwImageType == 3
         IFDEF MUI_USEGDIPLUS
         Invoke MUIGetIntProperty, hControl, @ButtonImageStream 
         mov hIStreamImage, rax
@@ -780,14 +784,14 @@ _MUI_ButtonCleanup PROC FRAME hControl:QWORD
 
 
     Invoke MUIGetExtProperty, hControl, @ButtonImageType
-    mov dqImageType, rax
-    .IF dqImageType == 0
+    mov qwImageType, rax
+    .IF qwImageType == 0
         ret
     .ENDIF
     Invoke MUIGetExtProperty, hControl, @ButtonImage
     mov hImage, rax
     .IF rax != 0
-        .IF dqImageType != 3
+        .IF qwImageType != 3
             Invoke DeleteObject, rax
         .ELSE
             IFDEF MUI_USEGDIPLUS
@@ -798,7 +802,7 @@ _MUI_ButtonCleanup PROC FRAME hControl:QWORD
     Invoke MUIGetExtProperty, hControl, @ButtonImageAlt
     mov hImageAlt, rax
     .IF rax != 0 && rax != hImage
-        .IF dqImageType != 3
+        .IF qwImageType != 3
             Invoke DeleteObject, rax
         .ELSE
             IFDEF MUI_USEGDIPLUS
@@ -809,7 +813,7 @@ _MUI_ButtonCleanup PROC FRAME hControl:QWORD
     Invoke MUIGetExtProperty, hControl, @ButtonImageSel
     mov hImageSel, rax
     .IF rax != 0 && rax != hImage && rax != hImageAlt
-        .IF dqImageType != 3
+        .IF qwImageType != 3
             Invoke DeleteObject, rax
         .ELSE
             IFDEF MUI_USEGDIPLUS
@@ -820,7 +824,7 @@ _MUI_ButtonCleanup PROC FRAME hControl:QWORD
     Invoke MUIGetExtProperty, hControl, @ButtonImageSelAlt
     mov hImageSelAlt, rax
     .IF rax != 0 && rax != hImage && rax != hImageAlt && rax != hImageSel
-        .IF dqImageType != 3
+        .IF qwImageType != 3
             Invoke DeleteObject, rax
         .ELSE
             IFDEF MUI_USEGDIPLUS
@@ -831,7 +835,7 @@ _MUI_ButtonCleanup PROC FRAME hControl:QWORD
     Invoke MUIGetExtProperty, hControl, @ButtonImageDisabled
     mov hImageDisabled, rax
     .IF rax != 0 && rax != hImage && rax != hImageAlt && rax != hImageSel && rax != hImageSelAlt
-        .IF dqImageType != 3
+        .IF qwImageType != 3
             Invoke DeleteObject, rax
         .ELSE
             IFDEF MUI_USEGDIPLUS
@@ -846,13 +850,13 @@ _MUI_ButtonCleanup PROC FRAME hControl:QWORD
     PrintText '_MUI_ButtonCleanup::Image Handles cleared'
     ENDIF
     Invoke MUIGetExtProperty, hControl, @ButtonNotifyImageType
-    mov dqImageType, rax
-    .IF dqImageType == 0
+    mov qwImageType, rax
+    .IF qwImageType == 0
         ret
     .ENDIF
     Invoke MUIGetExtProperty, hControl, @ButtonNotifyImage
     .IF rax != 0 && rax != hImage && rax != hImageAlt && rax != hImageSel && rax != hImageSelAlt && rax != hImageDisabled
-        .IF dqImageType != 3
+        .IF qwImageType != 3
             Invoke DeleteObject, rax
         .ELSE
             IFDEF MUI_USEGDIPLUS
@@ -1259,9 +1263,9 @@ _MUI_ButtonPaintAccent ENDP
 ; _MUI_ButtonCalcPositions - calculate x, y positions of images, text etc
 ;-------------------------------------------------------------------------------------
 _MUI_ButtonCalcPositions PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD, bSelectedState:QWORD
-    LOCAL dqStyle:QWORD
+    LOCAL qwStyle:QWORD
     LOCAL hImage:QWORD
-    LOCAL dqImageType:QWORD
+    LOCAL qwImageType:QWORD
     LOCAL NotifyImageType:QWORD
     LOCAL hNotifyImage:QWORD
     LOCAL ImageWidth:QWORD
@@ -1284,13 +1288,13 @@ _MUI_ButtonCalcPositions PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:
     Invoke CopyRect, Addr rect, lpRect
     
     Invoke GetWindowLongPtr, hWin, GWL_STYLE
-    mov dqStyle, rax
+    mov qwStyle, rax
 
     ;--------------------------------------------------------------
     ; Padding & Indent
     ;--------------------------------------------------------------
     
-    mov rax, dqStyle
+    mov rax, qwStyle
     and rax, MUIBS_BOTTOM 
     .IF rax != MUIBS_BOTTOM    
         Invoke MUIGetExtProperty, hWin, @ButtonPaddingLeftIndent
@@ -1341,7 +1345,7 @@ _MUI_ButtonCalcPositions PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:
     ; Image position
     ;--------------------------------------------------------------
     Invoke MUIGetExtProperty, hWin, @ButtonImageType        
-    mov dqImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
+    mov qwImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
 
     .IF bEnabledState == TRUE
         .IF bSelectedState == FALSE
@@ -1364,10 +1368,10 @@ _MUI_ButtonCalcPositions PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:
 
     .IF hImage != 0
         
-        Invoke MUIGetImageSize, hImage, dqImageType, Addr ImageWidth, Addr ImageHeight
+        Invoke MUIGetImageSize, hImage, qwImageType, Addr ImageWidth, Addr ImageHeight
         ;Invoke _MUI_ButtonGetImageSize, hWin, ImageType, hImage, Addr ImageWidth, Addr ImageHeight
         
-        mov rax, dqStyle
+        mov rax, qwStyle
         and rax, MUIBS_BOTTOM 
         .IF rax == MUIBS_BOTTOM
         
@@ -1407,7 +1411,7 @@ _MUI_ButtonCalcPositions PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:
     Invoke MUISetIntProperty, hWin, @ButtonTextYposition, ypos
 
 
-    mov rax, dqStyle
+    mov rax, qwStyle
     and rax, MUIBS_BOTTOM 
     .IF rax != MUIBS_BOTTOM
 
@@ -1495,8 +1499,8 @@ _MUI_ButtonCalcPositions ENDP
 _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD, bSelectedState:QWORD
     LOCAL TextColor:QWORD
     LOCAL BackColor:QWORD
-    LOCAL dqStyle:QWORD
-    LOCAL dqTextStyle:QWORD
+    LOCAL qwStyle:QWORD
+    LOCAL qwTextStyle:QWORD
     LOCAL hFont:QWORD
     LOCAL hOldFont:QWORD
     LOCAL hBrush:QWORD
@@ -1504,7 +1508,7 @@ _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bE
     LOCAL hPen:QWORD
     LOCAL hOldPen:QWORD
     LOCAL hImage:QWORD
-    LOCAL dqImageType:QWORD
+    LOCAL qwImageType:QWORD
     LOCAL NotifyImageType:QWORD
     LOCAL hNotifyImage:QWORD
     LOCAL ImageWidth:QWORD
@@ -1516,7 +1520,7 @@ _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bE
     LOCAL LenNotifyText:QWORD
     LOCAL szText[256]:BYTE
     LOCAL LenText:QWORD
-    LOCAL dqRoundRect:QWORD
+    LOCAL qwRoundRect:QWORD
 
     Invoke CopyRect, Addr rect, lpRect
     
@@ -1543,7 +1547,7 @@ _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bE
     mov BackColor, rax    
     
     Invoke GetWindowLongPtr, hWin, GWL_STYLE
-    mov dqStyle, rax
+    mov qwStyle, rax
     
     Invoke MUIGetExtProperty, hWin, @ButtonTextFont        
     mov hFont, rax
@@ -1571,7 +1575,7 @@ _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bE
     mov TextColor, rax
     
     Invoke MUIGetExtProperty, hWin, @ButtonImageType        
-    mov dqImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
+    mov qwImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
 
     .IF bEnabledState == TRUE
         .IF bSelectedState == FALSE
@@ -1602,14 +1606,14 @@ _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bE
     
     .IF hImage != 0
         
-        Invoke MUIGetImageSize, hImage, dqImageType, Addr ImageWidth, Addr ImageHeight
-        ;Invoke _MUI_ButtonGetImageSize, hWin, dqImageType, hImage, Addr ImageWidth, Addr ImageHeight
+        Invoke MUIGetImageSize, hImage, qwImageType, Addr ImageWidth, Addr ImageHeight
+        ;Invoke _MUI_ButtonGetImageSize, hWin, qwImageType, hImage, Addr ImageWidth, Addr ImageHeight
 
         mov rax, ImageWidth
         add rect.left, eax
         add rect.left, 8d
         
-        mov rax, dqStyle
+        mov rax, qwStyle
         and rax, MUIBS_BOTTOM 
         .IF rax == MUIBS_BOTTOM
             xor rax, rax
@@ -1675,24 +1679,24 @@ _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bE
     Invoke SetBkColor, hdc, dword ptr BackColor    
     Invoke SetTextColor, hdc, dword ptr TextColor
     
-    mov dqTextStyle, DT_SINGLELINE
-    mov rax, dqStyle
+    mov qwTextStyle, DT_SINGLELINE
+    mov rax, qwStyle
     and rax, MUIBS_CENTER
     .IF rax == MUIBS_CENTER
-        or dqTextStyle, DT_CENTER
+        or qwTextStyle, DT_CENTER
     .ELSE
-        or dqTextStyle, DT_LEFT
+        or qwTextStyle, DT_LEFT
     .ENDIF
     
-    mov rax, dqStyle
+    mov rax, qwStyle
     and rax, MUIBS_BOTTOM 
     .IF rax == MUIBS_BOTTOM
-        or dqTextStyle, DT_BOTTOM
+        or qwTextStyle, DT_BOTTOM
     .ELSE ; center
-        or dqTextStyle, DT_VCENTER
+        or qwTextStyle, DT_VCENTER
     .ENDIF
     
-    Invoke DrawText, hdc, Addr szText, -1, Addr rect, dword ptr dqTextStyle
+    Invoke DrawText, hdc, Addr szText, -1, Addr rect, dword ptr qwTextStyle
     
     .IF hOldFont != 0
         Invoke SelectObject, hdc, hOldFont
@@ -1740,7 +1744,7 @@ _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bE
     ;            mov rect.left, eax
     ;        .ENDIF
     
-            mov rax, dqStyle
+            mov rax, qwStyle
             and rax, MUIBS_BOTTOM 
             .IF rax == MUIBS_BOTTOM
                 xor rax, rax
@@ -1793,8 +1797,8 @@ _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bE
             mov hOldPen, rax         
             Invoke SetDCPenColor, hdc, dword ptr BackColor
             Invoke MUIGetExtProperty, hWin, @ButtonNotifyRound
-            mov dqRoundRect, rax
-            Invoke RoundRect, hdc, rect.left, rect.top, rect.right, rect.bottom, dword ptr dqRoundRect, dword ptr dqRoundRect
+            mov qwRoundRect, rax
+            Invoke RoundRect, hdc, rect.left, rect.top, rect.right, rect.bottom, dword ptr qwRoundRect, dword ptr qwRoundRect
             
             Invoke DrawText, hdc, lpszNotifyText, dword ptr LenNotifyText, Addr rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER
         .ENDIF
@@ -1830,8 +1834,8 @@ _MUI_ButtonPaintText ENDP
 ; _MUI_ButtonPaintImages
 ;-------------------------------------------------------------------------------------
 _MUI_ButtonPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD, bSelectedState:QWORD
-    LOCAL dqStyle:QWORD
-    LOCAL dqImageType:QWORD
+    LOCAL qwStyle:QWORD
+    LOCAL qwImageType:QWORD
     LOCAL hImage:QWORD
     LOCAL NotifyImageType:QWORD
     LOCAL hNotifyImage:QWORD    
@@ -1846,19 +1850,19 @@ _MUI_ButtonPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:QW
     LOCAL pt:POINT
     
     Invoke GetWindowLongPtr, hWin, GWL_STYLE
-    mov dqStyle, rax
+    mov qwStyle, rax
     
     Invoke MUIGetExtProperty, hWin, @ButtonImageType        
-    mov dqImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
+    mov qwImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
     
     Invoke MUIGetExtProperty, hWin, @ButtonNotifyImageType        
     mov NotifyImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
         
-    .IF dqImageType == 0 && NotifyImageType == 0
+    .IF qwImageType == 0 && NotifyImageType == 0
         ret
     .ENDIF    
     
-    .IF dqImageType != 0
+    .IF qwImageType != 0
         .IF bEnabledState == TRUE
             .IF bSelectedState == FALSE
                 .IF bMouseOver == FALSE
@@ -1888,12 +1892,12 @@ _MUI_ButtonPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:QW
     
         Invoke CopyRect, Addr rect, lpRect
         
-        Invoke MUIGetImageSize, hImage, dqImageType, Addr ImageWidth, Addr ImageHeight
-        ;Invoke _MUI_ButtonGetImageSize, hWin, dqImageType, hImage, Addr ImageWidth, Addr ImageHeight
+        Invoke MUIGetImageSize, hImage, qwImageType, Addr ImageWidth, Addr ImageHeight
+        ;Invoke _MUI_ButtonGetImageSize, hWin, qwImageType, hImage, Addr ImageWidth, Addr ImageHeight
         
         mov pt.x, 8d
         mov pt.y, 4d
-        mov rax, dqStyle
+        mov rax, qwStyle
         and rax, MUIBS_BOTTOM 
         .IF rax == MUIBS_BOTTOM
             xor rax, rax
@@ -1915,7 +1919,7 @@ _MUI_ButtonPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:QW
             mov pt.y, eax
         .ENDIF
         
-        mov rax, dqImageType
+        mov rax, qwImageType
         .IF rax == 1 ; bitmap
             
             Invoke CreateCompatibleDC, hdcMain
@@ -1996,7 +2000,7 @@ _MUI_ButtonPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:QW
         sub eax, ebx
         mov pt.x, eax
 
-        mov rax, dqStyle
+        mov rax, qwStyle
         and rax, MUIBS_BOTTOM 
         .IF rax == MUIBS_BOTTOM
             xor rax, rax
@@ -2118,6 +2122,15 @@ _MUI_ButtonPaintBorder PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledS
                 mov hOldBrush, rax
                 Invoke SetDCBrushColor, hdc, dword ptr BorderColor
                 Invoke FrameRect, hdc, lpRect, hBrush
+                
+                .IF hOldBrush != 0
+                    Invoke SelectObject, hdc, hOldBrush
+                    Invoke DeleteObject, hOldBrush
+                .ENDIF     
+                .IF hBrush != 0
+                    Invoke DeleteObject, hBrush
+                .ENDIF                 
+                
             .ELSE
                 Invoke CreatePen, PS_SOLID, 1, dword ptr BorderColor
                 mov hPen, rax
@@ -2167,14 +2180,6 @@ _MUI_ButtonPaintBorder PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledS
         .ENDIF
     .ENDIF
 
-    .IF hOldBrush != 0
-        Invoke SelectObject, hdc, hOldBrush
-        Invoke DeleteObject, hOldBrush
-    .ENDIF     
-    .IF hBrush != 0
-        Invoke DeleteObject, hBrush
-    .ENDIF      
-    
     ret
 
 _MUI_ButtonPaintBorder ENDP
@@ -2183,91 +2188,91 @@ _MUI_ButtonPaintBorder ENDP
 ;-------------------------------------------------------------------------------------
 ; _MUI_ButtonSetPropertyEx
 ;-------------------------------------------------------------------------------------
-_MUI_ButtonSetPropertyEx PROC FRAME USES RBX hWin:QWORD, dqProperty:QWORD, dqPropertyValue:QWORD
+_MUI_ButtonSetPropertyEx PROC FRAME USES RBX hWin:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     
-    mov rax, dqProperty
+    mov rax, qwProperty
     .IF rax == @ButtonTextFont || rax == @ButtonNoteTextFont || rax == @ButtonNotifyTextFont
-        .IF dqPropertyValue != 0
-            Invoke MUISetExtProperty, hWin, dqProperty, dqPropertyValue 
+        .IF qwPropertyValue != 0
+            Invoke MUISetExtProperty, hWin, qwProperty, qwPropertyValue 
         .ENDIF    
     .ELSE
-        Invoke MUISetExtProperty, hWin, dqProperty, dqPropertyValue
+        Invoke MUISetExtProperty, hWin, qwProperty, qwPropertyValue
     .ENDIF
     
-	mov rax, dqProperty
+	mov rax, qwProperty
 	.IF rax == @ButtonTextColor ; set other text colors to this if they are not set
 	    Invoke MUIGetExtProperty, hWin, @ButtonTextColorAlt
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonTextColorAlt, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonTextColorAlt, qwPropertyValue
 	    .ENDIF
 	    Invoke MUIGetExtProperty, hWin, @ButtonTextColorSel
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonTextColorSel, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonTextColorSel, qwPropertyValue
 	    .ENDIF
 	    ; except this, if sel has a color, then use this for selalt if it has a value
 	    Invoke MUIGetExtProperty, hWin, @ButtonTextColorSelAlt
 	    .IF rax == 0
 	        Invoke MUIGetExtProperty, hWin, @ButtonTextColorSel
 	        .IF rax == 0
-	            Invoke MUISetExtProperty, hWin, @ButtonTextColorSelAlt, dqPropertyValue
+	            Invoke MUISetExtProperty, hWin, @ButtonTextColorSelAlt, qwPropertyValue
 	        .ELSE
 	            Invoke MUISetExtProperty, hWin, @ButtonTextColorSelAlt, rax
 	        .ENDIF
 	    .ENDIF
         Invoke MUIGetExtProperty, hWin, @ButtonNotifyTextColor
         .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonNotifyTextColor, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonNotifyTextColor, qwPropertyValue
 	    .ENDIF
 	    Invoke MUIGetExtProperty, hWin, @ButtonNoteTextColor
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonNoteTextColor, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonNoteTextColor, qwPropertyValue
 	    .ENDIF
 	
 	.ELSEIF rax == @ButtonTextColorSel
 	    Invoke MUIGetExtProperty, hWin, @ButtonTextColorSelAlt
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonTextColorSelAlt, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonTextColorSelAlt, qwPropertyValue
 	    .ENDIF
 	
 	.ELSEIF rax == @ButtonBackColor
 	    Invoke MUIGetExtProperty, hWin, @ButtonBackColorAlt
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonBackColorAlt, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonBackColorAlt, qwPropertyValue
 	    .ENDIF
 	    Invoke MUIGetExtProperty, hWin, @ButtonBackColorSel
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonBackColorSel, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonBackColorSel, qwPropertyValue
 	    .ENDIF
 	    ; except this, if sel has a color, then use this for selalt if it has a value
 	    Invoke MUIGetExtProperty, hWin, @ButtonBackColorSelAlt
 	    .IF rax == 0
 	        Invoke MUIGetExtProperty, hWin, @ButtonBackColorSel
 	        .IF rax == 0
-	            Invoke MUISetExtProperty, hWin, @ButtonBackColorSelAlt, dqPropertyValue
+	            Invoke MUISetExtProperty, hWin, @ButtonBackColorSelAlt, qwPropertyValue
 	        .ELSE
 	            Invoke MUISetExtProperty, hWin, @ButtonBackColorSelAlt, rax
 	        .ENDIF
 	    .ENDIF
         Invoke MUIGetExtProperty, hWin, @ButtonNotifyBackColor
         .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonNotifyBackColor, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonNotifyBackColor, qwPropertyValue
 	    .ENDIF
 
 	.ELSEIF rax == @ButtonBorderColor
 	    Invoke MUIGetExtProperty, hWin, @ButtonBorderColorAlt
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonBorderColorAlt, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonBorderColorAlt, qwPropertyValue
 	    .ENDIF
 	    Invoke MUIGetExtProperty, hWin, @ButtonBorderColorSel
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonBorderColorSel, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonBorderColorSel, qwPropertyValue
 	    .ENDIF
 	    ; except this, if sel has a color, then use this for selalt if it has a value
 	    Invoke MUIGetExtProperty, hWin, @ButtonBorderColorSelAlt
 	    .IF rax == 0
 	        Invoke MUIGetExtProperty, hWin, @ButtonBorderColorSel
 	        .IF rax == 0
-	            Invoke MUISetExtProperty, hWin, @ButtonBorderColorSelAlt, dqPropertyValue
+	            Invoke MUISetExtProperty, hWin, @ButtonBorderColorSelAlt, qwPropertyValue
 	        .ELSE
 	            Invoke MUISetExtProperty, hWin, @ButtonBorderColorSelAlt, rax
 	        .ENDIF
@@ -2276,18 +2281,18 @@ _MUI_ButtonSetPropertyEx PROC FRAME USES RBX hWin:QWORD, dqProperty:QWORD, dqPro
 	.ELSEIF rax == @ButtonAccentColor
 	    Invoke MUIGetExtProperty, hWin, @ButtonAccentColorAlt
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonAccentColorAlt, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonAccentColorAlt, qwPropertyValue
 	    .ENDIF
 	    Invoke MUIGetExtProperty, hWin, @ButtonAccentColorSel
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonAccentColorSel, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonAccentColorSel, qwPropertyValue
 	    .ENDIF
 	    ; except this, if sel has a color, then use this for selalt if it has a value
 	    Invoke MUIGetExtProperty, hWin, @ButtonAccentColorSelAlt
 	    .IF rax == 0
 	        Invoke MUIGetExtProperty, hWin, @ButtonAccentColorSel
 	        .IF rax == 0
-	            Invoke MUISetExtProperty, hWin, @ButtonAccentColorSelAlt, dqPropertyValue
+	            Invoke MUISetExtProperty, hWin, @ButtonAccentColorSelAlt, qwPropertyValue
 	        .ELSE
 	            Invoke MUISetExtProperty, hWin, @ButtonAccentColorSelAlt, rax
 	        .ENDIF
@@ -2296,18 +2301,18 @@ _MUI_ButtonSetPropertyEx PROC FRAME USES RBX hWin:QWORD, dqProperty:QWORD, dqPro
 	.ELSEIF rax == @ButtonAccentStyle
 	    Invoke MUIGetExtProperty, hWin, @ButtonAccentStyleAlt
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonAccentStyleAlt, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonAccentStyleAlt, qwPropertyValue
 	    .ENDIF
 	    Invoke MUIGetExtProperty, hWin, @ButtonAccentStyleSel
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonAccentStyleSel, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonAccentStyleSel, qwPropertyValue
 	    .ENDIF
 	    ; except this, if sel has a color, then use this for selalt if it has a value
 	    Invoke MUIGetExtProperty, hWin, @ButtonAccentStyleSelAlt
 	    .IF rax == 0
 	        Invoke MUIGetExtProperty, hWin, @ButtonAccentStyleSel
 	        .IF rax == 0
-	            Invoke MUISetExtProperty, hWin, @ButtonAccentStyleSelAlt, dqPropertyValue
+	            Invoke MUISetExtProperty, hWin, @ButtonAccentStyleSelAlt, qwPropertyValue
 	        .ELSE
 	            Invoke MUISetExtProperty, hWin, @ButtonAccentStyleSelAlt, rax
 	        .ENDIF
@@ -2316,18 +2321,18 @@ _MUI_ButtonSetPropertyEx PROC FRAME USES RBX hWin:QWORD, dqProperty:QWORD, dqPro
 	.ELSEIF rax == @ButtonImage
 	    Invoke MUIGetExtProperty, hWin, @ButtonImageAlt
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonImageAlt, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonImageAlt, qwPropertyValue
 	    .ENDIF
 	    Invoke MUIGetExtProperty, hWin, @ButtonImageSel
 	    .IF rax == 0
-	        Invoke MUISetExtProperty, hWin, @ButtonImageSel, dqPropertyValue
+	        Invoke MUISetExtProperty, hWin, @ButtonImageSel, qwPropertyValue
 	    .ENDIF
 	    ; except this, if sel has a color, then use this for selalt if it has a value
 	    Invoke MUIGetExtProperty, hWin, @ButtonImageSelAlt
 	    .IF rax == 0
 	        Invoke MUIGetExtProperty, hWin, @ButtonImageSel
 	        .IF rax == 0
-	            Invoke MUISetExtProperty, hWin, @ButtonImageSelAlt, dqPropertyValue
+	            Invoke MUISetExtProperty, hWin, @ButtonImageSelAlt, qwPropertyValue
 	        .ELSE
 	            Invoke MUISetExtProperty, hWin, @ButtonImageSelAlt, rax
 	        .ENDIF
@@ -2363,75 +2368,75 @@ MUIButtonSetState ENDP
 ; MUIButtonLoadImages - Loads images from resource ids and stores the handles in the
 ; appropriate property.
 ;-------------------------------------------------------------------------------------
-MUIButtonLoadImages PROC FRAME hControl:QWORD, dqImageType:QWORD, dqResIDImage:QWORD, dqResIDImageAlt:QWORD, dqResIDImageSel:QWORD, dqResIDImageSelAlt:QWORD, dqResIDImageDisabled:QWORD
+MUIButtonLoadImages PROC FRAME hControl:QWORD, qwImageType:QWORD, qwResIDImage:QWORD, qwResIDImageAlt:QWORD, qwResIDImageSel:QWORD, qwResIDImageSelAlt:QWORD, qwResIDImageDisabled:QWORD
 
-    .IF dqImageType == 0
+    .IF qwImageType == 0
         ret
     .ENDIF
     
-    Invoke MUISetExtProperty, hControl, @ButtonImageType, dqImageType
+    Invoke MUISetExtProperty, hControl, @ButtonImageType, qwImageType
 
-    .IF dqResIDImage != 0
-        mov rax, dqImageType
+    .IF qwResIDImage != 0
+        mov rax, qwImageType
         .IF rax == 1 ; bitmap
-            Invoke _MUI_ButtonLoadBitmap, hControl, @ButtonImage, dqResIDImage
+            Invoke _MUI_ButtonLoadBitmap, hControl, @ButtonImage, qwResIDImage
         .ELSEIF rax == 2 ; icon
-            Invoke _MUI_ButtonLoadIcon, hControl, @ButtonImage, dqResIDImage
+            Invoke _MUI_ButtonLoadIcon, hControl, @ButtonImage, qwResIDImage
         .ELSEIF rax == 3 ; png
             IFDEF MUI_USEGDIPLUS
-            Invoke _MUI_ButtonLoadPng, hControl, @ButtonImage, dqResIDImage
+            Invoke _MUI_ButtonLoadPng, hControl, @ButtonImage, qwResIDImage
             ENDIF
         .ENDIF
     .ENDIF
 
-    .IF dqResIDImageAlt != 0
-        mov rax, dqImageType
+    .IF qwResIDImageAlt != 0
+        mov rax, qwImageType
         .IF rax == 1 ; bitmap
-            Invoke _MUI_ButtonLoadBitmap, hControl, @ButtonImageAlt, dqResIDImageAlt
+            Invoke _MUI_ButtonLoadBitmap, hControl, @ButtonImageAlt, qwResIDImageAlt
         .ELSEIF rax == 2 ; icon
-            Invoke _MUI_ButtonLoadIcon, hControl, @ButtonImageAlt, dqResIDImageAlt
+            Invoke _MUI_ButtonLoadIcon, hControl, @ButtonImageAlt, qwResIDImageAlt
         .ELSEIF rax == 3 ; png
             IFDEF MUI_USEGDIPLUS
-            Invoke _MUI_ButtonLoadPng, hControl, @ButtonImageAlt, dqResIDImageAlt
+            Invoke _MUI_ButtonLoadPng, hControl, @ButtonImageAlt, qwResIDImageAlt
             ENDIF
         .ENDIF
     .ENDIF
 
-    .IF dqResIDImageSel != 0
-        mov rax, dqImageType
+    .IF qwResIDImageSel != 0
+        mov rax, qwImageType
         .IF rax == 1 ; bitmap
-            Invoke _MUI_ButtonLoadBitmap, hControl, @ButtonImageSel, dqResIDImageSel
+            Invoke _MUI_ButtonLoadBitmap, hControl, @ButtonImageSel, qwResIDImageSel
         .ELSEIF rax == 2 ; icon
-            Invoke _MUI_ButtonLoadIcon, hControl, @ButtonImageSel, dqResIDImageSel
+            Invoke _MUI_ButtonLoadIcon, hControl, @ButtonImageSel, qwResIDImageSel
         .ELSEIF rax == 3 ; png
             IFDEF MUI_USEGDIPLUS
-            Invoke _MUI_ButtonLoadPng, hControl, @ButtonImageSel, dqResIDImageSel
+            Invoke _MUI_ButtonLoadPng, hControl, @ButtonImageSel, qwResIDImageSel
             ENDIF
         .ENDIF
     .ENDIF
 
-    .IF dqResIDImageSelAlt != 0
-        mov rax, dqImageType
+    .IF qwResIDImageSelAlt != 0
+        mov rax, qwImageType
         .IF rax == 1 ; bitmap
-            Invoke _MUI_ButtonLoadBitmap, hControl, @ButtonImageSelAlt, dqResIDImageSelAlt
+            Invoke _MUI_ButtonLoadBitmap, hControl, @ButtonImageSelAlt, qwResIDImageSelAlt
         .ELSEIF rax == 2 ; icon
-            Invoke _MUI_ButtonLoadIcon, hControl, @ButtonImageSelAlt, dqResIDImageSelAlt
+            Invoke _MUI_ButtonLoadIcon, hControl, @ButtonImageSelAlt, qwResIDImageSelAlt
         .ELSEIF rax == 3 ; png
             IFDEF MUI_USEGDIPLUS
-            Invoke _MUI_ButtonLoadPng, hControl, @ButtonImageSelAlt, dqResIDImageSelAlt
+            Invoke _MUI_ButtonLoadPng, hControl, @ButtonImageSelAlt, qwResIDImageSelAlt
             ENDIF
         .ENDIF
     .ENDIF
 
-    .IF dqResIDImageDisabled != 0
-        mov rax, dqImageType
+    .IF qwResIDImageDisabled != 0
+        mov rax, qwImageType
         .IF rax == 1 ; bitmap
-            Invoke _MUI_ButtonLoadBitmap, hControl, @ButtonImageDisabled, dqResIDImageDisabled
+            Invoke _MUI_ButtonLoadBitmap, hControl, @ButtonImageDisabled, qwResIDImageDisabled
         .ELSEIF rax == 2 ; icon
-            Invoke _MUI_ButtonLoadIcon, hControl, @ButtonImageDisabled, dqResIDImageDisabled
+            Invoke _MUI_ButtonLoadIcon, hControl, @ButtonImageDisabled, qwResIDImageDisabled
         .ELSEIF rax == 3 ; png
             IFDEF MUI_USEGDIPLUS
-            Invoke _MUI_ButtonLoadPng, hControl, @ButtonImageDisabled, dqResIDImageDisabled
+            Invoke _MUI_ButtonLoadPng, hControl, @ButtonImageDisabled, qwResIDImageDisabled
             ENDIF
         .ENDIF
     .ENDIF
@@ -2444,13 +2449,13 @@ MUIButtonLoadImages ENDP
 ;-------------------------------------------------------------------------------------
 ; MUIButtonSetImages - Sets the property handles for image types
 ;-------------------------------------------------------------------------------------
-MUIButtonSetImages PROC FRAME hControl:QWORD, dqImageType:QWORD, hImage:QWORD, hImageAlt:QWORD, hImageSel:QWORD, hImageSelAlt:QWORD, hImageDisabled:QWORD
+MUIButtonSetImages PROC FRAME hControl:QWORD, qwImageType:QWORD, hImage:QWORD, hImageAlt:QWORD, hImageSel:QWORD, hImageSelAlt:QWORD, hImageDisabled:QWORD
 
-    .IF dqImageType == 0
+    .IF qwImageType == 0
         ret
     .ENDIF
     
-    Invoke MUISetExtProperty, hControl, @ButtonImageType, dqImageType
+    Invoke MUISetExtProperty, hControl, @ButtonImageType, qwImageType
 
     .IF hImage != 0
         Invoke MUISetExtProperty, hControl, @ButtonImage, hImage
@@ -2489,16 +2494,16 @@ MUIButtonNotifySetText ENDP
 ;-------------------------------------------------------------------------------------
 ; MUIButtonNotifyLoadImage
 ;-------------------------------------------------------------------------------------
-MUIButtonNotifyLoadImage PROC FRAME hControl:QWORD, dqImageType:QWORD, dqResIDNotifyImage:QWORD
-    Invoke SendMessage, hControl, MUIBM_NOTIFYLOADIMAGE, dqImageType, dqResIDNotifyImage
+MUIButtonNotifyLoadImage PROC FRAME hControl:QWORD, qwImageType:QWORD, qwResIDNotifyImage:QWORD
+    Invoke SendMessage, hControl, MUIBM_NOTIFYLOADIMAGE, qwImageType, qwResIDNotifyImage
     ret
 MUIButtonNotifyLoadImage ENDP
 
 ;-------------------------------------------------------------------------------------
 ; MUIButtonNotifySetImage
 ;-------------------------------------------------------------------------------------
-MUIButtonNotifySetImage PROC FRAME hControl:QWORD, dqImageType:QWORD, hNotifyImage:QWORD
-    Invoke SendMessage, hControl, MUIBM_NOTIFYSETIMAGE, dqImageType, hNotifyImage
+MUIButtonNotifySetImage PROC FRAME hControl:QWORD, qwImageType:QWORD, hNotifyImage:QWORD
+    Invoke SendMessage, hControl, MUIBM_NOTIFYSETIMAGE, qwImageType, hNotifyImage
     ret
 MUIButtonNotifySetImage ENDP
 
@@ -2538,138 +2543,138 @@ MUIButtonNoteSetFont ENDP
 ; MUIButtonSetAllProperties - Set all properties at once from long poiner to a 
 ; MUI_BUTTON_PROPERTIES structure.
 ;-------------------------------------------------------------------------------------
-MUIButtonSetAllProperties PROC FRAME USES RBX RCX hControl:QWORD, lpMUIBUTTONPROPERTIES:QWORD, dqSizeMUIBP:QWORD
-    LOCAL lpdqExternalProperties:QWORD
+MUIButtonSetAllProperties PROC FRAME USES RBX RCX hControl:QWORD, lpMUIBUTTONPROPERTIES:QWORD, qwSizeMUIBP:QWORD
+    LOCAL lpqwExternalProperties:QWORD
     
     Invoke GetWindowLongPtr, hControl, MUI_EXTERNAL_PROPERTIES ; 4
     .IF rax == 0
         mov rax, FALSE
         ret
     .ENDIF
-    mov lpdqExternalProperties, rax
+    mov lpqwExternalProperties, rax
     
-    mov rax, dqSizeMUIBP
+    mov rax, qwSizeMUIBP
     .IF rax != SIZEOF MUI_BUTTON_PROPERTIES
         mov rax, FALSE
         ret
     .ENDIF
     
-    mov rcx, lpdqExternalProperties
+    mov rcx, lpqwExternalProperties
     mov rbx, lpMUIBUTTONPROPERTIES
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqTextFont
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwTextFont
     .IF rax != NULL
-        mov [rcx].MUI_BUTTON_PROPERTIES.dqTextFont, rax 
+        mov [rcx].MUI_BUTTON_PROPERTIES.qwTextFont, rax 
     .ENDIF
     
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqTextColor
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqTextColor, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqTextColorAlt
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqTextColorAlt, rax    
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqTextColorSel
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqTextColorSel, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqTextColorSelAlt
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqTextColorSelAlt, rax    
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqTextColorDisabled
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqTextColorDisabled, rax      
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwTextColor
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwTextColor, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwTextColorAlt
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwTextColorAlt, rax    
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwTextColorSel
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwTextColorSel, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwTextColorSelAlt
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwTextColorSelAlt, rax    
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwTextColorDisabled
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwTextColorDisabled, rax      
         
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBackColor
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBackColor, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBackColorAlt
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBackColorAlt, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBackColorSel
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBackColorSel, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBackColorSelAlt
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBackColorSelAlt, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBackColorDisabled
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBackColorDisabled, rax    
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBackColor
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBackColor, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBackColorAlt
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBackColorAlt, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBackColorSel
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBackColorSel, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBackColorSelAlt
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBackColorSelAlt, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBackColorDisabled
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBackColorDisabled, rax    
     
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBorderColor
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBorderColor, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBorderColorAlt
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBorderColorAlt, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBorderColorSel
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBorderColorSel, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBorderColorSelAlt
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBorderColorSelAlt, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBorderColorDisabled
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBorderColorDisabled, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBorderColor
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBorderColor, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBorderColorAlt
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBorderColorAlt, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBorderColorSel
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBorderColorSel, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBorderColorSelAlt
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBorderColorSelAlt, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBorderColorDisabled
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBorderColorDisabled, rax
     
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqBorderStyle
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqBorderStyle, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwBorderStyle
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwBorderStyle, rax
 
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqAccentColor
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqAccentColor, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqAccentColorAlt
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqAccentColorAlt, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqAccentColorSel
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqAccentColorSel, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqAccentColorSelAlt
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqAccentColorSelAlt, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwAccentColor
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwAccentColor, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwAccentColorAlt
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwAccentColorAlt, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwAccentColorSel
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwAccentColorSel, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwAccentColorSelAlt
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwAccentColorSelAlt, rax
 
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqAccentStyle
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqAccentStyle, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqAccentStyleAlt
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqAccentStyleAlt, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqAccentStyleSel
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqAccentStyleSel, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqAccentStyleSelAlt
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqAccentStyleSelAlt, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwAccentStyle
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwAccentStyle, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwAccentStyleAlt
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwAccentStyleAlt, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwAccentStyleSel
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwAccentStyleSel, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwAccentStyleSelAlt
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwAccentStyleSelAlt, rax
     
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqImageType
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwImageType
     .IF rax != NULL
-        mov [rcx].MUI_BUTTON_PROPERTIES.dqImageType, rax
-    .ENDIF
-    
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqImage
-    .IF rax != NULL
-        mov [rcx].MUI_BUTTON_PROPERTIES.dqImage, rax
+        mov [rcx].MUI_BUTTON_PROPERTIES.qwImageType, rax
     .ENDIF
     
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqRightImage
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwImage
     .IF rax != NULL
-        mov [rcx].MUI_BUTTON_PROPERTIES.dqRightImage, rax
+        mov [rcx].MUI_BUTTON_PROPERTIES.qwImage, rax
     .ENDIF
     
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqNotifyTextFont
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwRightImage
     .IF rax != NULL
-        mov [rcx].MUI_BUTTON_PROPERTIES.dqNotifyTextFont, rax
+        mov [rcx].MUI_BUTTON_PROPERTIES.qwRightImage, rax
     .ENDIF
     
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqNotifyTextColor
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqNotifyTextColor, rax    
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqNotifyBackColor
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqNotifyBackColor, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqNotifyRound
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqNotifyRound, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqNotifyImageType
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwNotifyTextFont
     .IF rax != NULL
-        mov [rcx].MUI_BUTTON_PROPERTIES.dqNotifyImageType, rax
+        mov [rcx].MUI_BUTTON_PROPERTIES.qwNotifyTextFont, rax
     .ENDIF
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqNotifyImage
+    
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwNotifyTextColor
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwNotifyTextColor, rax    
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwNotifyBackColor
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwNotifyBackColor, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwNotifyRound
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwNotifyRound, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwNotifyImageType
     .IF rax != NULL
-        mov [rcx].MUI_BUTTON_PROPERTIES.dqNotifyImage, rax
+        mov [rcx].MUI_BUTTON_PROPERTIES.qwNotifyImageType, rax
     .ENDIF
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqButtonNoteTextFont
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwNotifyImage
     .IF rax != NULL
-        mov [rcx].MUI_BUTTON_PROPERTIES.dqButtonNoteTextFont, rax
+        mov [rcx].MUI_BUTTON_PROPERTIES.qwNotifyImage, rax
     .ENDIF
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqButtonNoteTextColor
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqButtonNoteTextColor, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqButtonNoteTextColorDisabled
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqButtonNoteTextColorDisabled, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqButtonPaddingLeftIndent
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqButtonPaddingLeftIndent, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqButtonPaddingGeneral
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqButtonPaddingGeneral, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqButtonPaddingStyle
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqButtonPaddingStyle, rax
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqButtonPaddingTextImage
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwButtonNoteTextFont
     .IF rax != NULL
-        mov [rcx].MUI_BUTTON_PROPERTIES.dqButtonPaddingTextImage, rax
+        mov [rcx].MUI_BUTTON_PROPERTIES.qwButtonNoteTextFont, rax
     .ENDIF
-    mov rax, [rbx].MUI_BUTTON_PROPERTIES.dqButtonDllInstance
-    mov [rcx].MUI_BUTTON_PROPERTIES.dqButtonDllInstance, rax
-    ;Invoke RtlMoveMemory, lpdqInternalProperties, lpMUIBUTTONPROPERTIES, SIZEOF MUI_BUTTON_PROPERTIES
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwButtonNoteTextColor
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwButtonNoteTextColor, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwButtonNoteTextColorDisabled
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwButtonNoteTextColorDisabled, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwButtonPaddingLeftIndent
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwButtonPaddingLeftIndent, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwButtonPaddingGeneral
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwButtonPaddingGeneral, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwButtonPaddingStyle
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwButtonPaddingStyle, rax
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwButtonPaddingTextImage
+    .IF rax != NULL
+        mov [rcx].MUI_BUTTON_PROPERTIES.qwButtonPaddingTextImage, rax
+    .ENDIF
+    mov rax, [rbx].MUI_BUTTON_PROPERTIES.qwButtonDllInstance
+    mov [rcx].MUI_BUTTON_PROPERTIES.qwButtonDllInstance, rax
+    ;Invoke RtlMoveMemory, lpqwInternalProperties, lpMUIBUTTONPROPERTIES, SIZEOF MUI_BUTTON_PROPERTIES
 
     ; check default values: text colors
     Invoke MUIGetExtProperty, hControl, @ButtonTextColorAlt
@@ -2803,7 +2808,7 @@ MUIButtonSetAllProperties ENDP
 ; _MUI_ButtonLoadIcon - if succesful, loads specified bitmap resource into the specified
 ; external property and returns TRUE in rax, otherwise FALSE.
 ;-------------------------------------------------------------------------------------
-_MUI_ButtonLoadBitmap PROC FRAME hWin:QWORD, dqProperty:QWORD, idResBitmap:QWORD
+_MUI_ButtonLoadBitmap PROC FRAME hWin:QWORD, qwProperty:QWORD, idResBitmap:QWORD
     LOCAL hinstance:QWORD
 
     .IF idResBitmap == NULL
@@ -2818,7 +2823,7 @@ _MUI_ButtonLoadBitmap PROC FRAME hWin:QWORD, dqProperty:QWORD, idResBitmap:QWORD
     mov hinstance, rax
     
 	Invoke LoadBitmap, hinstance, idResBitmap
-    Invoke MUISetExtProperty, hWin, dqProperty, rax
+    Invoke MUISetExtProperty, hWin, qwProperty, rax
 	mov rax, TRUE
     
     ret
@@ -2829,7 +2834,7 @@ _MUI_ButtonLoadBitmap ENDP
 ; _MUI_ButtonLoadIcon - if succesful, loads specified icon resource into the specified
 ; external property and returns TRUE in rax, otherwise FALSE.
 ;-------------------------------------------------------------------------------------
-_MUI_ButtonLoadIcon PROC FRAME hWin:QWORD, dqProperty:QWORD, idResIcon:QWORD
+_MUI_ButtonLoadIcon PROC FRAME hWin:QWORD, qwProperty:QWORD, idResIcon:QWORD
     LOCAL hinstance:QWORD
 
     .IF idResIcon == NULL
@@ -2843,7 +2848,7 @@ _MUI_ButtonLoadIcon PROC FRAME hWin:QWORD, dqProperty:QWORD, idResIcon:QWORD
     mov hinstance, rax
 
 	Invoke LoadImage, hinstance, idResIcon, IMAGE_ICON, 0, 0, 0 ;LR_SHARED
-    Invoke MUISetExtProperty, hWin, dqProperty, eax
+    Invoke MUISetExtProperty, hWin, qwProperty, eax
 
 	mov rax, TRUE
 
@@ -2862,7 +2867,7 @@ _MUI_ButtonLoadIcon ENDP
 ; the bitmap or corruption of png occurs. store png as RCDATA in resource file.
 ;-------------------------------------------------------------------------------------
 IFDEF MUI_USEGDIPLUS
-_MUI_ButtonLoadPng PROC FRAME hWin:QWORD, dqProperty:QWORD, idResPng:QWORD
+_MUI_ButtonLoadPng PROC FRAME hWin:QWORD, qwProperty:QWORD, idResPng:QWORD
 	local rcRes:HRSRC
 	local hResData:HRSRC
 	local pResData:HANDLE
@@ -2942,11 +2947,11 @@ _MUI_ButtonLoadPng PROC FRAME hWin:QWORD, dqProperty:QWORD, idResPng:QWORD
 	invoke	GlobalUnlock, hbuffer
 	invoke	GlobalFree, hbuffer
 
-    Invoke MUISetExtProperty, hWin, dqProperty, pBitmapFromStream
+    Invoke MUISetExtProperty, hWin, qwProperty, pBitmapFromStream
     ;PrintDec dwProperty
     ;PrintDec pBitmapFromStream
     
-    mov rax, dqProperty
+    mov rax, qwProperty
     .IF rax == @ButtonImage
         Invoke MUISetIntProperty, hWin, @ButtonImageStream, hIStream
     .ELSEIF rax == @ButtonImageAlt
