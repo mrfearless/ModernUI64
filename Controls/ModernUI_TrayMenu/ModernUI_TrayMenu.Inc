@@ -34,10 +34,10 @@
 ; ModernUI_TrayMenu Prototypes
 ;--------------------------------------------------------------------------------------------------------------------------------------
 MUITrayMenuRegister         PROTO                                                                ; Use 'ModernUI_TrayMenu' as class in RadASM custom class control
-MUITrayMenuCreate           PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD         ; hWndParent, hTrayMenuIcon, lpszTooltip, dwMenuType, dwMenu, dwOptions, hWndExtra
-MUITrayMenuSetProperty      PROTO :QWORD, :QWORD, :QWORD                                         ; hModernUI_TrayMenu, dwProperty, dwPropertyValue
-MUITrayMenuGetProperty      PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, dwProperty
-MUITrayMenuAssignMenu       PROTO :QWORD, :QWORD, :QWORD                                         ; hModernUI_TrayMenu, dwMenuType, dwMenu
+MUITrayMenuCreate           PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD         ; hWndParent, hTrayMenuIcon, lpszTooltip, qwMenuType, qwMenu, qwOptions, hWndExtra
+MUITrayMenuSetProperty      PROTO :QWORD, :QWORD, :QWORD                                         ; hModernUI_TrayMenu, qwProperty, qwPropertyValue
+MUITrayMenuGetProperty      PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, qwProperty
+MUITrayMenuAssignMenu       PROTO :QWORD, :QWORD, :QWORD                                         ; hModernUI_TrayMenu, qwMenuType, qwMenu
 
 ; Tray Menu Item Functions
 MUITrayMenuSetTrayIcon      PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, hTrayIcon
@@ -48,7 +48,7 @@ MUITrayMenuChangeMenuItemState PROTO :QWORD, :QWORD, :QWORD                     
 MUITrayMenuSetMenuItemText  PROTO :QWORD, :QWORD, :QWORD                                         ; hModernUI_TrayMenu, MenuItemID, lpszMenuItemText
 MUITrayMenuHideTrayIcon     PROTO :QWORD                                                         ; hModernUI_TrayMenu
 MUITrayMenuShowTrayIcon     PROTO :QWORD                                                         ; hModernUI_TrayMenu
-MUITrayMenuShowNotification PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD                         ; hModernUI_TrayMenu, lpszNotificationMessage, lpszNotificationTitle, dwTimeout, dwStyle
+MUITrayMenuShowNotification PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD                         ; hModernUI_TrayMenu, lpszNotificationMessage, lpszNotificationTitle, qwTimeout, qwStyle
 MUITrayMenuSetTrayIconText  PROTO :QWORD, :QWORD, :QWORD, :QWORD                                 ; hModernUI_TrayIcon, lpszText, lpszFont, qwTextColorRGB
 
 ; Tray Icon Functions (standalone - no menu)
@@ -56,7 +56,7 @@ MUITrayIconCreate           PROTO :QWORD, :QWORD, :QWORD, :QWORD                
 MUITrayIconDestroy          PROTO :QWORD                                                         ; hModernUI_TrayIcon
 MUITrayIconSetTrayIcon      PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayIcon, hTrayIcon
 MUITrayIconSetTooltipText   PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayIcon, lpszTooltip
-MUITrayIconShowNotification PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD                         ; hModernUI_TrayIcon, lpszNotificationMessage, lpszNotificationTitle, dwTimeout, dwStyle
+MUITrayIconShowNotification PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD                         ; hModernUI_TrayIcon, lpszNotificationMessage, lpszNotificationTitle, qwTimeout, qwStyle
 
 
 ;--------------------------------------------------------------------------------------------------------------------------------------
@@ -64,12 +64,12 @@ MUITrayIconShowNotification PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD        
 ;--------------------------------------------------------------------------------------------------------------------------------------
 IFNDEF MUI_TRAYMENU_PROPERTIES
 MUI_TRAYMENU_PROPERTIES     STRUCT
-    dwTrayMenuIcon          DQ ?
-    dwTrayMenuTooltipText   DQ ?
-    dwTrayMenuVisible       DQ ?
-    dwTrayMenuType          DQ ?
-    dwTrayMenuHandleMenu    DQ ?
-    dwTrayMenuExtraWndHandle DQ ?
+    qwTrayMenuIcon          DQ ?
+    qwTrayMenuTooltipText   DQ ?
+    qwTrayMenuVisible       DQ ?
+    qwTrayMenuType          DQ ?
+    qwTrayMenuHandleMenu    DQ ?
+    qwTrayMenuExtraWndHandle DQ ?
 MUI_TRAYMENU_PROPERTIES     ENDS
 ENDIF
 

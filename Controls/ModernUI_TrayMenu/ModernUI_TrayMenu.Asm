@@ -126,20 +126,20 @@ _MUI_TM_HideNotification                PROTO :QWORD
 ; External public properties
 IFNDEF MUI_TRAYMENU_PROPERTIES
 MUI_TRAYMENU_PROPERTIES                 STRUCT
-    dwTrayMenuIcon                      DQ ?
-    dwTrayMenuTooltipText               DQ ?
-    dwTrayMenuVisible                   DQ ?
-    dwTrayMenuType                      DQ ?
-    dwTrayMenuHandleMenu                DQ ?
-    dwTrayMenuExtraWndHandle            DQ ?
+    qwTrayMenuIcon                      DQ ?
+    qwTrayMenuTooltipText               DQ ?
+    qwTrayMenuVisible                   DQ ?
+    qwTrayMenuType                      DQ ?
+    qwTrayMenuHandleMenu                DQ ?
+    qwTrayMenuExtraWndHandle            DQ ?
 MUI_TRAYMENU_PROPERTIES                 ENDS
 ENDIF
 
 ; Internal properties
 _MUI_TRAYMENU_PROPERTIES                STRUCT
     NID                                 DQ ? ; ptr to NOTIFYICONDATA struct
-    dwTrayMenuIconVisible               DQ ?
-    dwTrayIconVisible                   DQ ?
+    qwTrayMenuIconVisible               DQ ?
+    qwTrayIconVisible                   DQ ?
 _MUI_TRAYMENU_PROPERTIES                ENDS
 
 
@@ -162,8 +162,8 @@ szMUITrayMenuFont                       DB 'Tahoma',0                   ; Font u
 ;-------------------------------------------------------------------------------------
 ; Set property for ModernUI_TrayMenu control
 ;-------------------------------------------------------------------------------------
-MUITrayMenuSetProperty PROC FRAME hControl:QWORD, dqProperty:QWORD, dqPropertyValue:QWORD
-    Invoke SendMessage, hControl, MUI_SETPROPERTY, dqProperty, dqPropertyValue
+MUITrayMenuSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
+    Invoke SendMessage, hControl, MUI_SETPROPERTY, qwProperty, qwPropertyValue
     ret
 MUITrayMenuSetProperty ENDP
 
@@ -171,8 +171,8 @@ MUITrayMenuSetProperty ENDP
 ;-------------------------------------------------------------------------------------
 ; Get property for ModernUI_TrayMenu control
 ;-------------------------------------------------------------------------------------
-MUITrayMenuGetProperty PROC FRAME hControl:QWORD, dqProperty:QWORD
-    Invoke SendMessage, hControl, MUI_GETPROPERTY, dqProperty, NULL
+MUITrayMenuGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
+    Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUITrayMenuGetProperty ENDP
 
@@ -217,7 +217,7 @@ MUITrayMenuRegister ENDP
 ;-------------------------------------------------------------------------------------
 ; MUIModernUI_TrayMenuCreate - Returns handle in rax of newly created control
 ;-------------------------------------------------------------------------------------
-MUITrayMenuCreate PROC FRAME hWndParent:QWORD, hTrayMenuIcon:QWORD, lpszTooltip:QWORD, dqMenuType:QWORD, dqMenu:QWORD, dqOptions:QWORD, hWndExtra:QWORD
+MUITrayMenuCreate PROC FRAME hWndParent:QWORD, hTrayMenuIcon:QWORD, lpszTooltip:QWORD, qwMenuType:QWORD, qwMenu:QWORD, qwOptions:QWORD, hWndExtra:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
 	LOCAL hControl:QWORD
@@ -230,7 +230,7 @@ MUITrayMenuCreate PROC FRAME hWndParent:QWORD, hTrayMenuIcon:QWORD, lpszTooltip:
     ; Modify styles appropriately - for visual controls no CS_HREDRAW CS_VREDRAW (causes flickering)
 	; probably need WS_CHILD, WS_VISIBLE. Needs WS_CLIPCHILDREN. Non visual prob dont need any of these.
 	
-    Invoke CreateWindowEx, NULL, Addr szMUITrayMenuClass, lpszTooltip, dword ptr dqOptions, 0, 0, 0, 0, hWndParent, NULL, hinstance, NULL
+    Invoke CreateWindowEx, NULL, Addr szMUITrayMenuClass, lpszTooltip, dword ptr qwOptions, 0, 0, 0, 0, hWndParent, NULL, hinstance, NULL
 	mov hControl, rax
 	.IF rax != NULL
         .IF hTrayMenuIcon != NULL
@@ -243,18 +243,18 @@ MUITrayMenuCreate PROC FRAME hWndParent:QWORD, hTrayMenuIcon:QWORD, lpszTooltip:
             Invoke MUISetExtProperty, hControl, @TrayMenuExtraWndHandle, hWndExtra
         .ENDIF
         
-;        .IF dqMenuType != NULL
-;            Invoke MUISetExtProperty, hControl, @TrayMenuType, dqMenuType
+;        .IF qwMenuType != NULL
+;            Invoke MUISetExtProperty, hControl, @TrayMenuType, qwMenuType
 ;        .ENDIF
-;        .IF dqMenu != NULL
-;            Invoke MUISetExtProperty, hControl, @TrayMenuHandleMenu, dqMenu
+;        .IF qwMenu != NULL
+;            Invoke MUISetExtProperty, hControl, @TrayMenuHandleMenu, qwMenu
 ;        .ENDIF
 
         Invoke _MUI_TM_AddIconAndTooltip, hControl, hWndParent, hTrayMenuIcon, lpszTooltip
         
-        .IF dqMenuType != NULL && dqMenu != NULL
-            .IF dqMenuType != MUITMT_MENUDEFER && dqMenuType != MUITMT_NOMENUEVER
-                Invoke MUITrayMenuAssignMenu, hControl, dqMenuType, dqMenu
+        .IF qwMenuType != NULL && qwMenu != NULL
+            .IF qwMenuType != MUITMT_MENUDEFER && qwMenuType != MUITMT_NOMENUEVER
+                Invoke MUITrayMenuAssignMenu, hControl, qwMenuType, qwMenu
             .ENDIF
         .ENDIF
 	.ENDIF
@@ -399,8 +399,8 @@ _MUI_TrayMenuSetSubclass ENDP
 ;-------------------------------------------------------------------------------------
 ; _MUI_TrayMenuWindowSubClass_Proc - sublcass main window to handle our WM_SHELLNOTIFY
 ;-------------------------------------------------------------------------------------
-_MUI_TrayMenuWindowSubClass_Proc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM, uIdSubclass:UINT, dqRefData:QWORD
-    LOCAL dqStyle:QWORD
+_MUI_TrayMenuWindowSubClass_Proc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM, uIdSubclass:UINT, qwRefData:QWORD
+    LOCAL qwStyle:QWORD
     
     mov eax, uMsg
     .IF eax == WM_NCDESTROY
@@ -411,13 +411,13 @@ _MUI_TrayMenuWindowSubClass_Proc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wPara
     .ELSEIF eax == WM_SYSCOMMAND
         ;PrintText 'WM_SYSCOMMAND'
         .IF wParam == SC_CLOSE
-            Invoke GetWindowLong, dqRefData, GWL_STYLE
-            mov dqStyle, rax
+            Invoke GetWindowLong, qwRefData, GWL_STYLE
+            mov qwStyle, rax
             ;PrintText 'MinOnClose'
             ;PrintDec dwStyle
             AND rax, MUITMS_MINONCLOSE
             .IF rax == MUITMS_MINONCLOSE ; MinimizeOnClose is ON
-                mov rax, dqStyle
+                mov rax, qwStyle
                 AND rax, MUITMS_HIDEIFMIN
                 .IF rax == MUITMS_HIDEIFMIN  
                     Invoke _MUI_TM_MinimizeToTray, hWin, TRUE
@@ -432,8 +432,8 @@ _MUI_TrayMenuWindowSubClass_Proc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wPara
     .ELSEIF eax == WM_SIZE
         ;PrintText 'WM_SIZE'
         .IF wParam == SIZE_MINIMIZED
-            Invoke GetWindowLong, dqRefData, GWL_STYLE
-            mov dqStyle, rax
+            Invoke GetWindowLong, qwRefData, GWL_STYLE
+            mov qwStyle, rax
             ;PrintText 'HideIfMin'
             ;PrintDec dwStyle
             AND rax, MUITMS_HIDEIFMIN
@@ -446,13 +446,13 @@ _MUI_TrayMenuWindowSubClass_Proc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wPara
     
     .ELSEIF eax == WM_SHELLNOTIFY
         .IF lParam == WM_RBUTTONDOWN
-            Invoke _MUI_TM_ShowTrayMenu, hWin, dqRefData ;hTM
+            Invoke _MUI_TM_ShowTrayMenu, hWin, qwRefData ;hTM
         .ELSEIF lParam == WM_LBUTTONDOWN
-            Invoke _MUI_TM_RestoreFromTray, hWin, dqRefData
+            Invoke _MUI_TM_RestoreFromTray, hWin, qwRefData
         .ELSEIF lParam == WM_RBUTTONDBLCLK
-            Invoke _MUI_TM_ShowTrayMenu, hWin, dqRefData ;hTM
+            Invoke _MUI_TM_ShowTrayMenu, hWin, qwRefData ;hTM
         .ELSEIF lParam == WM_LBUTTONDBLCLK
-            Invoke _MUI_TM_RestoreFromTray, hWin, dqRefData
+            Invoke _MUI_TM_RestoreFromTray, hWin, qwRefData
         .ENDIF
     .ENDIF
     
@@ -467,7 +467,7 @@ _MUI_TrayMenuWindowSubClass_Proc endp
 ;-------------------------------------------------------------------------------------
 _MUI_TrayMenuInit PROC FRAME hControl:QWORD
     LOCAL hParent:QWORD
-    LOCAL dqStyle:QWORD
+    LOCAL qwStyle:QWORD
     
 
     Invoke GetParent, hControl
@@ -475,7 +475,7 @@ _MUI_TrayMenuInit PROC FRAME hControl:QWORD
     
     ; get style and check it is our default at least
     Invoke GetWindowLong, hControl, GWL_STYLE
-    mov dqStyle, rax
+    mov qwStyle, rax
     
     Invoke _MUI_TrayMenuSetSubclass, hControl
 
@@ -510,12 +510,12 @@ _MUI_TrayMenuCleanup ENDP
 ;-------------------------------------------------------------------------------------
 ; Assigns a menu to the ModernUI_TrayMenu control, using a popup menu created with 
 ; CreatePopupMenu or by building a menu from a block of MUITRAYMENUITEM structures
-; dqMenuType determines which dwMenu contains
-; if dqMenuType == MUITMT_POPUPMENU, dwMenu is a handle to a popup menu
-; if dqMenuType == MUITMT_MENUITEMS, dwMenu is pointer to array of structures
+; qwMenuType determines which dwMenu contains
+; if qwMenuType == MUITMT_POPUPMENU, dwMenu is a handle to a popup menu
+; if qwMenuType == MUITMT_MENUITEMS, dwMenu is pointer to array of structures
 ; Returns in rax TRUE of succesful or FALSE otherwise.
 ;-------------------------------------------------------------------------------------
-MUITrayMenuAssignMenu PROC FRAME USES RBX hControl:QWORD, dqMenuType:QWORD, dqMenu:QWORD
+MUITrayMenuAssignMenu PROC FRAME USES RBX hControl:QWORD, qwMenuType:QWORD, qwMenu:QWORD
     LOCAL mi:MENUITEMINFO
     LOCAL hTrayMenu:QWORD
     LOCAL CurrentItem:QWORD
@@ -543,9 +543,9 @@ MUITrayMenuAssignMenu PROC FRAME USES RBX hControl:QWORD, dqMenuType:QWORD, dqMe
         Invoke MUISetExtProperty, hControl, @TrayMenuHandleMenu, 0
     .ENDIF
     
-    .IF dqMenuType == MUITMT_POPUPMENU
-        .IF dqMenu != NULL
-            Invoke MUISetExtProperty, hControl, @TrayMenuHandleMenu, dqMenu
+    .IF qwMenuType == MUITMT_POPUPMENU
+        .IF qwMenu != NULL
+            Invoke MUISetExtProperty, hControl, @TrayMenuHandleMenu, qwMenu
             mov rax, TRUE
         .ELSE
             Invoke MUISetExtProperty, hControl, @TrayMenuHandleMenu, 0
@@ -554,13 +554,13 @@ MUITrayMenuAssignMenu PROC FRAME USES RBX hControl:QWORD, dqMenuType:QWORD, dqMe
         ret        
     .ENDIF
     
-    .IF dqMenuType == MUITMT_MENUITEMS
-        .IF dqMenu == NULL
+    .IF qwMenuType == MUITMT_MENUITEMS
+        .IF qwMenu == NULL
             mov rax, FALSE
             ret
         .ENDIF
 
-        mov rbx, dqMenu
+        mov rbx, qwMenu
         mov rax, [rbx]
         ;PrintQWORD rax
         .IF rax != 0xfFfFfFfFf0f0f0f0
@@ -568,7 +568,7 @@ MUITrayMenuAssignMenu PROC FRAME USES RBX hControl:QWORD, dqMenuType:QWORD, dqMe
             ret 
         .ENDIF
         
-        mov rbx, dqMenu
+        mov rbx, qwMenu
         add rbx, 8d
         mov pTrayMenuItem, rbx
         
@@ -899,7 +899,7 @@ MUITrayMenuSetTooltipText ENDP
 ; with this function)
 ; Returns in rax hIcon or NULL
 ;------------------------------------------------------------------------------------------
-MUITrayMenuSetTrayIconText PROC FRAME hControl:QWORD, lpszText:QWORD, lpszFont:QWORD, dqTextColorRGB:QWORD
+MUITrayMenuSetTrayIconText PROC FRAME hControl:QWORD, lpszText:QWORD, lpszFont:QWORD, qwTextColorRGB:QWORD
     LOCAL hTrayIcon:QWORD
 
     .IF hControl == NULL
@@ -907,7 +907,7 @@ MUITrayMenuSetTrayIconText PROC FRAME hControl:QWORD, lpszText:QWORD, lpszFont:Q
         ret
     .ENDIF
     
-    Invoke _MUI_TM_IconText, lpszText, lpszFont, dqTextColorRGB
+    Invoke _MUI_TM_IconText, lpszText, lpszFont, qwTextColorRGB
     mov hTrayIcon, rax
     
     .IF hTrayIcon == NULL
@@ -1009,7 +1009,7 @@ MUITrayMenuShowTrayIcon ENDP
 ;
 ; Returns in rax TRUE of succesful or FALSE otherwise.
 ;------------------------------------------------------------------------------------------
-MUITrayMenuShowNotification PROC FRAME USES RBX hControl:QWORD, lpszNotificationMessage:QWORD, lpszNotificationTitle:QWORD, dqTimeout:QWORD, dqStyle:QWORD
+MUITrayMenuShowNotification PROC FRAME USES RBX hControl:QWORD, lpszNotificationMessage:QWORD, lpszNotificationTitle:QWORD, qwTimeout:QWORD, qwStyle:QWORD
     LOCAL hTrayIcon:QWORD
     LOCAL NID:QWORD
     
@@ -1039,18 +1039,18 @@ MUITrayMenuShowNotification PROC FRAME USES RBX hControl:QWORD, lpszNotification
     mov [rbx].NOTIFYICONDATA.uFlags, eax
     mov rax, WM_SHELLNOTIFY
     mov [rbx].NOTIFYICONDATA.uCallbackMessage, eax
-    .IF dqTimeout == NULL
+    .IF qwTimeout == NULL
         mov rax, 3000d
     .ELSE
-        mov rax, dqTimeout
+        mov rax, qwTimeout
     .ENDIF
     mov [rbx].NOTIFYICONDATA.uTimeout, eax
     mov rax, NOTIFYICON_VERSION
     mov [rbx].NOTIFYICONDATA.uVersion, eax
-    .IF dqStyle == NULL
+    .IF qwStyle == NULL
         mov rax, MUITMNI_INFO
     .ELSE
-        mov rax, dqStyle
+        mov rax, qwStyle
     .ENDIF
     mov [rbx].NOTIFYICONDATA.dwInfoFlags, eax ;TMNI_INFO ; Balloon Style
     
@@ -1081,12 +1081,12 @@ MUITrayMenuShowNotification PROC FRAME USES RBX hControl:QWORD, lpszNotification
 
     invoke Shell_NotifyIcon, NIM_MODIFY, NID ; Send msg to show icon in tray
     
-    .IF dqTimeout == NULL
+    .IF qwTimeout == NULL
         Invoke KillTimer, hControl, hControl
         Invoke SetTimer, hControl, hControl, 3000d, NULL
     .ELSE
         Invoke KillTimer, hControl, hControl
-        Invoke SetTimer, hControl, hControl, dword ptr dqTimeout, NULL
+        Invoke SetTimer, hControl, hControl, dword ptr qwTimeout, NULL
     .ENDIF
     
     mov rax, TRUE
@@ -1104,7 +1104,7 @@ MUITrayMenuShowNotification ENDP
 ; Creates a tray icon and tooltip text. Standalone without any menu
 ; Returns in rax hTI (handle of TrayIcon = NID)
 ;-------------------------------------------------------------------------------------
-MUITrayIconCreate PROC FRAME USES RBX hWndParent:QWORD, dqTrayIconResID:QWORD, hTrayIcon:QWORD, lpszTooltip:QWORD
+MUITrayIconCreate PROC FRAME USES RBX hWndParent:QWORD, qwTrayIconResID:QWORD, hTrayIcon:QWORD, lpszTooltip:QWORD
     LOCAL NID:QWORD
 
     IFDEF DEBUG32
@@ -1133,7 +1133,7 @@ MUITrayIconCreate PROC FRAME USES RBX hWndParent:QWORD, dqTrayIconResID:QWORD, h
     mov [rbx].NOTIFYICONDATA.hWnd, rax  
     
 
-    mov rax, dqTrayIconResID ; use hControl has unique id for each tryamenu icon ; dwTrayMenuResID
+    mov rax, qwTrayIconResID ; use hControl has unique id for each tryamenu icon ; dwTrayMenuResID
     mov [rbx].NOTIFYICONDATA.uID, eax ; Tray ID
     mov rax,  NIF_ICON + NIF_TIP
     mov [rbx].NOTIFYICONDATA.uFlags, eax
@@ -1316,7 +1316,7 @@ MUITrayIconSetTooltipText ENDP
 ;
 ; Returns in rax TRUE of succesful or FALSE otherwise.
 ;-------------------------------------------------------------------------------------
-MUITrayIconShowNotification PROC FRAME USES RBX hTI:QWORD, lpszNotificationMessage:QWORD, lpszNotificationTitle:QWORD, dqTimeout:QWORD, dqStyle:QWORD
+MUITrayIconShowNotification PROC FRAME USES RBX hTI:QWORD, lpszNotificationMessage:QWORD, lpszNotificationTitle:QWORD, qwTimeout:QWORD, qwStyle:QWORD
     LOCAL NID:QWORD
     LOCAL hWndParent:QWORD
     LOCAL lenMessage:QWORD
@@ -1346,18 +1346,18 @@ MUITrayIconShowNotification PROC FRAME USES RBX hTI:QWORD, lpszNotificationMessa
     mov rax, NIF_INFO + NIF_TIP
     mov [rbx].NOTIFYICONDATA.uFlags, eax
 
-    .IF dqTimeout == NULL
+    .IF qwTimeout == NULL
         mov rax, 3000d
     .ELSE
-        mov rax, dqTimeout
+        mov rax, qwTimeout
     .ENDIF
     mov [rbx].NOTIFYICONDATA.uTimeout, eax
     mov rax, NOTIFYICON_VERSION
     mov [rbx].NOTIFYICONDATA.uVersion, eax
-    .IF dqStyle == NULL
+    .IF qwStyle == NULL
         mov rax, MUITMNI_INFO
     .ELSE
-        mov rax, dqStyle
+        mov rax, qwStyle
     .ENDIF
     mov [rbx].NOTIFYICONDATA.dwInfoFlags, eax ;TMNI_INFO ; Balloon Style
     
@@ -1573,10 +1573,10 @@ _MUI_TM_RestoreFromTray ENDP
 ;-------------------------------------------------------------------------------------
 ; Minimize to Tray - Called from WM_SIZE (wParam==SIZE_MINIMIZED) in sublclass
 ;-------------------------------------------------------------------------------------
-_MUI_TM_MinimizeToTray PROC FRAME hWin:QWORD, dqHideWindow:QWORD
+_MUI_TM_MinimizeToTray PROC FRAME hWin:QWORD, qwHideWindow:QWORD
     Invoke ShowWindow, hWin, SW_MINIMIZE
     
-    .IF dqHideWindow == TRUE   
+    .IF qwHideWindow == TRUE   
         invoke ShowWindow, hWin, SW_HIDE ; Hide main window
     .ENDIF
     ret
@@ -1624,7 +1624,7 @@ _MUI_TM_HideNotification ENDP
 ; Returns handle to an icon (cursor) in eax, use DeleteObject to free this when you have
 ; finished with it
 ;------------------------------------------------------------------------------------------
-_MUI_TM_IconText PROC FRAME lpszText:QWORD, lpszFont:QWORD, dqTextColorRGB:QWORD
+_MUI_TM_IconText PROC FRAME lpszText:QWORD, lpszFont:QWORD, qwTextColorRGB:QWORD
     ;// Creates a DC for use in multithreaded programs (works in single threaded as well)
     LOCAL hdc:HDC
     LOCAL hMemDC:HDC
@@ -1683,7 +1683,7 @@ _MUI_TM_IconText PROC FRAME lpszText:QWORD, lpszFont:QWORD, dqTextColorRGB:QWORD
     
     ;Invoke SelectObject, hMemDC, eax
     Invoke SetBkColor, hMemDC, MUI_RGBCOLOR(72,72,72) ;RGBCOLOR(0,0,0)
-    Invoke SetTextColor, hMemDC, dword ptr dqTextColorRGB ;RGBCOLOR(118,198,238) ;RGBCOLOR(255,255,255)
+    Invoke SetTextColor, hMemDC, dword ptr qwTextColorRGB ;RGBCOLOR(118,198,238) ;RGBCOLOR(255,255,255)
     Invoke DrawText, hMemDC, lpszText, lentext, Addr cbox, DT_SINGLELINE or DT_VCENTER or DT_CENTER
     
     ;// Create monochrome (1 bit) mask bitmap.

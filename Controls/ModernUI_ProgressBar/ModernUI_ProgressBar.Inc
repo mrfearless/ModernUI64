@@ -34,9 +34,9 @@
 ; ModernUI_ProgressBar Prototypes
 ;--------------------------------------------------------------------------------------------------------------------------------------
 MUIProgressBarRegister		PROTO																	; Use 'ModernUI_ProgressBar' as class in RadASM custom class control
-MUIProgressBarCreate		PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD        	; hWndParent, lpszText, xpos, ypos, dqWidth, dqHeight, dqResourceID, dqStyle
-MUIProgressBarSetProperty	PROTO :QWORD, :QWORD, :QWORD											; hModernUI_ProgressBar, dqProperty, dqPropertyValue
-MUIProgressBarGetProperty	PROTO :QWORD, :QWORD													; hModernUI_ProgressBar, dqProperty
+MUIProgressBarCreate		PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD        	; hWndParent, lpszText, xpos, ypos, qwWidth, qwHeight, qwResourceID, qwStyle
+MUIProgressBarSetProperty	PROTO :QWORD, :QWORD, :QWORD											; hModernUI_ProgressBar, qwProperty, qwPropertyValue
+MUIProgressBarGetProperty	PROTO :QWORD, :QWORD													; hModernUI_ProgressBar, qwProperty
 MUIProgressBarSetMinMax     PROTO :QWORD, :QWORD, :QWORD
 MUIProgressBarSetPercent    PROTO :QWORD, :QWORD
 MUIProgressBarGetPercent    PROTO :QWORD

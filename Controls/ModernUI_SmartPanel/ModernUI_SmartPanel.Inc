@@ -34,16 +34,16 @@
 ; ModernUI_SmartPanel Prototypes
 ;--------------------------------------------------------------------------------------------------------------------------------------
 MUISmartPanelRegister		   PROTO																   ; Use 'ModernUI_SmartPanel' as class in RadASM custom class control
-MUISmartPanelCreate		       PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD        	   ; hWndParent, xpos, ypos, dwWidth, dwHeight, dwResourceID, dwStyle
-MUISmartPanelSetProperty	   PROTO :QWORD, :QWORD, :QWORD											   ; hModernUI_SmartPanel, dwProperty, dwPropertyValue
-MUISmartPanelGetProperty	   PROTO :QWORD, :QWORD													   ; hModernUI_SmartPanel, dwProperty
+MUISmartPanelCreate		       PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD        	   ; hWndParent, xpos, ypos, qwWidth, qwHeight, qwResourceID, qwStyle
+MUISmartPanelSetProperty	   PROTO :QWORD, :QWORD, :QWORD											   ; hModernUI_SmartPanel, qwProperty, qwPropertyValue
+MUISmartPanelGetProperty	   PROTO :QWORD, :QWORD													   ; hModernUI_SmartPanel, qwProperty
 
 MUISmartPanelGetCurrentPanel   PROTO :QWORD                                                            ; hModernUI_SmartPanel
 MUISmartPanelSetCurrentPanel   PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_SmartPanel, PanelIndex, bNotify
 MUISmartPanelNextPanel         PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, bNotify
 MUISmartPanelPrevPanel         PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, bNotify
 MUISmartPanelSetIsDlgMsgVar    PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, Addr lpdwVar
-MUISmartPanelRegisterPanel     PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_SmartPanel, dwResIdPanelDlg, lpdwPanelProc
+MUISmartPanelRegisterPanel     PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_SmartPanel, qwResIdPanelDlg, lpqwPanelProc
 
 
 ;--------------------------------------------------------------------------------------------------------------------------------------

@@ -68,7 +68,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2017
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=16
@@ -92,13 +92,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=11837121
+PTimer=12277373
 [Collapse]
 2=
-1=16448,1074270208,1141115152,6291592,117440528
+1=16384,4096,1141113104,2097288,16777232
 [Size]
-2=0,0,0,0,4116
-1=0,0,0,0,3118
+2=0,0,0,0,5608
+1=0,0,0,0,53586
 [GroupExpand]
 GroupExpand=1,0,0,0,0,0
 [BookMark]
@@ -115,10 +115,11 @@ GroupExpand=1,0,0,0,0,0
 [BreakPoint]
 0=
 [Find]
-1="Shell_NotifyIcon"
-2="DD 0"
-3="DD ?"
-4="DWORD"
+1="dq"
+2="Shell_NotifyIcon"
+3="DD 0"
+4="DD ?"
+5="DWORD"
 [RADebugBP]
 2=
 1=

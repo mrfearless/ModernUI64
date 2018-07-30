@@ -67,7 +67,7 @@ AutoLoad=2,1
 5="SetWindowLong"
 6="GetWindowLong"
 [VersionControl]
-Settings=1279
+Settings=1278
 Milestones=129
 MilestoneEvery=10
 MilestoneEveryCurrent=0
@@ -76,7 +76,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=11
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2018
 MilestoneOnDateTimeMonth=2
 MilestoneOnDateTimeDate=1
@@ -100,12 +100,12 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=3613607
+PTimer=3646804
 [Collapse]
 1=,2,
 2=
 [Size]
-1=0,0,0,0,36273
+1=0,0,0,0,4732
 2=0,0,0,0,4848
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0
