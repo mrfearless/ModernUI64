@@ -80,6 +80,8 @@ ENDIF
 
 .CODE
 
+ALIGN 8
+
 ;======================================================================================================================================
 ; PRIVATE FUNCTIONS
 ;
@@ -131,14 +133,14 @@ ENDIF
 ;-------------------------------------------------------------------------------------
 ; Gets the pointer to memory allocated to control at startup and stored in cbWinExtra
 ; adds the offset to property to this pointer and fetches value at this location and
-; returns it in eax.
+; returns it in rax.
 ; Properties are defined as constants, which are used as offsets in memory to the 
 ; data alloc'd
-; for example: @MouseOver EQU 0, @SelectedState EQU 4
-; we might specify 4 in cbWndExtra and then GlobalAlloc 8 bytes of data to control at 
+; for example: @MouseOver EQU 0, @SelectedState EQU 8
+; we might specify 16 in cbWndExtra and then GlobalAlloc 16 bytes of data to control at 
 ; startup and store this pointer with SetWindowLong, hControl, 0, pMem
-; pMem is our pointer to our 8 bytes of storage, of which first four bytes (dword) is
-; used for our @MouseOver property and the next dword for @SelectedState 
+; pMem is our pointer to our 16 bytes of storage, of which first eight bytes (qword) is
+; used for our @MouseOver property and the next qword for @SelectedState 
 ; cbWndExtraOffset is usually going to be 0 for custom registered window controls
 ; and some other offset for superclassed window control
 ;-------------------------------------------------------------------------------------

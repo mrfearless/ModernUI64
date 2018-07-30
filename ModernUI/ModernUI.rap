@@ -34,7 +34,7 @@ Debug=0
 Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
 2=3,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"M:\JWASM\Include" ModernUI.asm
-3=9,O,$B\LIB.EXE *.obj /out:ModernUI.lib
+3=7,O,$B\LIB.EXE *.obj /out:ModernUI.lib
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
@@ -62,7 +62,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=23
@@ -86,12 +86,12 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=16029694
+PTimer=18192570
 [Collapse]
-1=8256,8388608,1052672
+1=8256,,1052672
 2=
 [Size]
-1=0,0,0,0,37606
+1=0,0,0,0,2376
 2=0,0,0,0,4497
 [GroupExpand]
 GroupExpand=1,0,0,0
@@ -113,4 +113,5 @@ GroupExpand=1,0,0,0
 1=
 0=
 [Find]
-1="ImageHeight"
+1="dw"
+2="ImageHeight"
