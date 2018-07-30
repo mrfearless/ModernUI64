@@ -33,11 +33,11 @@ Debug=0
 [MakeDef]
 Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
-2=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
+2=3,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
 3=7,O,$B\LIB.EXE,3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
@@ -63,8 +63,9 @@ AutoLoad=2,5,1
 2=
 1=
 [Find]
-1="icoMUICheckboxEmpty"
-2="eax"
+1="dq"
+2="icoMUICheckboxEmpty"
+3="eax"
 [VersionControl]
 Settings=1278
 Milestones=129
@@ -75,7 +76,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2017
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=29
@@ -99,14 +100,14 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=8396801
+PTimer=8522444
 [Collapse]
-1=527881,1073774596,671744,1761608192,1
+1=3073,,671744,553648128,
 2=
 5=
 [Size]
-1=0,0,0,0,677
-2=0,0,0,0,3329
+1=0,0,0,0,50173
+2=0,0,0,0,4672
 5=0,0,0,0,3169
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0

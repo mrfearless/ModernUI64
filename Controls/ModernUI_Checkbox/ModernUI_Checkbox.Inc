@@ -34,14 +34,14 @@
 ; ModernUI_Checkbox Prototypes
 ;--------------------------------------------------------------------------------------------------------------------------------------
 MUICheckboxRegister		        PROTO																	; Use 'ModernUI_Checkbox' as class in RadASM custom class control
-MUICheckboxCreate		        PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD	; hWndParent, lpszText, xpos, ypos, dqWidth, dqHeight, dqResourceID, dqStyle
-MUICheckboxSetProperty	        PROTO :QWORD, :QWORD, :QWORD											; hModernUI_Checkbox, dqProperty, dqPropertyValue
-MUICheckboxGetProperty	        PROTO :QWORD, :QWORD													; hModernUI_Checkbox, dqProperty
+MUICheckboxCreate		        PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD	; hWndParent, lpszText, xpos, ypos, qwWidth, qwHeight, qwResourceID, qwStyle
+MUICheckboxSetProperty	        PROTO :QWORD, :QWORD, :QWORD											; hModernUI_Checkbox, qwProperty, qwPropertyValue
+MUICheckboxGetProperty	        PROTO :QWORD, :QWORD													; hModernUI_Checkbox, qwProperty
 MUICheckboxGetState             PROTO :QWORD                                                            ; hModernUI_Checkbox
 MUICheckboxSetState             PROTO :QWORD, :QWORD                                                    ; hModernUI_Checkbox, bState
 
-MUICheckboxLoadImages           PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD    ; hModernUI_Checkbox, dqImageType, dqResIDImage, dqResIDImageAlt, dqResIDImageSel, dqResIDImageSelAlt, dqResIDImageDisabled, dqResIDImageDisabledSel
-MUICheckboxSetImages            PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD    ; hModernUI_Checkbox, dqImageType, hImage, hImageAlt, hImageSel, hImageSelAlt, hImageDisabled, hImageDisabledSel
+MUICheckboxLoadImages           PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD    ; hModernUI_Checkbox, qwImageType, qwResIDImage, qwResIDImageAlt, qwResIDImageSel, qwResIDImageSelAlt, qwResIDImageDisabled, qwResIDImageDisabledSel
+MUICheckboxSetImages            PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD    ; hModernUI_Checkbox, qwImageType, hImage, hImageAlt, hImageSel, hImageSelAlt, hImageDisabled, hImageDisabledSel
 
 
 ;--------------------------------------------------------------------------------------------------------------------------------------
@@ -49,21 +49,21 @@ MUICheckboxSetImages            PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :Q
 ;--------------------------------------------------------------------------------------------------------------------------------------
 IFNDEF MUI_CHECKBOX_PROPERTIES
 MUI_CHECKBOX_PROPERTIES         STRUCT
-    dqTextFont                  DQ ?       ; hFont
-    dqTextColor                 DQ ?       ; Colorref
-    dqTextColorAlt              DQ ?       ; Colorref
-    dqTextColorSel              DQ ?       ; Colorref
-    dqTextColorSelAlt           DQ ?       ; Colorref
-    dqTextColorDisabled         DQ ?       ; Colorref
-    dqBackColor                 DQ ?       ; Colorref
-    dqImageType                 DQ ?       ; image type
-    dqImage                     DQ ?       ; hImage for empty checkbox
-    dqImageAlt                  DQ ?       ; hImage for empty checkbox when mouse moves over checkbox
-    dqImageSel                  DQ ?       ; hImage for checkbox with checkmark
-    dqImageSelAlt               DQ ?       ; hImage for checkbox with checkmark when mouse moves over checkbox
-    dqImageDisabled             DQ ?       ; hImage for disabled empty checkbox
-    dqImageDisabledSel          DQ ?       ; hImage for disabled checkbox with checkmark
-    dqCheckboxDllInstance       DQ ?
+    qwTextFont                  DQ ?       ; hFont
+    qwTextColor                 DQ ?       ; Colorref
+    qwTextColorAlt              DQ ?       ; Colorref
+    qwTextColorSel              DQ ?       ; Colorref
+    qwTextColorSelAlt           DQ ?       ; Colorref
+    qwTextColorDisabled         DQ ?       ; Colorref
+    qwBackColor                 DQ ?       ; Colorref
+    qwImageType                 DQ ?       ; image type
+    qwImage                     DQ ?       ; hImage for empty checkbox
+    qwImageAlt                  DQ ?       ; hImage for empty checkbox when mouse moves over checkbox
+    qwImageSel                  DQ ?       ; hImage for checkbox with checkmark
+    qwImageSelAlt               DQ ?       ; hImage for checkbox with checkmark when mouse moves over checkbox
+    qwImageDisabled             DQ ?       ; hImage for disabled empty checkbox
+    qwImageDisabledSel          DQ ?       ; hImage for disabled checkbox with checkmark
+    qwCheckboxDllInstance       DQ ?
 MUI_CHECKBOX_PROPERTIES			ENDS
 ENDIF
 
