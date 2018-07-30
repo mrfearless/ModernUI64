@@ -36,11 +36,11 @@ Debug=0
 [MakeDef]
 Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
-2=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
-3=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /MACHINE:X64 /LIBPATH:"$L\x64" /OUT:"$5",3,4
+2=3,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
+3=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /MACHINE:X64 /LIBPATH:"$L" /OUT:"$5",3,4
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
@@ -53,10 +53,10 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 1=,1,8,[*PROJECTNAME*].xml
 [StringTable]
 [VerInf]
-FV=0.0.4.3
-FileVersion=0.0.4.3
-PV=0.0.4.3
-ProductVersion=0.0.4.3
+FV=0.0.4.4
+FileVersion=0.0.4.4
+PV=0.0.4.4
+ProductVersion=0.0.4.4
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -86,13 +86,13 @@ AutoLoad=2,1,4
 Settings=1279
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=5
+MilestoneEveryCurrent=6
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=24
@@ -116,14 +116,14 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=12119875
+PTimer=12311133
 [Collapse]
 1=
 2=
 [Size]
 1=0,0,0,0,3569
 4=0,0,0,0
-2=0,0,0,0,1394
+2=0,0,0,0,297
 [GroupExpand]
 GroupExpand=1,0,1,0
 [BookMark]
