@@ -1,5 +1,5 @@
 [Project]
-Assembler=JWasm
+Assembler=UASM64
 Type=LIB64 Project
 Description=ModernUI_ProgressBar
 Backup=$P\Bak\
@@ -7,8 +7,8 @@ Group=1
 GroupExpand=1
 Debug=0
 [Files]
-1=ModernUI_ProgressBar.Asm
-2=ModernUI_ProgressBar.Inc
+1=ModernUI_ProgressBar.asm
+2=ModernUI_ProgressBar.inc
 3=Notes.txt
 4=Distribution\Readme.txt
 [MakeFiles]
@@ -71,7 +71,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=12
@@ -95,13 +95,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=2443257
+PTimer=2465815
 [Collapse]
 1=,
 2=
 [Size]
-1=0,0,0,0,20291
-2=0,0,0,0,2578
+1=0,0,0,0,600
+2=0,0,0,0,1956
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0
 [BookMark]

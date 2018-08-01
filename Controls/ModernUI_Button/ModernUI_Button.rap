@@ -1,5 +1,5 @@
 [Project]
-Assembler=JWasm
+Assembler=UASM64
 Type=LIB64 Project
 Description=ModernUI_Button
 Backup=$P\Bak\
@@ -7,8 +7,8 @@ Group=1
 GroupExpand=1
 Debug=0
 [Files]
-1=ModernUI_Button.Asm
-2=ModernUI_Button.Inc
+1=ModernUI_Button.asm
+2=ModernUI_Button.inc
 3=Notes.txt
 4=Distribution\Readme.txt
 [MakeFiles]
@@ -68,7 +68,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=27
@@ -92,7 +92,7 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=25917649
+PTimer=25934449
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0
 [BookMark]
@@ -115,7 +115,7 @@ GroupExpand=1,1,1,0,0,0
 3=
 [Size]
 1=0,0,0,0,108489
-2=0,0,0,0,14500
+2=0,0,0,0,14745
 4=0,0,0,0,366
 3=0,0,0,0,0
 [Find]

@@ -1,5 +1,5 @@
 [Project]
-Assembler=JWasm
+Assembler=UASM64
 Type=LIB64 Project
 Description=ModernUI_Checkbox
 Backup=$P\Bak\
@@ -7,8 +7,8 @@ Group=1
 GroupExpand=1
 Debug=0
 [Files]
-1=ModernUI_Checkbox.Asm
-2=ModernUI_Checkbox.Inc
+1=ModernUI_Checkbox.asm
+2=ModernUI_Checkbox.inc
 3=Notes.txt
 4=Distribution\Readme.txt
 5=ModernUI_Checkbox_Icons.asm
@@ -77,7 +77,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2017
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=29
@@ -101,7 +101,7 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=8597761
+PTimer=8603299
 [Collapse]
 1=3073,,524288,536870912,
 2=

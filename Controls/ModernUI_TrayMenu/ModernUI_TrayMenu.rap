@@ -7,8 +7,8 @@ Group=1
 GroupExpand=1
 Debug=0
 [Files]
-1=ModernUI_TrayMenu.Asm
-2=ModernUI_TrayMenu.Inc
+1=ModernUI_TrayMenu.asm
+2=ModernUI_TrayMenu.inc
 3=Notes.txt
 4=Distribution\Readme.txt
 [MakeFiles]
@@ -68,7 +68,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2017
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=16
@@ -92,13 +92,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=12391644
+PTimer=12534759
 [Collapse]
 2=
 1=,4096,67371280,2097152,16777232
 [Size]
 2=0,0,0,0,4428
-1=0,0,0,0,53576
+1=0,0,0,0,14069
 [GroupExpand]
 GroupExpand=1,0,0,0,0,0
 [BookMark]
