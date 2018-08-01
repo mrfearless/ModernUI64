@@ -1731,6 +1731,8 @@ _MUI_ApplyMUIStyleToDialog PROC FRAME hWin:QWORD, qwDropShadow:QWORD
 	    Invoke SetMenu, hWin, NULL
 	.ENDIF
 	
+	Invoke SetWindowPos, hWin, NULL, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_FRAMECHANGED
+	
     ret
 
 _MUI_ApplyMUIStyleToDialog ENDP

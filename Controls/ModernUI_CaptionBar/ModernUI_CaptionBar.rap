@@ -1,5 +1,5 @@
 [Project]
-Assembler=JWasm
+Assembler=UASM64
 Type=LIB64 Project
 Description=ModernUI_CaptionBar
 Backup=$P\Bak\
@@ -7,8 +7,8 @@ Group=1
 GroupExpand=1
 Debug=0
 [Files]
-1=ModernUI_CaptionBar.Asm
-2=ModernUI_CaptionBar.Inc
+1=ModernUI_CaptionBar.asm
+2=ModernUI_CaptionBar.inc
 3=Notes.txt
 4=Distribution\Readme.txt
 [MakeFiles]
@@ -82,7 +82,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=23
@@ -106,13 +106,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=207537959
+PTimer=207711868
 [Collapse]
-1=16779392,262272,16777256,525312,540800,2
+1=16779400,128,16777256,525312,540800,2
 2=
 [Size]
-1=0,0,0,0,75126
-2=0,0,0,0,7016
+1=0,0,0,0,64644
+2=0,0,0,0,3079
 [GroupExpand]
 GroupExpand=1,0,1,0,0,0
 [BookMark]
