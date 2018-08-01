@@ -7,8 +7,8 @@ Group=1
 GroupExpand=1
 Debug=0
 [Files]
-1=ModernUI.Asm
-2=ModernUI.Inc
+1=ModernUI.asm
+2=ModernUI.inc
 [MakeFiles]
 0=ModernUI.rap
 1=ModernUI.rc
@@ -62,7 +62,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=23
@@ -86,13 +86,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=18192570
+PTimer=19773905
 [Collapse]
-1=8256,,1052672
+1=67641408,8650786,716161026,
 2=
 [Size]
-1=0,0,0,0,2376
-2=0,0,0,0,4497
+1=0,0,0,0,3459
+2=0,0,0,0,4685
 [GroupExpand]
 GroupExpand=1,0,0,0
 [BookMark]

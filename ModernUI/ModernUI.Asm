@@ -64,8 +64,52 @@ _MUISetProperty                  PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hContr
 ;--------------------------------------------------------------------------------------------------------------------------------------
 ; Structures for internal use
 ;--------------------------------------------------------------------------------------------------------------------------------------
+IFNDEF CURSORDIR
+CURSORDIR           STRUCT 8
+    idReserved      WORD ?
+    idType          WORD ?
+    idCount         WORD ?
+CURSORDIR           ENDS
+ENDIF
 
+IFNDEF CURSORDIRENTRY
+CURSORDIRENTRY      STRUCT 8
+    bWidth          BYTE ?  
+    bHeight         BYTE ?  
+    bColorCount     BYTE ? 
+    bReserved       BYTE ? 
+    XHotspot        WORD ?
+    YHotspot        WORD ?
+    dwBytesInRes    DWORD ?
+    pImageData      DWORD ?
+CURSORDIRENTRY      ENDS
+ENDIF
 
+IFNDEF BITMAPINFOHEADER
+BITMAPINFOHEADER	STRUCT 8
+biSize	            DWORD	?
+biWidth	            SDWORD	?
+biHeight	        SDWORD	?
+biPlanes	        WORD	?
+biBitCount	        WORD	?
+biCompression	    DWORD	?
+biSizeImage	        DWORD	?
+biXPelsPerMeter	    SDWORD	?
+biYPelsPerMeter	    SDWORD	?
+biClrUsed	        DWORD	?
+biClrImportant	    DWORD	?
+BITMAPINFOHEADER	ENDS
+ENDIF
+
+IFNDEF BITMAPFILEHEADER
+BITMAPFILEHEADER	STRUCT 8
+bfType	            WORD	?
+bfSize	            DWORD	?
+bfReserved1	        WORD	?
+bfReserved2	        WORD	?
+bfOffBits	        DWORD	?
+BITMAPFILEHEADER	ENDS
+ENDIF
 
 .CONST
 
@@ -77,6 +121,8 @@ MUI_GDIPLUS                     DQ 0 ; controls that use gdiplus check this firs
 MUI_GDIPlusToken                DQ 0
 MUI_gdipsi                      GdiplusStartupInput <1,0,0,0>
 ENDIF
+
+szMUIBitmapFromMemoryDisplayDC  DB 'DISPLAY',0
 
 .CODE
 
@@ -508,10 +554,15 @@ MUIPaintBackground PROC FRAME hWin:QWORD, qwBackcolor:QWORD, qwBorderColor:QWORD
     LOCAL hbmMem:QWORD
     LOCAL hOldBitmap:QWORD
     LOCAL hBrush:QWORD
+    LOCAL hOldBrush:QWORD    
 
-    invoke BeginPaint, hWin, addr ps
+    Invoke BeginPaint, hWin, addr ps
     mov hdc, rax
     Invoke GetClientRect, hWin, Addr rect
+    
+    ;----------------------------------------------------------
+    ; Setup Double Buffering
+    ;----------------------------------------------------------      
     Invoke CreateCompatibleDC, hdc
     mov hdcMem, rax
     Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
@@ -519,20 +570,35 @@ MUIPaintBackground PROC FRAME hWin:QWORD, qwBackcolor:QWORD, qwBorderColor:QWORD
     Invoke SelectObject, hdcMem, hbmMem
     mov hOldBitmap, rax 
 
+    ;----------------------------------------------------------
+    ; Fill background
+    ;----------------------------------------------------------
     Invoke GetStockObject, DC_BRUSH
     mov hBrush, rax
     Invoke SelectObject, hdcMem, rax
+    mov hOldBrush, rax
     Invoke SetDCBrushColor, hdcMem, dword ptr qwBackcolor
     Invoke FillRect, hdcMem, Addr rect, hBrush
-
+    
+    ;----------------------------------------------------------
+    ; Draw border if !0
+    ;----------------------------------------------------------
     .IF qwBorderColor != 0
+        .IF hOldBrush != 0
+            Invoke SelectObject, hdcMem, hOldBrush
+            Invoke DeleteObject, hOldBrush
+        .ENDIF
         Invoke GetStockObject, DC_BRUSH
         mov hBrush, rax
         Invoke SelectObject, hdcMem, rax
+        mov hOldBrush, rax
         Invoke SetDCBrushColor, hdcMem, dword ptr qwBorderColor
         Invoke FrameRect, hdcMem, Addr rect, hBrush
     .ENDIF
     
+    ;----------------------------------------------------------
+    ; BitBlt from hdcMem back to hdc
+    ;----------------------------------------------------------
     Invoke BitBlt, hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY
 
 ;    .IF dwBorderColor != 0
@@ -543,15 +609,23 @@ MUIPaintBackground PROC FRAME hWin:QWORD, qwBackcolor:QWORD, qwBorderColor:QWORD
 ;        Invoke FrameRect, hdc, Addr rect, hBrush
 ;    .ENDIF
 
+    ;----------------------------------------------------------
+    ; Cleanup
+    ;----------------------------------------------------------
+    .IF hOldBrush != 0
+        Invoke SelectObject, hdcMem, hOldBrush
+        Invoke DeleteObject, hOldBrush
+    .ENDIF     
+    .IF hBrush != 0
+        Invoke DeleteObject, hBrush
+    .ENDIF
     Invoke SelectObject, hdcMem, hbmMem
     Invoke DeleteObject, hbmMem
     Invoke DeleteDC, hdcMem
     Invoke DeleteObject, hOldBitmap
-    .IF hBrush != 0
-        Invoke DeleteObject, hBrush
-    .ENDIF
-    invoke ReleaseDC, hWin, hdc
-    invoke EndPaint, hWin, addr ps
+    Invoke ReleaseDC, hWin, hdc
+    
+    Invoke EndPaint, hWin, addr ps
     mov rax, 0
     ret
 
@@ -574,6 +648,7 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
     LOCAL hbmMemBmp:QWORD
     LOCAL hOldBitmap:QWORD
     LOCAL hBrush:QWORD
+    LOCAL hOldBrush:QWORD      
     LOCAL ImageWidth:QWORD
     LOCAL ImageHeight:QWORD
     LOCAL pGraphics:QWORD
@@ -586,9 +661,13 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
         mov pBitmap, 0
     .ENDIF
     
-    invoke BeginPaint, hWin, addr ps
+    Invoke BeginPaint, hWin, addr ps
     mov hdc, rax
     Invoke GetClientRect, hWin, Addr rect
+    
+    ;----------------------------------------------------------
+    ; Setup Double Buffering
+    ;----------------------------------------------------------       
     Invoke CreateCompatibleDC, hdc
     mov hdcMem, rax
     Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
@@ -596,16 +675,28 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
     Invoke SelectObject, hdcMem, hbmMem
     mov hOldBitmap, rax 
 
+    ;----------------------------------------------------------
+    ; Fill background
+    ;----------------------------------------------------------
     Invoke GetStockObject, DC_BRUSH
     mov hBrush, rax
     Invoke SelectObject, hdcMem, rax
+    mov hOldBrush, rax
     Invoke SetDCBrushColor, hdcMem, dword ptr qwBackcolor
     Invoke FillRect, hdcMem, Addr rect, hBrush
 
+    ;----------------------------------------------------------
+    ; Draw border if !0
+    ;----------------------------------------------------------
     .IF qwBorderColor != 0
+        .IF hOldBrush != 0
+            Invoke SelectObject, hdcMem, hOldBrush
+            Invoke DeleteObject, hOldBrush
+        .ENDIF
         Invoke GetStockObject, DC_BRUSH
         mov hBrush, rax
         Invoke SelectObject, hdcMem, rax
+        mov hOldBrush, rax
         Invoke SetDCBrushColor, hdcMem, dword ptr qwBorderColor
         Invoke FrameRect, hdcMem, Addr rect, hBrush
     .ENDIF
@@ -754,17 +845,28 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
         
     .ENDIF
     
+    ;----------------------------------------------------------
+    ; BitBlt from hdcMem back to hdc
+    ;----------------------------------------------------------
     Invoke BitBlt, hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY
 
+    ;----------------------------------------------------------
+    ; Cleanup
+    ;----------------------------------------------------------
+    .IF hOldBrush != 0
+        Invoke SelectObject, hdcMem, hOldBrush
+        Invoke DeleteObject, hOldBrush
+    .ENDIF     
+    .IF hBrush != 0
+        Invoke DeleteObject, hBrush
+    .ENDIF    
     Invoke SelectObject, hdcMem, hbmMem
     Invoke DeleteObject, hbmMem
     Invoke DeleteDC, hdcMem
     Invoke DeleteObject, hOldBitmap
-    .IF hBrush != 0
-        Invoke DeleteObject, hBrush
-    .ENDIF
-    invoke ReleaseDC, hWin, hdc
-    invoke EndPaint, hWin, addr ps
+    Invoke ReleaseDC, hWin, hdc
+    
+    Invoke EndPaint, hWin, addr ps
     mov rax, 0
     ret
 
@@ -1089,6 +1191,202 @@ MUICreateIconFromMemory PROC FRAME USES RDX pIconData:QWORD, iIcon:QWORD
 
 
 MUICreateIconFromMemory ENDP
+
+
+;--------------------------------------------------------------------------------------------------------------------
+;MUICreateCursorFromMemory
+; Creates a cursor from icon/cursor data stored in the DATA or CONST SECTION
+; (The cursor data is an CUR file stored directly in the executable)
+;
+; Parameters
+;   pCursorData = Pointer to the cursor file data
+
+;--------------------------------------------------------------------------------------------------------------------
+MUICreateCursorFromMemory PROC FRAME USES RBX pCursorData:QWORD
+    LOCAL hinstance:QWORD
+    LOCAL pCursorDirEntry:QWORD
+    LOCAL pInfoHeader:QWORD
+    LOCAL bWidth:QWORD
+    LOCAL bHeight:QWORD
+    LOCAL bColorCount:QWORD
+    LOCAL XHotspot:QWORD
+    LOCAL YHotspot:QWORD
+    LOCAL pImageData:QWORD
+    LOCAL RGBQuadSize:QWORD
+    LOCAL pXORData:QWORD
+    LOCAL pANDData:QWORD
+    LOCAL biHeight:QWORD
+    LOCAL biWidth:QWORD
+    LOCAL biBitCount:QWORD
+    LOCAL qwSizeImageXOR:QWORD
+    LOCAL qwSizeImageAND:QWORD
+    
+    mov rbx, pCursorData
+    movzx rax, word ptr [rbx].CURSORDIR.idCount
+    .IF rax == 0 || rax > 1
+        mov rax, 0
+        ret
+    .ENDIF
+
+    Invoke GetModuleHandle, NULL
+    mov hinstance, rax
+
+    mov rbx, pCursorData
+    add rbx, SIZEOF CURSORDIR
+    mov pCursorDirEntry, rbx
+    
+    movzx rax, byte ptr [rbx].CURSORDIRENTRY.bWidth
+    mov bWidth, rax
+    movzx rax, byte ptr [rbx].CURSORDIRENTRY.bHeight
+    mov bHeight, rax
+    movzx rax, byte ptr [rbx].CURSORDIRENTRY.bColorCount
+    mov bColorCount, rax
+    movzx rax, word ptr [rbx].CURSORDIRENTRY.XHotspot
+    mov XHotspot, rax
+    movzx rax, word ptr [rbx].CURSORDIRENTRY.YHotspot
+    mov YHotspot, rax
+    xor rax, rax
+    mov eax, DWORD ptr [rbx].CURSORDIRENTRY.pImageData
+    mov pImageData, rax
+    
+    mov rax, SIZEOF DWORD
+    mov rbx, bColorCount
+    mul rbx
+    mov RGBQuadSize, rax
+    
+    mov rbx, pCursorData
+    add rbx, pImageData
+    mov pInfoHeader, rbx
+    
+    xor rax, rax
+    mov eax, sdword ptr [rbx].BITMAPINFOHEADER.biWidth
+    mov biWidth, rax
+    xor rax, rax
+    mov eax, sdword ptr [rbx].BITMAPINFOHEADER.biHeight
+    mov biHeight, rax
+    movzx rax, word ptr [rbx].BITMAPINFOHEADER.biBitCount
+    mov biBitCount, rax
+    
+    .IF rax == 1 ; BI_MONOCHROME
+        mov rax, biWidth
+        mov rbx, biHeight
+        shr rbx, 1 ; div by 2
+        mul rbx
+        shr rax, 3 ; div by 8
+        mov qwSizeImageXOR, rax
+        mov qwSizeImageAND, rax
+
+    .ELSEIF rax == 4 ; BI_4_BIT
+        mov rax, biWidth
+        mov rbx, biHeight
+        shr rbx, 1 ; div by 2
+        mul rbx
+        shr rax, 1 ; div by 2
+        mov qwSizeImageXOR, rax
+        
+        mov rax, biWidth
+        mov rbx, biHeight
+        shr rbx, 1 ; div by 2
+        mul rbx
+        shr rax, 3 ; div by 8
+        mov qwSizeImageAND, rax
+
+    .ELSEIF rax == 8 ; BI_8_BIT
+        mov rax, biWidth
+        mov rbx, biHeight
+        shr rbx, 1 ; div by 2
+        mul rbx
+        mov qwSizeImageXOR, rax
+        
+        mov rax, biWidth
+        mov rbx, biHeight
+        shr rbx, 1 ; div by 2
+        mul rbx
+        shr rax, 3 ; div by 8
+        mov qwSizeImageAND, rax
+
+    .ELSEIF rax == 0
+        mov rax, biWidth
+        mov rbx, biHeight
+        shr rbx, 1 ; div by 2
+        mul rbx
+        mov rbx, 4
+        mul rbx
+        mov qwSizeImageXOR, rax
+
+        mov rax, biWidth
+        mov rbx, biHeight
+        shr rbx, 1 ; div by 2
+        mul rbx
+        shr rax, 3 ; div by 8
+        mov qwSizeImageAND, rax
+
+    .ELSE ; default
+        mov rax, biWidth
+        mov rbx, biHeight
+        shr rbx, 1 ; div by 2
+        mul rbx
+        mov rbx, biBitCount
+        shr rbx, 3 ; div by 8
+        mul rbx
+        mov qwSizeImageXOR, rax
+        
+        mov rax, biWidth
+        mov rbx, biHeight
+        shr rbx, 1 ; div by 2
+        mul rbx
+        shr rax, 3 ; div by 8
+        mov qwSizeImageAND, rax
+
+    .ENDIF
+
+    mov rbx, pCursorData
+    add rbx, pImageData
+    add rbx, SIZEOF BITMAPINFOHEADER
+    .IF biBitCount == 1 || biBitCount == 4 || biBitCount == 8
+        add rbx, RGBQuadSize
+    .ENDIF
+    mov pXORData, rbx
+    add rbx, qwSizeImageXOR
+    mov pANDData, rbx
+
+    Invoke CreateCursor, hinstance, dword ptr XHotspot, dword ptr YHotspot, dword ptr bWidth, dword ptr bHeight, pANDData, pXORData
+
+    ret
+MUICreateCursorFromMemory ENDP
+
+
+;-------------------------------------------------------------------------------------
+; MUICreateBitmapFromMemory
+;
+; http://www.masmforum.com/board/index.php?topic=16267.msg134453#msg134453
+;-------------------------------------------------------------------------------------
+MUICreateBitmapFromMemory PROC FRAME USES RCX RDX pBitmapData:QWORD
+    LOCAL hDC:QWORD
+    LOCAL hBmp:QWORD
+    LOCAL lpInfoHeader:QWORD
+    LOCAL lpInitBits:QWORD
+
+    ;Invoke GetDC,hWnd
+    Invoke CreateDC, Addr szMUIBitmapFromMemoryDisplayDC, NULL, NULL, NULL
+    test    rax,rax
+    jz      @f
+    mov     hDC,rax
+    mov     rdx,pBitmapData
+    lea     rcx,[rdx + SIZEOF BITMAPFILEHEADER]  ; start of the BITMAPINFOHEADER header
+    mov lpInfoHeader, rcx
+    xor rax, rax
+    mov     eax, dword ptr BITMAPFILEHEADER.bfOffBits[rdx]
+    add     rdx,rax
+    mov lpInitBits, rdx
+    Invoke  CreateDIBitmap, hDC, lpInfoHeader, CBM_INIT, lpInitBits, lpInfoHeader, DIB_RGB_COLORS
+    mov     hBmp,rax
+    ;Invoke  ReleaseDC,hWnd,hDC
+    Invoke DeleteDC, hDC
+    mov     rax,hBmp
+@@:
+    ret
+MUICreateBitmapFromMemory ENDP
 
 
 ;-------------------------------------------------------------------------------------
