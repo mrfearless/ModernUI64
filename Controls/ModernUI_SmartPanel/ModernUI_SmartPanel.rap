@@ -1,5 +1,5 @@
 [Project]
-Assembler=JWasm
+Assembler=UASM64
 Type=LIB64 Project
 Description=ModernUI_SmartPanel
 Backup=$P\Bak\
@@ -7,8 +7,8 @@ Group=1
 GroupExpand=1
 Debug=0
 [Files]
-1=ModernUI_SmartPanel.Asm
-2=ModernUI_SmartPanel.Inc
+1=ModernUI_SmartPanel.asm
+2=ModernUI_SmartPanel.inc
 3=Notes.txt
 4=Distribution\Readme.txt
 [MakeFiles]
@@ -59,9 +59,11 @@ Group=Distribution,Modules,Assembly,Resources,Misc
 [AutoLoad]
 AutoLoad=2,1
 [Find]
-1="dw"
-2="dq"
-3="DWORD"
+1="@SmartPanellpdwIsDlgMsgVar"
+2="MUIGetExtProperty"
+3="dw"
+4="dq"
+5="DWORD"
 [RADebugBP]
 2=
 1=
@@ -75,7 +77,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=27
@@ -99,13 +101,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=2818814
+PTimer=4130111
 [Collapse]
-1=,270532608,128
+1=128,164416,121643012
 2=
 [Size]
-1=0,0,0,0,25796
-2=0,0,0,0,3284
+1=0,0,0,0,44153
+2=0,0,0,0,3029
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0
 [BookMark]

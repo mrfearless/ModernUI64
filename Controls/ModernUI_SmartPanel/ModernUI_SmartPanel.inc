@@ -40,6 +40,8 @@ MUISmartPanelGetProperty	   PROTO :QWORD, :QWORD													   ; hModernUI_Smar
 
 MUISmartPanelGetCurrentPanel   PROTO :QWORD                                                            ; hModernUI_SmartPanel
 MUISmartPanelSetCurrentPanel   PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_SmartPanel, PanelIndex, bNotify
+MUISmartPanelCurrentPanelIndex PROTO :QWORD                                                            ; hModernUI_SmartPanel. Returns PanelIndex in rax
+
 MUISmartPanelNextPanel         PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, bNotify
 MUISmartPanelPrevPanel         PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, bNotify
 MUISmartPanelSetIsDlgMsgVar    PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, Addr lpqwVar
@@ -93,10 +95,15 @@ MUISPS_SLIDEPANELS_FAST         EQU 04h
 MUISPS_SLIDEPANELS_VFAST        EQU 08h
 MUISPS_SLIDEPANELS_INSTANT      EQU MUISPS_NORMAL
 MUISPS_SPS_WRAPAROUND           EQU 10h ; for next/prev and showcase, if at end, moves to the right and starts again, otherwise if not specified, at last panel, scrolls left all the way back to start showing all panels along the way.
+MUISPS_SPS_SKIPBETWEEN          EQU 20h ; skips any in between panels, just moves from one to another.
+
 ;--------------------------------------------------------------------------------------------------------------------------------------
 ; ModernUI_SmartPanel Properties: Use with MUIModernUI_SmartPanelSetProperty / MUIModernUI_SmartPanelGetProperty or MUI_SETPROPERTY / MUI_GETPROPERTY msgs
 ;--------------------------------------------------------------------------------------------------------------------------------------
-@SmartPanelDllInstance          EQU 0
+@SmartPanelPanelsColor          EQU 0   ; RGBCOLOR for panel's background. -1 = ignore, use system default. Default value is -1
+@SmartPanelBorderColor          EQU 8   ; RGBCOLOR for border color of MUISmartPanel. -1 = none. Default value is -1
+@SmartPanelDllInstance          EQU 16  ; reserved for future use
+@SmartPanelParam                EQU 24  ; user custom data
 
 
 
