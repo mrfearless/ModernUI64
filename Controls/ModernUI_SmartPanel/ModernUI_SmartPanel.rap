@@ -39,11 +39,11 @@ Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
-12=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
+12=3,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
 13=7,O,$B\LINK -lib *.obj /out:"$9"
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-16=*.obj,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+16=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 17=0,0,"$E\x64\x64dbg",$.exe
 [Resource]
 [StringTable]
@@ -57,13 +57,17 @@ Group=Distribution,Modules,Assembly,Resources,Misc
 4=1
 5=2
 [AutoLoad]
-AutoLoad=2,1
+AutoLoad=1,2
 [Find]
-1="@SmartPanellpdwIsDlgMsgVar"
-2="MUIGetExtProperty"
-3="dw"
-4="dq"
-5="DWORD"
+1="dw"
+2="SetWindowLongPtr"
+3="SetWindowLong"
+4="GetWindowLongPtr"
+5="GetWindowLong"
+6="@SmartPanellpdwIsDlgMsgVar"
+7="MUIGetExtProperty"
+8="dq"
+9="DWORD"
 [RADebugBP]
 2=
 1=
@@ -77,7 +81,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=5
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=27
@@ -101,12 +105,12 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=4191295
+PTimer=5976883
 [Collapse]
-1=128,164416,121643012
+1=2097584,805470280,122233924
 2=
 [Size]
-1=0,0,0,0,17128
+1=0,0,0,0,601
 2=0,0,0,0,3029
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0

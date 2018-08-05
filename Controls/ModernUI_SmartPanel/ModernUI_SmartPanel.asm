@@ -28,10 +28,10 @@ WINVER equ 0501h
 ;
 ;IFDEF DEBUG64
 ;    PRESERVEXMMREGS equ 1
-;    includelib \JWasm\lib\x64\Debug64.lib
+;    includelib \UASM\lib\x64\Debug64.lib
 ;    DBG64LIB equ 1
-;    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
-;    include \JWasm\include\debug64.inc
+;    DEBUGEXE textequ <'M:\UASM\bin\DbgWin.exe'>
+;    include \UASM\include\debug64.inc
 ;    .DATA
 ;    RDBG_DbgWin	DB DEBUGEXE,0
 ;    .CODE
@@ -302,66 +302,64 @@ _MUI_SmartPanelWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, 
     
     Invoke DefWindowProc, hWin, uMsg, wParam, lParam
     ret
-
 _MUI_SmartPanelWndProc ENDP
 
 
 ;-------------------------------------------------------------------------------------
 ; _MUI_SmartPanelInit - set initial default values
 ;-------------------------------------------------------------------------------------
-_MUI_SmartPanelInit PROC FRAME hControl:QWORD
+_MUI_SmartPanelInit PROC FRAME hWin:QWORD
     LOCAL qwStyle:QWORD
     LOCAL qwExStyle:QWORD
     
     ; get style and check it is our default at least
-    Invoke GetWindowLongPtr, hControl, GWL_STYLE
+    Invoke GetWindowLongPtr, hWin, GWL_STYLE
     mov qwStyle, rax
     and rax, DS_CONTROL or WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
     .IF rax != DS_CONTROL or WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
         mov rax, qwStyle
         or rax, DS_CONTROL or WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
         mov qwStyle, rax
-        Invoke SetWindowLongPtr, hControl, GWL_STYLE, qwStyle
+        Invoke SetWindowLongPtr, hWin, GWL_STYLE, qwStyle
     .ENDIF
     
-    Invoke GetWindowLongPtr, hControl, GWL_EXSTYLE
+    Invoke GetWindowLongPtr, hWin, GWL_EXSTYLE
     mov qwExStyle, rax
     and rax, WS_EX_CONTROLPARENT
     .IF rax != WS_EX_CONTROLPARENT
         mov rax, qwExStyle
         or rax, WS_EX_CONTROLPARENT
         mov qwExStyle, rax
-        Invoke SetWindowLongPtr, hControl, GWL_EXSTYLE, qwExStyle
+        Invoke SetWindowLongPtr, hWin, GWL_EXSTYLE, qwExStyle
     .ENDIF
     ;PrintDec dwStyle
     
     ; Set default initial internal property values     
-    Invoke MUISetIntProperty, hControl, @SmartPanelCurrentPanel, -1
-    Invoke MUISetIntProperty, hControl, @SmartPanelTotalPanels, 0
-    Invoke MUISetIntProperty, hControl, @SmartPanelPanelsArray, 0
-    Invoke MUISetIntProperty, hControl, @SmartPanellpqwIsDlgMsgVar, 0
+    Invoke MUISetIntProperty, hWin, @SmartPanelCurrentPanel, -1
+    Invoke MUISetIntProperty, hWin, @SmartPanelTotalPanels, 0
+    Invoke MUISetIntProperty, hWin, @SmartPanelPanelsArray, 0
+    Invoke MUISetIntProperty, hWin, @SmartPanellpqwIsDlgMsgVar, 0
     
     ; Set default initial external property values
-    Invoke MUISetExtProperty, hControl, @SmartPanelPanelsColor, -1
-    Invoke MUISetExtProperty, hControl, @SmartPanelBorderColor, -1
-    Invoke MUISetExtProperty, hControl, @SmartPanelDllInstance, 0
+    Invoke MUISetExtProperty, hWin, @SmartPanelPanelsColor, -1
+    Invoke MUISetExtProperty, hWin, @SmartPanelBorderColor, -1
+    Invoke MUISetExtProperty, hWin, @SmartPanelDllInstance, 0
 
     ret
-
 _MUI_SmartPanelInit ENDP
 
 
 ;-------------------------------------------------------------------------------------
 ; _MUI_SmartPanelCleanup - cleanup a few things before control is destroyed
 ;-------------------------------------------------------------------------------------
-_MUI_SmartPanelCleanup PROC FRAME hControl:QWORD
+_MUI_SmartPanelCleanup PROC FRAME hWin:QWORD
     LOCAL TotalItems:QWORD
 
-    Invoke MUIGetIntProperty, hControl, @SmartPanelTotalPanels
+    Invoke MUIGetIntProperty, hWin, @SmartPanelTotalPanels
     mov TotalItems, rax
 
     .IF TotalItems != 0
-        Invoke MUIGetIntProperty, hControl, @SmartPanelPanelsArray
+        Invoke MUIGetIntProperty, hWin, @SmartPanelPanelsArray
         ;mov pItemData, eax
         .IF rax != NULL
             Invoke GlobalFree, rax
@@ -625,7 +623,7 @@ MUISmartPanelSetCurrentPanel PROC FRAME USES RBX hControl:QWORD, NewSelection:QW
         
         
         ; call slide panels function if specified
-        Invoke GetWindowLong, hControl, GWL_STYLE
+        Invoke GetWindowLongPtr, hControl, GWL_STYLE
         ;mov dwStyle, eax
         AND rax, MUISPS_SLIDEPANELS_SLOW + MUISPS_SLIDEPANELS_NORMAL + MUISPS_SLIDEPANELS_FAST + MUISPS_SLIDEPANELS_VFAST
         .IF rax == MUISPS_SLIDEPANELS_SLOW
@@ -681,7 +679,7 @@ MUISmartPanelSetCurrentPanel ENDP
 ;-------------------------------------------------------------------------------------
 ; _MUI_SmartPanelNavNotify
 ;-------------------------------------------------------------------------------------
-_MUI_SmartPanelNavNotify PROC FRAME USES RBX hControl:QWORD, OldSelection:QWORD, NewSelection:QWORD
+_MUI_SmartPanelNavNotify PROC FRAME USES RBX hWin:QWORD, OldSelection:QWORD, NewSelection:QWORD
     LOCAL pItemData:QWORD
     LOCAL pOldItemDataEntry:QWORD
     LOCAL pNewItemDataEntry:QWORD
@@ -691,15 +689,15 @@ _MUI_SmartPanelNavNotify PROC FRAME USES RBX hControl:QWORD, OldSelection:QWORD,
     LOCAL hParent:QWORD
     LOCAL idControl:QWORD
     
-    Invoke GetParent, hControl
+    Invoke GetParent, hWin
     mov hParent, rax
 
-    mov rax, hControl
+    mov rax, hWin
     mov SPNM.hdr.hwndFrom, rax
     mov rax, MUISPN_SELCHANGED
     mov SPNM.hdr.code, eax
     
-    Invoke MUIGetIntProperty, hControl, @SmartPanelPanelsArray
+    Invoke MUIGetIntProperty, hWin, @SmartPanelPanelsArray
     mov pItemData, rax
     
     mov rax, OldSelection
@@ -732,7 +730,7 @@ _MUI_SmartPanelNavNotify PROC FRAME USES RBX hControl:QWORD, OldSelection:QWORD,
     mov rax, [rbx].MUISP_ITEM.hPanel
     mov SPNM.itemNew.hPanel, rax
     
-    Invoke GetDlgCtrlID, hControl
+    Invoke GetDlgCtrlID, hWin
     mov idControl, rax
     
     Invoke GetParent, hParent
@@ -750,28 +748,28 @@ _MUI_SmartPanelNavNotify endp
 ;-------------------------------------------------------------------------------------
 ; _MUI_SmartPanelSlidePanels - SlideSpeed 0 slow, 1 fast, 2 very fast
 ;-------------------------------------------------------------------------------------
-_MUI_SmartPanelSlidePanels PROC FRAME USES RBX hControl:QWORD, OldSelection:QWORD, NewSelection:QWORD, SlideSpeed:QWORD 
+_MUI_SmartPanelSlidePanels PROC FRAME USES RBX hWin:QWORD, OldSelection:QWORD, NewSelection:QWORD, SlideSpeed:QWORD 
     LOCAL hCurrentPanel:QWORD
     LOCAL hNextPanel:QWORD
     LOCAL nPanel:QWORD
-    LOCAL dwStyle:DWORD
+    LOCAL qwStyle:QWORD
     
-    Invoke GetWindowLong, hControl, GWL_STYLE
-    mov dwStyle, eax
-    and eax, MUISPS_SPS_SKIPBETWEEN
-    .IF eax == MUISPS_SPS_SKIPBETWEEN    
+    Invoke GetWindowLongPtr, hWin, GWL_STYLE
+    mov qwStyle, rax
+    and rax, MUISPS_SPS_SKIPBETWEEN
+    .IF rax == MUISPS_SPS_SKIPBETWEEN    
         
-        Invoke _MUI_SmartPanelGetPanelHandle, hControl, OldSelection
+        Invoke _MUI_SmartPanelGetPanelHandle, hWin, OldSelection
         mov hCurrentPanel, rax
         
-        Invoke _MUI_SmartPanelGetPanelHandle, hControl, NewSelection
+        Invoke _MUI_SmartPanelGetPanelHandle, hWin, NewSelection
         mov hNextPanel, rax
 
         mov rax, NewSelection
         .IF rax < OldSelection ; moving down = left, so slide right 
-            Invoke _MUI_SmartPanelSlidePanelsRight, hControl, hCurrentPanel, hNextPanel, SlideSpeed
+            Invoke _MUI_SmartPanelSlidePanelsRight, hWin, hCurrentPanel, hNextPanel, SlideSpeed
         .ELSE ; moving up = right, so slide left   
-            Invoke _MUI_SmartPanelSlidePanelsLeft, hControl, hCurrentPanel, hNextPanel, SlideSpeed
+            Invoke _MUI_SmartPanelSlidePanelsLeft, hWin, hCurrentPanel, hNextPanel, SlideSpeed
         .ENDIF        
 
     .ELSE
@@ -783,14 +781,14 @@ _MUI_SmartPanelSlidePanels PROC FRAME USES RBX hControl:QWORD, OldSelection:QWOR
             mov nPanel, rax
             .WHILE rax > NewSelection
         
-                Invoke _MUI_SmartPanelGetPanelHandle, hControl, nPanel
+                Invoke _MUI_SmartPanelGetPanelHandle, hWin, nPanel
                 mov hCurrentPanel, rax
                 mov rax, nPanel
                 dec rax
-                Invoke _MUI_SmartPanelGetPanelHandle, hControl, rax
+                Invoke _MUI_SmartPanelGetPanelHandle, hWin, rax
                 mov hNextPanel, rax
                 
-                Invoke _MUI_SmartPanelSlidePanelsRight, hControl, hCurrentPanel, hNextPanel, SlideSpeed
+                Invoke _MUI_SmartPanelSlidePanelsRight, hWin, hCurrentPanel, hNextPanel, SlideSpeed
                 dec nPanel
                 mov rax, nPanel
             .ENDW
@@ -801,14 +799,14 @@ _MUI_SmartPanelSlidePanels PROC FRAME USES RBX hControl:QWORD, OldSelection:QWOR
             mov nPanel, rax
             .WHILE rax < NewSelection
         
-                Invoke _MUI_SmartPanelGetPanelHandle, hControl, nPanel
+                Invoke _MUI_SmartPanelGetPanelHandle, hWin, nPanel
                 mov hCurrentPanel, rax
                 mov rax, nPanel
                 inc rax
-                Invoke _MUI_SmartPanelGetPanelHandle, hControl, rax
+                Invoke _MUI_SmartPanelGetPanelHandle, hWin, rax
                 mov hNextPanel, rax
                 
-                Invoke _MUI_SmartPanelSlidePanelsLeft, hControl, hCurrentPanel, hNextPanel, SlideSpeed
+                Invoke _MUI_SmartPanelSlidePanelsLeft, hWin, hCurrentPanel, hNextPanel, SlideSpeed
                 inc nPanel
                 mov rax, nPanel
             .ENDW
@@ -824,22 +822,23 @@ _MUI_SmartPanelSlidePanels endp
 ;-------------------------------------------------------------------------------------
 ; _MUI_SmartPanelSlidePanelsLeft - Slides current and next panel left till we show next panel only
 ;-------------------------------------------------------------------------------------
-_MUI_SmartPanelSlidePanelsLeft PROC FRAME hControl:QWORD, hCurrentPanel:QWORD, hNextPanel:QWORD, SlideSpeed:QWORD
+_MUI_SmartPanelSlidePanelsLeft PROC FRAME hWin:QWORD, hCurrentPanel:QWORD, hNextPanel:QWORD, SlideSpeed:QWORD
     LOCAL rect:RECT
-    LOCAL xposnextpanel:SQWORD
-    LOCAL xposcurrentpanel:SQWORD    
+    LOCAL xposnextpanel:SDWORD
+    LOCAL xposcurrentpanel:SDWORD    
     
-    IFDEF DEBUG32
+    IFDEF DEBUG64
     PrintText 'SP_SlidePanelsLeft'
     ENDIF
-    Invoke GetClientRect, hControl, Addr rect
+    Invoke GetClientRect, hWin, Addr rect
+    xor rax, rax
     mov eax, rect.right
-    mov xposnextpanel, rax
+    mov xposnextpanel, eax
     mov xposcurrentpanel, 1
     Invoke SetWindowPos, hNextPanel, HWND_TOP, xposnextpanel, 0, 0, 0, SWP_NOSIZE + SWP_NOZORDER + SWP_NOCOPYBITS +SWP_SHOWWINDOW + SWP_NOSENDCHANGING+ SWP_NOACTIVATE ;+SWP_NOCOPYBITS +
 
-    mov rax, xposnextpanel
-    .WHILE sqword ptr rax > 0
+    mov eax, xposnextpanel
+    .WHILE sdword ptr eax > 0
         Invoke SetWindowPos, hNextPanel, HWND_TOP, xposnextpanel, 0, 0, 0, SWP_NOSIZE + SWP_NOZORDER  + SWP_NOSENDCHANGING + SWP_NOACTIVATE;+ SWP_NOMOVE +SWP_NOCOPYBITS
         Invoke SetWindowPos, hCurrentPanel, HWND_TOP, xposcurrentpanel, 0, 0, 0, SWP_NOSIZE + SWP_NOZORDER  + SWP_NOSENDCHANGING + SWP_NOACTIVATE;+ SWP_NOMOVE +SWP_NOCOPYBITS
         ;Invoke InvalidateRect, hNextPanel, NULL, TRUE
@@ -878,7 +877,7 @@ _MUI_SmartPanelSlidePanelsLeft PROC FRAME hControl:QWORD, hCurrentPanel:QWORD, h
         ;dec xposcurrentpanel
         ;dec xposnextpanel
         ;PrintDec xposnextpanel
-        mov rax, xposnextpanel
+        mov eax, xposnextpanel
     .ENDW
     
     ;PrintText 'SP_SlidePanelsLeft End'
@@ -896,23 +895,23 @@ _MUI_SmartPanelSlidePanelsLeft endp
 ;-------------------------------------------------------------------------------------
 ; _MUI_SmartPanelSlidePanelsRight - Slides current and next panel right till we show next panel only
 ;-------------------------------------------------------------------------------------
-_MUI_SmartPanelSlidePanelsRight PROC FRAME hControl:QWORD, hCurrentPanel:QWORD, hNextPanel:QWORD, SlideSpeed:QWORD
+_MUI_SmartPanelSlidePanelsRight PROC FRAME hWin:QWORD, hCurrentPanel:QWORD, hNextPanel:QWORD, SlideSpeed:QWORD
     LOCAL rect:RECT
-    LOCAL xposnextpanel:SQWORD
-    LOCAL xposcurrentpanel:SQWORD
+    LOCAL xposnextpanel:SDWORD
+    LOCAL xposcurrentpanel:SDWORD
     
-    IFDEF DEBUG32
+    IFDEF DEBUG64
     PrintText 'SP_SlidePanelsRight'
     ENDIF
-    Invoke GetClientRect, hControl, Addr rect
-    mov rax, 0
+    Invoke GetClientRect, hWin, Addr rect
+    xor rax, rax
     sub eax, rect.right ;sdword ptr sdword ptr 
-    mov xposnextpanel, rax ;-570
+    mov xposnextpanel, eax ;-570
     mov xposcurrentpanel, 1
     Invoke SetWindowPos, hNextPanel, HWND_TOP, xposnextpanel, 0, 0, 0, SWP_NOSIZE + SWP_NOZORDER + SWP_NOCOPYBITS +SWP_SHOWWINDOW + SWP_NOSENDCHANGING+ SWP_NOACTIVATE ; +SWP_NOCOPYBITS + 
     
-    mov rax, xposnextpanel
-    .WHILE sqword ptr rax < 1
+    mov eax, xposnextpanel
+    .WHILE sdword ptr eax < 1
         Invoke SetWindowPos, hNextPanel, HWND_TOP, xposnextpanel, 0, 0, 0, SWP_NOSIZE + SWP_NOZORDER + SWP_NOSENDCHANGING + SWP_NOACTIVATE ;+ SWP_NOMOVE  +SWP_NOCOPYBITS
         Invoke SetWindowPos, hCurrentPanel, HWND_TOP, xposcurrentpanel, 0, 0, 0, SWP_NOSIZE + SWP_NOZORDER  + SWP_NOSENDCHANGING + SWP_NOACTIVATE;+ SWP_NOMOVE +SWP_NOCOPYBITS
         ;Invoke InvalidateRect, hNextPanel, NULL, TRUE
@@ -949,7 +948,7 @@ _MUI_SmartPanelSlidePanelsRight PROC FRAME hControl:QWORD, hCurrentPanel:QWORD, 
             inc xposnextpanel
         .ENDIF
         ;PrintDec xposnextpanel
-        mov rax, xposnextpanel
+        mov eax, xposnextpanel
     .ENDW
     
     ;PrintText 'SP_SlidePanelsRight End'
@@ -989,7 +988,7 @@ MUISmartPanelNextPanel PROC FRAME USES RBX hControl:QWORD, qwNotify:QWORD
     Invoke MUIGetIntProperty, hControl, @SmartPanelCurrentPanel
     mov OldSelection, rax
 
-    Invoke GetWindowLong, hControl, GWL_STYLE
+    Invoke GetWindowLongPtr, hControl, GWL_STYLE
     mov qwStyle, rax
     
     inc rax ; for adjust of 0 based index
@@ -1092,7 +1091,7 @@ MUISmartPanelPrevPanel PROC FRAME USES RBX hControl:QWORD, qwNotify:QWORD
     Invoke MUIGetIntProperty, hControl, @SmartPanelCurrentPanel
     mov OldSelection, rax
     
-    Invoke GetWindowLong, hControl, GWL_STYLE
+    Invoke GetWindowLongPtr, hControl, GWL_STYLE
     mov qwStyle, rax    
     
     .IF rax == 0
@@ -1180,24 +1179,22 @@ MUISmartPanelSetIsDlgMsgVar PROC FRAME hControl:QWORD, lpqwIsDlgMsgVar:QWORD
 MUISmartPanelSetIsDlgMsgVar ENDP
 
 
-
-
 ;--------------------------------------------------------------------------------------------------------------------
 ; _MUI_SmartPanelGetPanelHandle
 ;--------------------------------------------------------------------------------------------------------------------
-_MUI_SmartPanelGetPanelHandle PROC FRAME USES RBX hControl:QWORD, nItem:QWORD
+_MUI_SmartPanelGetPanelHandle PROC FRAME USES RBX hWin:QWORD, nItem:QWORD
     LOCAL TotalItems:QWORD
     LOCAL pItemData:QWORD
     LOCAL pItemDataEntry:QWORD
 
-    Invoke MUIGetIntProperty, hControl, @SmartPanelTotalPanels
+    Invoke MUIGetIntProperty, hWin, @SmartPanelTotalPanels
     mov TotalItems, rax
     .IF TotalItems == 0
         mov rax, NULL
         ret
     .ENDIF
 
-    Invoke MUIGetIntProperty, hControl, @SmartPanelPanelsArray
+    Invoke MUIGetIntProperty, hWin, @SmartPanelPanelsArray
     mov pItemData, rax
 
     mov rax, nItem
@@ -1225,7 +1222,7 @@ MUISmartPanelCurrentPanelIndex ENDP
 ;--------------------------------------------------------------------------------------------------------------------
 ; _MUI_SP_ResizePanels - Resize panels to match SmartPanel size
 ;--------------------------------------------------------------------------------------------------------------------
-_MUI_SP_ResizePanels PROC FRAME USES RBX hControl:QWORD
+_MUI_SP_ResizePanels PROC FRAME USES RBX hWin:QWORD
     LOCAL rect:RECT
     LOCAL hPanelDlg:QWORD
     LOCAL qwTotalPanels:QWORD
@@ -1237,18 +1234,18 @@ _MUI_SP_ResizePanels PROC FRAME USES RBX hControl:QWORD
     ; check if size hasnt been sent at init, before properties can be checked?
     ; check if sliding currently?
     
-    Invoke MUIGetIntProperty, hControl, @SmartPanelTotalPanels
+    Invoke MUIGetIntProperty, hWin, @SmartPanelTotalPanels
     mov qwTotalPanels, rax
     .IF qwTotalPanels == 0
         xor rax, rax
         ret
     .ENDIF
 
-    Invoke MUIGetIntProperty, hControl, @SmartPanelPanelsArray
+    Invoke MUIGetIntProperty, hWin, @SmartPanelPanelsArray
     mov pItemData, rax
     mov pItemDataEntry, rax
     
-    Invoke GetClientRect, hControl, Addr rect
+    Invoke GetClientRect, hWin, Addr rect
 
     Invoke BeginDeferWindowPos, qwTotalPanels
     mov hDefer, rax
