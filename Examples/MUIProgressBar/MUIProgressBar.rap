@@ -1,5 +1,5 @@
 [Project]
-Assembler=JWasm
+Assembler=UASM64
 Type=Win64 App
 Description=MUIProgressBar
 Backup=$P\Bak\
@@ -8,9 +8,9 @@ GroupExpand=1
 Ver.rc=1
 Debug=0
 [Files]
-1=MUIProgressBar.Asm
-2=MUIProgressBar.Inc
-3=MUIProgressBar.Rc
+1=MUIProgressBar.asm
+2=MUIProgressBar.inc
+3=MUIProgressBar.rc
 4=MUIProgressBar.dlg
 5=MUIProgressBar.mnu
 [MakeFiles]
@@ -53,10 +53,10 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 1=,1,8,[*PROJECTNAME*].xml
 [StringTable]
 [VerInf]
-FV=0.0.0.7
-FileVersion=0.0.0.7
-PV=0.0.0.7
-ProductVersion=0.0.0.7
+FV=0.0.0.8
+FileVersion=0.0.0.8
+PV=0.0.0.8
+ProductVersion=0.0.0.8
 [Group]
 Group=Assembly,Resources,Misc
 1=1
@@ -73,13 +73,13 @@ AutoLoad=1,2,4
 Settings=1279
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=0
+MilestoneEveryCurrent=1
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=12
@@ -103,12 +103,12 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=3537212
+PTimer=3640094
 [Collapse]
 1=
 2=
 [Size]
-1=0,0,0,0,1452
+1=0,0,0,0,4638
 2=0,0,0,0,1123
 4=0,0,0,0
 [GroupExpand]
