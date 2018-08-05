@@ -529,6 +529,54 @@ MUICenterWindow PROC FRAME hWndChild:QWORD, hWndParent:QWORD
 MUICenterWindow ENDP
 
 
+;-------------------------------------------------------------------------------------
+; MUIGDIDoubleBufferStart - Starts double buffering. Used in a WM_PAINT event. 
+; Place after BeginPaint call
+;-------------------------------------------------------------------------------------
+MUIGDIDoubleBufferStart PROC FRAME USES RBX hWin:QWORD, hdcSource:QWORD, lpHDCBuffer:QWORD, lpClientRect:QWORD, lpBufferBitmap:QWORD, lpPreBufferBitamp:QWORD
+    LOCAL hdcBuffer:QWORD
+    LOCAL hBitmap:QWORD
+
+    .IF lpHDCBuffer == 0 || lpClientRect == 0 || lpBufferBitmap == 0 || lpPreBufferBitamp == 0
+        mov rax, FALSE
+        ret
+    .ENDIF
+    Invoke GetClientRect, hWin, lpClientRect
+    Invoke CreateCompatibleDC, hdcSource
+    mov hdcBuffer, rax
+    mov rbx, lpHDCBuffer
+    mov [rbx], rax
+    mov rbx, lpClientRect
+    Invoke CreateCompatibleBitmap, hdcSource, [rbx].RECT.right, [rbx].RECT.bottom
+    mov hBitmap, rax
+    mov rbx, lpBufferBitmap
+    mov [rbx], rax
+    Invoke SelectObject, hdcBuffer, hBitmap
+    mov rbx, lpPreBufferBitamp
+    mov [rbx], rax
+    mov rax, TRUE
+    ret
+MUIGDIDoubleBufferStart ENDP
+
+
+;-------------------------------------------------------------------------------------
+; MUIGDIDoubleBufferFinish - Finishes double buffering - cleans up afterwards.
+; Used in a WM_PAINT event. Place before EndPaint call and after all Blt calls
+;-------------------------------------------------------------------------------------
+MUIGDIDoubleBufferFinish PROC FRAME hdcBuffer:QWORD, hBufferBitmap:QWORD, hPreBufferBitamp:QWORD
+    .IF hBufferBitmap != 0
+        Invoke SelectObject, hdcBuffer, hBufferBitmap
+        Invoke DeleteObject, hBufferBitmap
+    .ENDIF
+    .IF hPreBufferBitamp != 0
+        Invoke SelectObject, hdcBuffer, hPreBufferBitamp
+        Invoke DeleteObject, hPreBufferBitamp
+    .ENDIF
+    .IF hdcBuffer != 0
+        Invoke DeleteDC, hdcBuffer
+    .ENDIF
+    ret
+MUIGDIDoubleBufferFinish ENDP
 
 
 ;-------------------------------------------------------------------------------------
@@ -623,7 +671,6 @@ MUIPaintBackground PROC FRAME hWin:QWORD, qwBackcolor:QWORD, qwBorderColor:QWORD
     Invoke DeleteObject, hbmMem
     Invoke DeleteDC, hdcMem
     Invoke DeleteObject, hOldBitmap
-    Invoke ReleaseDC, hWin, hdc
     
     Invoke EndPaint, hWin, addr ps
     mov rax, 0
@@ -864,7 +911,6 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
     Invoke DeleteObject, hbmMem
     Invoke DeleteDC, hdcMem
     Invoke DeleteObject, hOldBitmap
-    Invoke ReleaseDC, hWin, hdc
     
     Invoke EndPaint, hWin, addr ps
     mov rax, 0
@@ -909,6 +955,70 @@ MUIGetParentBackgroundColor PROC FRAME hControl:QWORD
     
     ret
 MUIGetParentBackgroundColor ENDP
+
+
+;-------------------------------------------------------------------------------------
+; Gets parent's background bitmap from parent DC, at the child's location and size
+; For use in setting background of child to 'transparent'
+; returns hBitmap or NULL
+;-------------------------------------------------------------------------------------
+MUIGetParentBackgroundBitmap PROC FRAME hControl:QWORD
+    LOCAL rcWin:RECT
+    LOCAL rcWnd:RECT
+    LOCAL parWnd:QWORD
+    LOCAL parDc:QWORD
+    LOCAL hdcMem:QWORD
+    LOCAL hbmMem:QWORD
+    LOCAL hOldBitmap:QWORD
+	LOCAL qwWidth:QWORD
+	LOCAL qwHeight:QWORD      
+
+    Invoke GetParent, hControl; // Get the parent window.
+    mov parWnd, rax
+    Invoke GetDC, parWnd; // Get its DC.
+    mov parDc, rax 
+    ;Invoke UpdateWindow, hWnd
+    Invoke GetWindowRect, hControl, Addr rcWnd;
+    Invoke ScreenToClient, parWnd, Addr rcWnd; // Convert to the parent's co-ordinates
+    Invoke GetClipBox, parDc, Addr rcWin
+    ; Copy from parent DC.
+    xor rax, rax
+    mov eax, rcWin.right
+    sub eax, rcWin.left
+    mov qwWidth, rax
+    
+    xor rax, rax
+    mov eax, rcWin.bottom
+    sub eax, rcWin.top
+    mov qwHeight, rax    
+
+    ;----------------------------------------------------------
+    ; Setup Double Buffering
+    ;----------------------------------------------------------
+    Invoke CreateCompatibleDC, parDc
+    mov hdcMem, rax
+    Invoke CreateCompatibleBitmap, parDc, dword ptr qwWidth, dword ptr qwHeight
+    mov hbmMem, rax
+    Invoke SelectObject, hdcMem, hbmMem
+    mov hOldBitmap, rax
+
+    Invoke BitBlt, hdcMem, 0, 0, dword ptr qwWidth, dword ptr qwHeight, parDc, rcWnd.left, rcWnd.top, SRCCOPY;
+
+    ;----------------------------------------------------------
+    ; Cleanup
+    ;----------------------------------------------------------
+    Invoke SelectObject, hdcMem, hOldBitmap
+    Invoke DeleteDC, hdcMem
+    ;Invoke DeleteObject, hbmMem ; need to keep this bitmap to return it
+    .IF hOldBitmap != 0
+        Invoke DeleteObject, hOldBitmap
+    .ENDIF          
+    Invoke ReleaseDC, parWnd, parDc
+    
+    mov rax, hbmMem
+    ret
+
+MUIGetParentBackgroundBitmap ENDP
 
 
 ;-------------------------------------------------------------------------------------

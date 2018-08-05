@@ -35,36 +35,41 @@
 ;--------------------------------------------------------------------------------------------------------------------------------------
 ; PUBLIC ModernUI Prototypes for users of controls
 ;--------------------------------------------------------------------------------------------------------------------------------------
-MUIGetExtProperty               PROTO :QWORD, :QWORD                   ; hControl, qwProperty
-MUISetExtProperty               PROTO :QWORD, :QWORD, :QWORD           ; hControl, qwProperty, qwPropertyValue
-MUIGetIntProperty               PROTO :QWORD, :QWORD                   ; hControl, qwProperty
-MUISetIntProperty               PROTO :QWORD, :QWORD, :QWORD           ; hControl, qwProperty, qwPropertyValue
+MUIGetExtProperty               PROTO :QWORD,:QWORD                             ; hControl, qwProperty
+MUISetExtProperty               PROTO :QWORD,:QWORD,:QWORD                      ; hControl, qwProperty, qwPropertyValue
+MUIGetIntProperty               PROTO :QWORD,:QWORD                             ; hControl, qwProperty
+MUISetIntProperty               PROTO :QWORD,:QWORD,:QWORD                      ; hControl, qwProperty, qwPropertyValue
 
-MUIPointSizeToLogicalUnit       PROTO :QWORD, :QWORD                   ; hControl, qwPointSize
-MUIApplyToDialog                PROTO :QWORD, :QWORD, :QWORD           ; hDialogWindow, qwDropShadow (true to set drop shadow), qwClipping (true to set clipping on)
-MUICenterWindow                 PROTO :QWORD, :QWORD                   ; hWndChild, hWndParent
-MUIPaintBackground              PROTO :QWORD, :QWORD, :QWORD           ; hDialogWindow, qwBackColor, qwBorderColor
-MUIPaintBackgroundImage         PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD ; hDialogWindow, qwBackColor, qwBorderColor, hImage, qwImageType, qwImageLocation
-MUIGetParentBackgroundColor     PROTO :QWORD                           ; hControl
-MUIGetImageSize                 PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hImage, qwImageType, lpqwImageWidth, lpqwImageHeight
+MUIPointSizeToLogicalUnit       PROTO :QWORD,:QWORD                             ; hControl, qwPointSize
+MUIApplyToDialog                PROTO :QWORD,:QWORD,:QWORD                      ; hDialogWindow, qwDropShadow (true to set drop shadow), qwClipping (true to set clipping on)
+MUICenterWindow                 PROTO :QWORD,:QWORD                             ; hWndChild, hWndParent
 
-MUILoadRegionFromResource       PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hInstance, idRgnRes, lpRegion, lpqwSizeRegion
-MUISetRegionFromResource        PROTO :QWORD, :QWORD, :QWORD, :QWORD   ; hWin, idRgnRes, lpqwCopyRgn, bRedraw
+MUIGDIDoubleBufferStart         PROTO :QWORD,:QWORD,:QWORD,:QWORD,:QWORD,:QWORD ; hWin, hdcSource, lpHDCBuffer, lpClientRect, lpBufferBitmap, lpPreBufferBitamp
+MUIGDIDoubleBufferFinish        PROTO :QWORD,:QWORD,:QWORD                      ; hdcBuffer, hBufferBitmap, hPreBufferBitamp
+
+MUIPaintBackground              PROTO :QWORD,:QWORD,:QWORD                      ; hDialogWindow, qwBackColor, qwBorderColor
+MUIPaintBackgroundImage         PROTO :QWORD,:QWORD,:QWORD,:QWORD,:QWORD,:QWORD ; hDialogWindow, qwBackColor, qwBorderColor, hImage, qwImageType, qwImageLocation
+MUIGetParentBackgroundColor     PROTO :QWORD                                    ; hControl
+MUIGetParentBackgroundBitmap    PROTO :QWORD                                    ; hControl
+MUIGetImageSize                 PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; hImage, qwImageType, lpqwImageWidth, lpqwImageHeight
+
+MUILoadRegionFromResource       PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; hInstance, idRgnRes, lpRegion, lpqwSizeRegion
+MUISetRegionFromResource        PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; hWin, idRgnRes, lpqwCopyRgn, bRedraw
 
 ;--------------------------------------------------------------------------------------------------------------------------------------
 ; PRIVATE ModernUI Prototypes for control creators to use with their controls
 ;--------------------------------------------------------------------------------------------------------------------------------------
-MUIGDIPlusStart                 PROTO                                  ; Wrapper for GDIPlus startup
-MUIGDIPlusFinish                PROTO                                  ; Wrapper for GDIPlus shutdown
+MUIGDIPlusStart                 PROTO                                           ; Wrapper for GDIPlus startup
+MUIGDIPlusFinish                PROTO                                           ; Wrapper for GDIPlus shutdown
 
-MUIAllocMemProperties           PROTO :QWORD, :QWORD, :QWORD           ; hControl, cbWndExtraOffset, qwSizeToAllocate
-MUIFreeMemProperties            PROTO :QWORD, :QWORD                   ; hControl, cbWndExtraOffset
+MUIAllocMemProperties           PROTO :QWORD,:QWORD,:QWORD                      ; hControl, cbWndExtraOffset, qwSizeToAllocate
+MUIFreeMemProperties            PROTO :QWORD,:QWORD                             ; hControl, cbWndExtraOffset
 
-MUIAllocStructureMemory         PROTO :QWORD, :QWORD, :QWORD           ; qwPtrStructMem, TotalItems, ItemSize
+MUIAllocStructureMemory         PROTO :QWORD,:QWORD,:QWORD                      ; qwPtrStructMem, TotalItems, ItemSize
 
-MUICreateIconFromMemory         PROTO :QWORD, :QWORD                   ; pIconData, iIcon
-MUICreateCursorFromMemory       PROTO :QWORD                           ; pCursorData
-MUICreateBitmapFromMemory       PROTO :QWORD                           ; pBitmapData
+MUICreateIconFromMemory         PROTO :QWORD,:QWORD                             ; pIconData, iIcon
+MUICreateCursorFromMemory       PROTO :QWORD                                    ; pCursorData
+MUICreateBitmapFromMemory       PROTO :QWORD                                    ; pBitmapData
 
 ;--------------------------------------------------------------------------------------------------------------------------------------
 ; LTLI ModernUI Structures
@@ -80,10 +85,10 @@ MUI_EXTERNAL_PROPERTIES         EQU 8
 
 
 ; ModernUI Custom Messages - each control should handle these
-MUI_GETPROPERTY                 EQU WM_USER + 1800                      ; wParam = dqProperty, lParam = NULL
-MUI_SETPROPERTY                 EQU WM_USER + 1799                      ; wParam = dqProperty, lParam = dqPropertyValue
-;MUI_GETTHEME                    EQU WM_USER + 1798                      ; wParam = NULL, lParam = NULL. Returns in eax lpMUITHEMEStructure
-;MUI_SETTHEME                    EQU WM_USER + 1797                      ; wParam = lpMUITHEMEStructure, lParam = NULL
+MUI_GETPROPERTY                 EQU WM_USER + 1800                              ; wParam = dqProperty, lParam = NULL
+MUI_SETPROPERTY                 EQU WM_USER + 1799                              ; wParam = dqProperty, lParam = dqPropertyValue
+;MUI_GETTHEME                   EQU WM_USER + 1798                              ; wParam = NULL, lParam = NULL. Returns in eax lpMUITHEMEStructure
+;MUI_SETTHEME                   EQU WM_USER + 1797                              ; wParam = lpMUITHEMEStructure, lParam = NULL
 
 
 ; Image Types
