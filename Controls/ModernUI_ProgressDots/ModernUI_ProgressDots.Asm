@@ -24,18 +24,18 @@ option stackbase : rsp
 _WIN64 EQU 1
 WINVER equ 0501h
 
-DEBUG64 EQU 1
-
-IFDEF DEBUG64
-    PRESERVEXMMREGS equ 1
-    includelib \UASM\lib\x64\Debug64.lib
-    DBG64LIB equ 1
-    DEBUGEXE textequ <'\UASM64\bin\DbgWin.exe'>
-    include \UASM\include\debug64.inc
-    .DATA
-    RDBG_DbgWin	DB DEBUGEXE,0
-    .CODE
-ENDIF
+;DEBUG64 EQU 1
+;
+;IFDEF DEBUG64
+;    PRESERVEXMMREGS equ 1
+;    includelib \UASM\lib\x64\Debug64.lib
+;    DBG64LIB equ 1
+;    DEBUGEXE textequ <'M:\UASM64\bin\DbgWin.exe'>
+;    include \UASM\include\debug64.inc
+;    .DATA
+;    RDBG_DbgWin	DB DEBUGEXE,0
+;    .CODE
+;ENDIF
 
 include windows.inc
 include commctrl.inc
@@ -370,14 +370,15 @@ _MUI_ProgressDotsInit PROC FRAME USES RBX RDX hWin:QWORD
     mov qwWidth, rax
     ; magic no by qword to div by 3
     mov rbx, qwWidth
-    mov rax, 055555556h
+    mov rax, 05555555555555556h
     imul rbx
-    shr rbx, 31d
+    shr rbx,63d
     add rdx, rbx
     ; quotient now in edx
     mov qwMarkerStart, rdx
     add rdx, rdx
-    mov qwMarkerFinish, rdx    
+    mov qwMarkerFinish, rdx
+
     Invoke MUISetIntProperty, hWin, @ProgressDotsMarkerStart, qwMarkerStart
     Invoke MUISetIntProperty, hWin, @ProgressDotsMarkerFinish, qwMarkerFinish
 
@@ -414,6 +415,13 @@ _MUI_ProgressDotsResize PROC FRAME USES RBX RDX hWin:QWORD
     LOCAL qwMarkerStart:QWORD
     LOCAL qwMarkerFinish:QWORD
     LOCAL hDefer:QWORD
+    LOCAL AnimateState:QWORD
+
+    Invoke MUIGetIntProperty, hWin, @ProgressDotsAnimateState
+    mov AnimateState, rax
+    .IF AnimateState == TRUE
+        Invoke MUIProgressDotsAnimateStop, hWin ; stop animation whilst resize occurs
+    .ENDIF    
 
     Invoke GetClientRect, hWin, Addr rect
     xor rax, rax
@@ -452,10 +460,10 @@ _MUI_ProgressDotsResize PROC FRAME USES RBX RDX hWin:QWORD
     mov qwWidth, rax
     ; div by 3
     mov rbx,qwWidth
-    mov rax,055555556h
+    mov rax, 05555555555555556h
     imul rbx
-    shr rbx,31
-    add rdx,rbx
+    shr rbx,63d
+    add rdx, rbx
     ; quotient now in edx
     mov qwMarkerStart, rdx
     add rdx, rdx
@@ -465,6 +473,11 @@ _MUI_ProgressDotsResize PROC FRAME USES RBX RDX hWin:QWORD
     
     ; reset everything otherwise graphically it looks odd
     Invoke _MUI_ProgressDotsInitDots, hWin
+    
+    .IF AnimateState == TRUE
+        Invoke MUIProgressDotsAnimateStart, hWin ; restart animation if it was started previously
+    .ENDIF        
+    
     ret
 _MUI_ProgressDotsResize ENDP
 
