@@ -210,7 +210,6 @@ MUITooltipCreate PROC FRAME hWndBuddyControl:QWORD, lpszText:QWORD, qwWidth:QWOR
 MUITooltipCreate ENDP
 
 
-
 ;-------------------------------------------------------------------------------------
 ; _MUI_TooltipWndProc - Main processing window for our control
 ;-------------------------------------------------------------------------------------
@@ -403,7 +402,7 @@ _MUI_TooltipWndProc ENDP
 ;-------------------------------------------------------------------------------------
 ; _MUI_TooltipInit - set initial default values
 ;-------------------------------------------------------------------------------------
-_MUI_TooltipInit PROC FRAME USES RBX hControl:QWORD, hWndParent:QWORD, lpszText:QWORD
+_MUI_TooltipInit PROC FRAME USES RBX hWin:QWORD, hWndParent:QWORD, lpszText:QWORD
     LOCAL ncm:NONCLIENTMETRICS
     LOCAL lfnt:LOGFONT
     LOCAL hFont:QWORD
@@ -411,46 +410,47 @@ _MUI_TooltipInit PROC FRAME USES RBX hControl:QWORD, hWndParent:QWORD, lpszText:
     LOCAL qwClassStyle:QWORD
     LOCAL qwShowDelay:QWORD
     LOCAL qwShowTimeout:QWORD
-    
-    Invoke GetWindowLongPtr, hControl, GWL_STYLE
+
+    Invoke GetWindowLongPtr, hWin, GWL_STYLE
     mov qwStyle, rax
     and rax, MUITTS_NODROPSHADOW
     .IF rax == MUITTS_NODROPSHADOW
-        Invoke GetClassLongPtr, hControl, GCL_STYLE
+        Invoke GetClassLongPtr, hWin, GCL_STYLE
         mov qwClassStyle, rax
         and rax, CS_DROPSHADOW
         .IF rax == CS_DROPSHADOW
             and qwClassStyle,(-1 xor CS_DROPSHADOW)
-            Invoke SetClassLongPtr, hControl, GCL_STYLE, qwClassStyle
+            Invoke SetClassLongPtr, hWin, GCL_STYLE, qwClassStyle
         .ENDIF
     .ENDIF
-    
+
     Invoke GetDoubleClickTime
     mov qwShowDelay, rax
     mov rbx, 10
     mul rbx
     mov qwShowTimeout, rax    
     
-    ; Set default initial external property values     
-    Invoke MUISetIntProperty, hControl, @TooltipHandle, hControl   
-    Invoke MUISetIntProperty, hControl, @TooltipParent, hWndParent
-    Invoke MUISetIntProperty, hControl, @TooltipHoverTime, qwShowDelay ;MUI_TOOLTIP_SHOW_DELAY
+    ; Set default initial internal property values     
+    Invoke MUISetIntProperty, hWin, @TooltipHandle, hWin   
+    Invoke MUISetIntProperty, hWin, @TooltipParent, hWndParent
+    Invoke MUISetIntProperty, hWin, @TooltipHoverTime, qwShowDelay ;MUI_TOOLTIP_SHOW_DELAY
 
-    Invoke MUISetExtProperty, hControl, @TooltipTextColor, MUI_RGBCOLOR(51,51,51) ;MUI_RGBCOLOR(242,242,242) ; MUI_RGBCOLOR(51,51,51)
-    Invoke MUISetExtProperty, hControl, @TooltipBackColor, MUI_RGBCOLOR(242,241,208) ;MUI_RGBCOLOR(242,241,208) ;MUI_RGBCOLOR(25,25,25) ;MUI_RGBCOLOR(242,241,208)
-    Invoke MUISetExtProperty, hControl, @TooltipBorderColor, MUI_RGBCOLOR(190,190,190) ;MUI_RGBCOLOR(0,0,0) ;MUI_RGBCOLOR(190,190,190)
-    Invoke MUISetExtProperty, hControl, @TooltipShowDelay, qwShowDelay ;MUI_TOOLTIP_SHOW_DELAY
-    Invoke MUISetExtProperty, hControl, @TooltipShowTimeout, qwShowTimeout
-    Invoke MUISetExtProperty, hControl, @TooltipOffsetX, 0
-    Invoke MUISetExtProperty, hControl, @TooltipOffsetY, 0
-    
+    ; Set default initial external property values 
+    Invoke MUISetExtProperty, hWin, @TooltipTextColor, MUI_RGBCOLOR(51,51,51) ;MUI_RGBCOLOR(242,242,242) ; MUI_RGBCOLOR(51,51,51)
+    Invoke MUISetExtProperty, hWin, @TooltipBackColor, MUI_RGBCOLOR(242,241,208) ;MUI_RGBCOLOR(242,241,208) ;MUI_RGBCOLOR(25,25,25) ;MUI_RGBCOLOR(242,241,208)
+    Invoke MUISetExtProperty, hWin, @TooltipBorderColor, MUI_RGBCOLOR(190,190,190) ;MUI_RGBCOLOR(0,0,0) ;MUI_RGBCOLOR(190,190,190)
+    Invoke MUISetExtProperty, hWin, @TooltipShowDelay, qwShowDelay ;MUI_TOOLTIP_SHOW_DELAY
+    Invoke MUISetExtProperty, hWin, @TooltipShowTimeout, qwShowTimeout
+    Invoke MUISetExtProperty, hWin, @TooltipOffsetX, 0
+    Invoke MUISetExtProperty, hWin, @TooltipOffsetY, 0
+
    .IF hMUITooltipFont == 0
         mov ncm.cbSize, SIZEOF NONCLIENTMETRICS
         Invoke SystemParametersInfo, SPI_GETNONCLIENTMETRICS, SIZEOF NONCLIENTMETRICS, Addr ncm, 0
         Invoke CreateFontIndirect, Addr ncm.lfMessageFont
         mov hMUITooltipFont, rax
     .ENDIF
-    Invoke MUISetExtProperty, hControl, @TooltipFont, hMUITooltipFont
+    Invoke MUISetExtProperty, hWin, @TooltipFont, hMUITooltipFont
 
     .IF hMUITooltipInfoTitleFont == 0
         Invoke GetObject, hMUITooltipFont, SIZEOF lfnt, Addr lfnt 
@@ -458,20 +458,19 @@ _MUI_TooltipInit PROC FRAME USES RBX hControl:QWORD, hWndParent:QWORD, lpszText:
         Invoke CreateFontIndirect, Addr lfnt
         mov hMUITooltipInfoTitleFont, rax
     .ENDIF
-    Invoke MUISetIntProperty, hControl, @TooltipTitleFont, hMUITooltipInfoTitleFont
-    
-    Invoke MUISetIntProperty, hControl, @TooltipMouseOver, FALSE
-    Invoke GetWindowLongPtr, hControl, 0 ; pointer to internal properties structure
+    Invoke MUISetIntProperty, hWin, @TooltipTitleFont, hMUITooltipInfoTitleFont
+
+    Invoke MUISetIntProperty, hWin, @TooltipMouseOver, FALSE
+    Invoke GetWindowLongPtr, hWin, 0 ; pointer to internal properties structure
     Invoke SetWindowSubclass, hWndParent, Addr _MUI_TooltipParentSubclass, 1, rax  
     
-    Invoke _MUI_TooltipCheckWidthMultiline, hControl
+    Invoke _MUI_TooltipCheckWidthMultiline, hWin
     .IF rax == FALSE
-        Invoke _MUI_TooltipCheckTextMultiline, hControl, lpszText
+        Invoke _MUI_TooltipCheckTextMultiline, hWin, lpszText
     .ENDIF
-    Invoke _MUI_TooltipSize, hControl, rax, lpszText
+    Invoke _MUI_TooltipSize, hWin, rax, lpszText
 
     ret
-
 _MUI_TooltipInit ENDP
 
 
@@ -510,10 +509,6 @@ _MUI_TooltipPaint PROC FRAME hWin:QWORD
 	;----------------------------------------------------------
 	; Get some property values
 	;----------------------------------------------------------	
-	; Use Invoke _MUIGetProperty, hWin, 4, @Property 
-	; to get property required: text, back, border colors etc
-	; save them to local vars for processing later in function
-
     Invoke MUIGetExtProperty, hWin, @TooltipInfoTitleText
     mov lpszTitleText, rax
 	
@@ -544,17 +539,18 @@ _MUI_TooltipPaint PROC FRAME hWin:QWORD
     ;----------------------------------------------------------
     ; Cleanup
     ;----------------------------------------------------------
-    Invoke DeleteDC, hdcMem
-    Invoke DeleteObject, hbmMem
     .IF hOldBitmap != 0
+        Invoke SelectObject, hdcMem, hOldBitmap
         Invoke DeleteObject, hOldBitmap
-    .ENDIF		
+    .ENDIF
+    Invoke SelectObject, hdcMem, hbmMem
+    Invoke DeleteObject, hbmMem
+    Invoke DeleteDC, hdcMem		
     
     Invoke EndPaint, hWin, Addr ps
 
     ret
 _MUI_TooltipPaint ENDP
-
 
 
 ;-------------------------------------------------------------------------------------
@@ -588,11 +584,10 @@ _MUI_TooltipPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
 _MUI_TooltipPaintBackground ENDP
 
 
-
 ;-------------------------------------------------------------------------------------
 ; _MUI_TooltipPaintText
 ;-------------------------------------------------------------------------------------
-_MUI_TooltipPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD
+_MUI_TooltipPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
     LOCAL TextColor:QWORD
     LOCAL BackColor:QWORD
     LOCAL hFont:QWORD
@@ -667,7 +662,6 @@ _MUI_TooltipPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD
     
     ret
 _MUI_TooltipPaintText ENDP
-
 
 
 ;-------------------------------------------------------------------------------------
@@ -837,7 +831,6 @@ _MUI_TooltipPaintBorder PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
     
     ret
 _MUI_TooltipPaintBorder ENDP
-
 
 
 ;-------------------------------------------------------------------------------------
@@ -1082,7 +1075,7 @@ _MUI_TooltipSize ENDP
 ;-------------------------------------------------------------------------------------
 ; Sets position of the tooltip relative to buddy control or mouse position
 ;-------------------------------------------------------------------------------------
-_MUI_TooltipSetPosition PROC FRAME USES RBX hControl:QWORD
+_MUI_TooltipSetPosition PROC FRAME USES RBX hWin:QWORD
     LOCAL hParent:QWORD
     LOCAL qwStyle:QWORD
     LOCAL rect:RECT
@@ -1090,25 +1083,21 @@ _MUI_TooltipSetPosition PROC FRAME USES RBX hControl:QWORD
     LOCAL pt:POINT
     LOCAL qwOffsetX:QWORD
     LOCAL qwOffsetY:QWORD
-    
-    ;PrintText '_MUI_TooltipSetPosition'
-    
-    Invoke MUIGetIntProperty, hControl, @TooltipParent
+
+    Invoke MUIGetIntProperty, hWin, @TooltipParent
     mov hParent, rax
 
-    Invoke MUIGetExtProperty, hControl, @TooltipOffsetX
+    Invoke MUIGetExtProperty, hWin, @TooltipOffsetX
     mov qwOffsetX, rax
-    Invoke MUIGetExtProperty, hControl, @TooltipOffsetY
+    Invoke MUIGetExtProperty, hWin, @TooltipOffsetY
     mov qwOffsetY, rax    
 
     Invoke GetWindowRect, hParent, Addr rect
-    Invoke GetClientRect, hControl, Addr tiprect
+    Invoke GetClientRect, hWin, Addr tiprect
 
-    Invoke GetWindowLongPtr, hControl, GWL_STYLE
+    Invoke GetWindowLongPtr, hWin, GWL_STYLE
     mov qwStyle, rax
-    ;PrintDec dwStyle
     and rax, MUITTS_POS_RIGHT or MUITTS_POS_ABOVE or MUITTS_POS_LEFT or MUITTS_POS_MOUSE
-    ;PrintDec eax
     
     .IF eax == 0 ; MUITTS_POS_BELOW
         mov eax, rect.bottom
@@ -1116,26 +1105,26 @@ _MUI_TooltipSetPosition PROC FRAME USES RBX hControl:QWORD
         sub eax, ebx
         add eax, 2
         add rect.top, eax
-        
+
     .ELSEIF eax == MUITTS_POS_RIGHT
         mov eax, rect.right
         add eax, 2
         mov rect.left, eax
-        
+
     .ELSEIF eax == MUITTS_POS_ABOVE
         mov eax, tiprect.bottom
         ;mov ebx, tiprect.top
         ;sub eax, ebx
         add eax, 2
         sub rect.top, eax
-    
+
     .ELSEIF eax == MUITTS_POS_LEFT
         mov eax, tiprect.right
         ;mov ebx, tiprect.left
         ;sub eax, ebx
         add eax, 2
         sub rect.left, eax
-    
+
     .ELSEIF eax == MUITTS_POS_MOUSE
         Invoke GetCursorPos, Addr pt
         ;Invoke ScreenToClient, hParent, Addr pt
@@ -1145,10 +1134,10 @@ _MUI_TooltipSetPosition PROC FRAME USES RBX hControl:QWORD
         mov eax, pt.y
         add eax, 8
         mov rect.top, eax
-    
+
     .ELSE
         ;PrintText 'Unknown Pos'
-    
+
     .ENDIF
 
     .IF qwOffsetX != 0
@@ -1166,25 +1155,24 @@ _MUI_TooltipSetPosition PROC FRAME USES RBX hControl:QWORD
     .ENDIF
     ;PrintDec rect.top
 
-    Invoke SetWindowPos, hControl, HWND_TOP, rect.left, rect.top, 0, 0,  SWP_NOACTIVATE or SWP_NOSENDCHANGING or SWP_NOZORDER or SWP_NOSIZE
-    
-    ret
+    Invoke SetWindowPos, hWin, HWND_TOP, rect.left, rect.top, 0, 0,  SWP_NOACTIVATE or SWP_NOSENDCHANGING or SWP_NOZORDER or SWP_NOSIZE
 
+    ret
 _MUI_TooltipSetPosition ENDP
 
 
 ;-------------------------------------------------------------------------------------
 ; Returns TRUE if width > 0 (assumes multiline usage)
 ;-------------------------------------------------------------------------------------
-_MUI_TooltipCheckWidthMultiline PROC FRAME USES RBX hControl:QWORD
+_MUI_TooltipCheckWidthMultiline PROC FRAME USES RBX hWin:QWORD
     LOCAL rect:RECT
     LOCAL bMultiline:QWORD
-    
+
     mov bMultiline, FALSE
-    Invoke GetClientRect, hControl, Addr rect
+    Invoke GetClientRect, hWin, Addr rect
     mov eax, rect.right
     .IF eax != 0 
-        Invoke MUISetIntProperty, hControl, @TooltipMultiline, TRUE
+        Invoke MUISetIntProperty, hWin, @TooltipMultiline, TRUE
         mov bMultiline, TRUE
     .ENDIF
     mov rax, bMultiline
@@ -1195,18 +1183,17 @@ _MUI_TooltipCheckWidthMultiline ENDP
 ;-------------------------------------------------------------------------------------
 ; Returns TRUE if CR LF found in string, otherwise returns FALSE
 ;-------------------------------------------------------------------------------------
-_MUI_TooltipCheckTextMultiline PROC FRAME USES RBX hControl:QWORD, lpszText:QWORD
+_MUI_TooltipCheckTextMultiline PROC FRAME USES RBX hWin:QWORD, lpszText:QWORD
     LOCAL lenText:QWORD
     LOCAL Cnt:QWORD
     LOCAL bMultiline:QWORD
-    
-    ;PrintText '_MUI_TooltipCheckTextMultiline'
+
     .IF lpszText == 0
         ret
     .ENDIF
     Invoke lstrlen, lpszText
     mov lenText, rax
-    
+
     mov bMultiline, FALSE
     mov rbx, lpszText
     mov Cnt, 0
@@ -1217,7 +1204,7 @@ _MUI_TooltipCheckTextMultiline PROC FRAME USES RBX hControl:QWORD, lpszText:QWOR
             mov bMultiline, FALSE
             .BREAK
         .ELSEIF al == 10 || al == 13
-            Invoke MUISetIntProperty, hControl, @TooltipMultiline, TRUE
+            Invoke MUISetIntProperty, hWin, @TooltipMultiline, TRUE
             mov bMultiline, TRUE
             .BREAK 
         .ENDIF
@@ -1235,18 +1222,16 @@ _MUI_TooltipCheckTextMultiline ENDP
 ;-------------------------------------------------------------------------------------
 _MUI_TooltipParentSubclass PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM, uIdSubclass:UINT, qwRefData:QWORD
     LOCAL TE:TRACKMOUSEEVENT
-    
+
     mov eax, uMsg
     .IF eax == WM_NCDESTROY
         Invoke RemoveWindowSubclass, hWin, Addr _MUI_TooltipParentSubclass, uIdSubclass
         Invoke DefSubclassProc, hWin, uMsg, wParam, lParam 
         ret
-    
+
     .ELSEIF eax == WM_MOUSEMOVE
-        ;PrintText 'WM_MOUSEMOVE'
         mov rbx, qwRefData
         mov rax, (_MUI_TOOLTIP_PROPERTIES ptr [rbx]).qwMouseOver
-        ;PrintDec eax
         .IF rax == FALSE
             mov rax, TRUE
             mov (_MUI_TOOLTIP_PROPERTIES ptr [ebx]).qwMouseOver, rax
@@ -1261,12 +1246,10 @@ _MUI_TooltipParentSubclass PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPAR
             mov TE.dwHoverTime, eax;HOVER_DEFAULT ;NULL
             Invoke TrackMouseEvent, Addr TE
         .ENDIF
-    
-    
+
     .ELSEIF eax == WM_MOUSEHOVER
         mov rbx, qwRefData
         mov rax, (_MUI_TOOLTIP_PROPERTIES ptr [rbx]).qwMouseOver
-        ;PrintDec eax
         .IF rax == TRUE
             mov rax, TRUE
             mov (_MUI_TOOLTIP_PROPERTIES ptr [rbx]).qwMouseOver, rax
@@ -1282,18 +1265,16 @@ _MUI_TooltipParentSubclass PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPAR
         .ENDIF
     
     .ELSEIF eax == WM_MOUSELEAVE
-        ;PrintText 'WM_MOUSELEAVE'
         mov rbx, qwRefData
         mov rax, (_MUI_TOOLTIP_PROPERTIES ptr [rbx]).qwTooltipHandle
         Invoke ShowWindow, rax, FALSE
         ;Invoke AnimateWindow, eax, 200, AW_BLEND or AW_HIDE
         mov rax, FALSE
         mov (_MUI_TOOLTIP_PROPERTIES ptr [rbx]).qwMouseOver, rax        
-    
+
     .ENDIF
     Invoke DefSubclassProc, hWin, uMsg, wParam, lParam         
     ret
-
 _MUI_TooltipParentSubclass ENDP
 
 

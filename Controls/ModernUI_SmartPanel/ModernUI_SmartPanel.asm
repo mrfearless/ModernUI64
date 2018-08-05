@@ -542,17 +542,16 @@ _MUI_SP_DialogPaintBackground PROC FRAME hWin:QWORD, qwBackColor:QWORD
     .IF hBrush != 0
         Invoke DeleteObject, hBrush
     .ENDIF
-    Invoke SelectObject, hdcMem, hOldBitmap
-    Invoke DeleteDC, hdcMem
-    Invoke DeleteObject, hbmMem
     .IF hOldBitmap != 0
+        Invoke SelectObject, hdcMem, hOldBitmap
         Invoke DeleteObject, hOldBitmap
-    .ENDIF              
+    .ENDIF
+    Invoke SelectObject, hdcMem, hbmMem
+    Invoke DeleteObject, hbmMem
+    Invoke DeleteDC, hdcMem          
     
     Invoke EndPaint, hWin, Addr ps
-
     ret
-
 _MUI_SP_DialogPaintBackground ENDP
 
 
