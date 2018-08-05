@@ -71,7 +71,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=12
@@ -95,12 +95,12 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=2465815
+PTimer=2636870
 [Collapse]
 1=,
 2=
 [Size]
-1=0,0,0,0,600
+1=0,0,0,0,11436
 2=0,0,0,0,1956
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0

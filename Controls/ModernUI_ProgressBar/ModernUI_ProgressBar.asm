@@ -313,19 +313,12 @@ _MUI_ProgressBarPaint PROC FRAME hWin:QWORD
     LOCAL hBitmap:QWORD
     LOCAL hOldBitmap:QWORD
     LOCAL hBrush:QWORD
-    LOCAL hPen:QWORD
     LOCAL hOldBrush:QWORD
-    LOCAL hOldPen:QWORD
-    LOCAL hFont:QWORD
-    LOCAL hOldFont:QWORD
     LOCAL Percent:QWORD
-    LOCAL MouseOver:QWORD
     LOCAL TextColor:QWORD
     LOCAL BackColor:QWORD
     LOCAL BorderColor:QWORD
     LOCAL ProgressColor:QWORD    
-    LOCAL hParent:QWORD
-	LOCAL qwStyle:QWORD
 
     Invoke BeginPaint, hWin, Addr ps
     mov hdc, rax
@@ -344,20 +337,12 @@ _MUI_ProgressBarPaint PROC FRAME hWin:QWORD
 	;----------------------------------------------------------
 	; Get some property values
 	;----------------------------------------------------------	
-	; Use Invoke _MUIGetProperty, hWin, 4, @Property 
-	; to get property required: text, back, border colors etc
-	; save them to local vars for processing later in function
-    Invoke GetWindowLongPtr, hWin, GWL_STYLE
-    mov qwStyle, rax
-
-    Invoke MUIGetExtProperty, hWin, @ProgressBarTextColor        ; normal text color
+    Invoke MUIGetExtProperty, hWin, @ProgressBarTextColor
     mov TextColor, rax
-    Invoke MUIGetExtProperty, hWin, @ProgressBarBackColor        ; normal back color
+    Invoke MUIGetExtProperty, hWin, @ProgressBarBackColor
     mov BackColor, rax
-    Invoke MUIGetExtProperty, hWin, @ProgressBarBorderColor        ; normal back color
+    Invoke MUIGetExtProperty, hWin, @ProgressBarBorderColor
     mov BorderColor, rax
-    Invoke MUIGetExtProperty, hWin, @ProgressBarTextFont        
-    mov hFont, rax	
     Invoke MUIGetExtProperty, hWin, @ProgressBarPercent        
     mov Percent, rax	
     Invoke MUIGetExtProperty, hWin, @ProgressBarProgressColor
@@ -379,13 +364,13 @@ _MUI_ProgressBarPaint PROC FRAME hWin:QWORD
 	;----------------------------------------------------------
 	; Draw Progress
 	;----------------------------------------------------------
+    .IF hOldBrush != 0
+        Invoke SelectObject, hdcMem, hOldBrush
+        Invoke DeleteObject, hOldBrush
+    .ENDIF     
     .IF hBrush != 0
         Invoke DeleteObject, hBrush
     .ENDIF
-    .IF hOldBrush != 0
-        Invoke DeleteObject, hOldBrush
-    .ENDIF 
-    
     
     Invoke MUIGetIntProperty, hWin, @ProgressBarWidth
     mov rectprogress.right, eax
@@ -401,12 +386,10 @@ _MUI_ProgressBarPaint PROC FRAME hWin:QWORD
 	; Border
 	;----------------------------------------------------------
     .IF BorderColor != 0
-        .IF hBrush != 0
-            Invoke DeleteObject, hBrush
-        .ENDIF
         .IF hOldBrush != 0
+            Invoke SelectObject, hdcMem, hOldBrush
             Invoke DeleteObject, hOldBrush
-        .ENDIF    
+        .ENDIF 
         Invoke GetStockObject, DC_BRUSH
         mov hBrush, rax
         Invoke SelectObject, hdcMem, rax
@@ -423,26 +406,20 @@ _MUI_ProgressBarPaint PROC FRAME hWin:QWORD
     ;----------------------------------------------------------
     ; Cleanup
     ;----------------------------------------------------------
-    Invoke DeleteDC, hdcMem
-    Invoke DeleteObject, hbmMem
-    .IF hOldBitmap != 0
-        Invoke DeleteObject, hOldBitmap
-    .ENDIF		
-    .IF hOldFont != 0
-        Invoke DeleteObject, hOldFont
-    .ENDIF
-    .IF hOldPen != 0
-        Invoke DeleteObject, hOldPen
-    .ENDIF
     .IF hOldBrush != 0
+        Invoke SelectObject, hdcMem, hOldBrush
         Invoke DeleteObject, hOldBrush
-    .ENDIF        
-    .IF hPen != 0
-        Invoke DeleteObject, hPen
-    .ENDIF
+    .ENDIF     
     .IF hBrush != 0
         Invoke DeleteObject, hBrush
     .ENDIF
+    .IF hOldBitmap != 0
+        Invoke SelectObject, hdcMem, hOldBitmap
+        Invoke DeleteObject, hOldBitmap
+    .ENDIF
+    Invoke SelectObject, hdcMem, hbmMem
+    Invoke DeleteObject, hbmMem
+    Invoke DeleteDC, hdcMem
     
     Invoke EndPaint, hWin, Addr ps
 
