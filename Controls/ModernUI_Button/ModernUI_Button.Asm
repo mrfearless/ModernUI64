@@ -896,76 +896,151 @@ _MUI_ButtonPaint PROC FRAME hWin:QWORD
     LOCAL EnabledState:QWORD
     LOCAL MouseOver:QWORD
     LOCAL SelectedState:QWORD
+    LOCAL BackColor:QWORD
 
     Invoke BeginPaint, hWin, Addr ps
     mov hdc, rax
-    
-    ;----------------------------------------------------------
-    ; Setup Double Buffering
-    ;----------------------------------------------------------
-    Invoke GetClientRect, hWin, Addr rect
-	Invoke CreateCompatibleDC, hdc
-	mov hdcMem, rax
-	Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
-	mov hbmMem, rax
-	Invoke SelectObject, hdcMem, hbmMem
-	mov hOldBitmap, rax
-	
+
 	;----------------------------------------------------------
 	; Get some property values
-	;----------------------------------------------------------	
+	;----------------------------------------------------------
+	Invoke GetClientRect, hWin, Addr rect
     Invoke MUIGetIntProperty, hWin, @ButtonEnabledState
     mov EnabledState, rax
 	Invoke MUIGetIntProperty, hWin, @ButtonMouseOver
     mov MouseOver, rax
 	Invoke MUIGetIntProperty, hWin, @ButtonSelectedState
-    mov SelectedState, rax    
+    mov SelectedState, rax
+    
+    .IF EnabledState == TRUE
+        .IF SelectedState == FALSE
+            .IF MouseOver == FALSE
+                Invoke MUIGetExtProperty, hWin, @ButtonBackColor        ; Normal back color
+            .ELSE
+                Invoke MUIGetExtProperty, hWin, @ButtonBackColorAlt     ; Mouse over back color
+            .ENDIF
+        .ELSE
+            .IF MouseOver == FALSE
+                Invoke MUIGetExtProperty, hWin, @ButtonBackColorSel     ; Selected back color
+            .ELSE
+                Invoke MUIGetExtProperty, hWin, @ButtonBackColorSelAlt  ; Selected mouse over color 
+            .ENDIF
+        .ENDIF
+    .ELSE
+        Invoke MUIGetExtProperty, hWin, @ButtonBackColorDisabled        ; Disabled back color
+    .ENDIF
+    mov BackColor, rax
+
+    .IF BackColor != -1 ; Not transparent, back color provided
+    
+        ;----------------------------------------------------------
+        ; Setup Double Buffering
+        ;----------------------------------------------------------
+    	Invoke CreateCompatibleDC, hdc
+    	mov hdcMem, rax
+    	Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
+    	mov hbmMem, rax
+    	Invoke SelectObject, hdcMem, hbmMem
+    	mov hOldBitmap, rax
 	
-	;----------------------------------------------------------
-	; Background
-	;----------------------------------------------------------
-	Invoke _MUI_ButtonPaintBackground, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    	;----------------------------------------------------------
+    	; Background
+    	;----------------------------------------------------------
+    	Invoke _MUI_ButtonPaintBackground, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
 
-	;----------------------------------------------------------
-	; Accent
-	;----------------------------------------------------------
-    Invoke _MUI_ButtonPaintAccent, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    	;----------------------------------------------------------
+    	; Accent
+    	;----------------------------------------------------------
+        Invoke _MUI_ButtonPaintAccent, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    
+    	;----------------------------------------------------------
+    	; calc positions for text and images
+    	;----------------------------------------------------------    
+        Invoke _MUI_ButtonCalcPositions, hWin, hdc, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    
+    	;----------------------------------------------------------
+    	; Images
+    	;----------------------------------------------------------
+        Invoke _MUI_ButtonPaintImages, hWin, hdc, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    
+    	;----------------------------------------------------------
+    	; Text
+    	;----------------------------------------------------------
+    	Invoke _MUI_ButtonPaintText, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    
+    	;----------------------------------------------------------
+    	; Border
+    	;----------------------------------------------------------
+    	Invoke _MUI_ButtonPaintBorder, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    
+        ;----------------------------------------------------------
+        ; BitBlt from hdcMem back to hdc
+        ;----------------------------------------------------------
+        Invoke BitBlt, hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY
 
-	;----------------------------------------------------------
-	; calc positions for text and images
-	;----------------------------------------------------------    
-    Invoke _MUI_ButtonCalcPositions, hWin, hdc, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+        ;----------------------------------------------------------
+        ; Cleanup
+        ;----------------------------------------------------------
+        .IF hOldBitmap != 0
+            Invoke SelectObject, hdcMem, hOldBitmap
+            Invoke DeleteObject, hOldBitmap
+        .ENDIF
+        Invoke SelectObject, hdcMem, hbmMem
+        Invoke DeleteObject, hbmMem
+        Invoke DeleteDC, hdcMem
 
-	;----------------------------------------------------------
-	; Images
-	;----------------------------------------------------------
-    Invoke _MUI_ButtonPaintImages, hWin, hdc, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    .ELSE ; Transparent background
+  
+        ;----------------------------------------------------------
+        ; Setup Double Buffering
+        ;----------------------------------------------------------
+        Invoke CreateCompatibleDC, hdc
+        mov hdcMem, rax
 
-	;----------------------------------------------------------
-	; Text
-	;----------------------------------------------------------
-	Invoke _MUI_ButtonPaintText, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+        Invoke MUIGetParentBackgroundBitmap, hWin
+        mov hbmMem, rax
+        
+        Invoke SelectObject, hdcMem, hbmMem
+        mov hOldBitmap, rax
 
-	;----------------------------------------------------------
-	; Border
-	;----------------------------------------------------------
-	Invoke _MUI_ButtonPaintBorder, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+        ;----------------------------------------------------------
+        ; Accent
+        ;----------------------------------------------------------
+        Invoke _MUI_ButtonPaintAccent, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
 
-    ;----------------------------------------------------------
-    ; BitBlt from hdcMem back to hdc
-    ;----------------------------------------------------------
-    Invoke BitBlt, hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY
+        ;----------------------------------------------------------
+        ; Images
+        ;----------------------------------------------------------
+        Invoke _MUI_ButtonPaintImages, hWin, hdc, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    
+        ;----------------------------------------------------------
+        ; Text
+        ;----------------------------------------------------------
+        Invoke _MUI_ButtonPaintText, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    
+        ;----------------------------------------------------------
+        ; Border
+        ;----------------------------------------------------------
+        Invoke _MUI_ButtonPaintBorder, hWin, hdcMem, Addr rect, EnabledState, MouseOver, SelectedState
+    
+        ;----------------------------------------------------------
+        ; BitBlt from hdcMem back to hdc
+        ;----------------------------------------------------------
+        Invoke BitBlt, hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY
+    
+        ;----------------------------------------------------------
+        ; Cleanup
+        ;----------------------------------------------------------
+        .IF hOldBitmap != 0
+            Invoke SelectObject, hdcMem, hOldBitmap
+            Invoke DeleteObject, hOldBitmap
+        .ENDIF
+        Invoke SelectObject, hdcMem, hbmMem
+        Invoke DeleteObject, hbmMem
+        Invoke DeleteDC, hdcMem
 
-    ;----------------------------------------------------------
-    ; Cleanup
-    ;----------------------------------------------------------
-    Invoke SelectObject, hdcMem, hOldBitmap
-    Invoke DeleteDC, hdcMem
-    Invoke DeleteObject, hbmMem
-    .IF hOldBitmap != 0
-        Invoke DeleteObject, hOldBitmap
-    .ENDIF		
-     
+    .ENDIF
+ 
     Invoke EndPaint, hWin, Addr ps
 
     ret
