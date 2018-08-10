@@ -213,7 +213,7 @@ InitGUI PROC FRAME hWin:QWORD
     ;-----------------------------------------------------------------------------------------------------
     ; ModernUI_Text: Community Edition 2018
     ;-----------------------------------------------------------------------------------------------------        
-    Invoke MUITextCreate, hWin, Addr szRSHeader, 17, 70, 457, 30, IDC_TEXTRSHEADER, MUITS_CAPTION or MUITS_FONT_SEGOE 
+    Invoke MUITextCreate, hWin, Addr szRSHeader, 17, 70, 457, 30, IDC_TEXTRSHEADER, MUITS_13PT or MUITS_FONT_BOLD or MUITS_FONT_SEGOE 
     mov hMUITextRSHeader, rax
     Invoke MUITextSetProperty, hMUITextRSHeader, @TextColor, MUI_RGBCOLOR(179,179,179)
     Invoke MUITextSetProperty, hMUITextRSHeader, @TextColorAlt, MUI_RGBCOLOR(179,179,179)
