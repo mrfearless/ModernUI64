@@ -7,6 +7,7 @@ Group=1
 GroupExpand=1
 Res.rc=1
 Ver.rc=1
+Debug=0
 [Files]
 1=MUICheckbox.Asm
 2=MUICheckbox.Inc
@@ -35,18 +36,18 @@ Ver.rc=1
 [MakeDef]
 Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
-2=3,O,$B\UASM64.exe /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
+2=3,O,$B\UASM64.exe /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
 3=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /MACHINE:X64 /LIBPATH:"$L" /OUT:"$5",3,4
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
 13=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /DEBUGTYPE:CV /PDB:"$18" /VERSION:4.0 /MACHINE:X64 /LIBPATH:"$L" /OUT:"$5",3,4
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-16=*.obj,O,$B\UASM64.EXE /c /coff /Cp /Zi /Zd /nologo /I"$I",*.asm
+16=*.obj,O,$B\UASM64.EXE /c -win64 /win64 /D_WIN64 /coff /Cp /Zi /Zd /nologo /I"$I",*.asm
 17=0,0,"$E\x64\x64dbg",$.exe
 [Resource]
 1=,1,8,MUICheckbox.xml
@@ -55,10 +56,10 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 4=,102,2,Images\mui_checkbox_tick_16x16.ico
 [StringTable]
 [VerInf]
-FV=0.0.1.7
-FileVersion=0.0.1.7
-PV=0.0.1.7
-ProductVersion=0.0.1.7
+FV=0.0.2.3
+FileVersion=0.0.2.3
+PV=0.0.2.3
+ProductVersion=0.0.2.3
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -88,13 +89,13 @@ AutoLoad=2,1,4
 Settings=1279
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=8
+MilestoneEveryCurrent=5
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2018
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=19
@@ -118,13 +119,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=5360959
+PTimer=6325466
 [Collapse]
 1=
 2=
 [Size]
-1=0,0,0,0,5362
-2=0,0,0,0,2103
+1=0,0,0,0,6554
+2=0,0,0,0,1223
 4=0,0,0,0
 [GroupExpand]
 GroupExpand=1,0,1,0
