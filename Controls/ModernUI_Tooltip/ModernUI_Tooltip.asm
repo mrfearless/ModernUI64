@@ -1,6 +1,6 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI x64 Control - ModernUI_Tooltip x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_Tooltip x64
 ;
 ; Copyright (c) 2018 by fearless
 ;
@@ -8,9 +8,36 @@
 ;
 ; http://www.LetTheLight.in
 ;
-; http://github.com/mrfearless/ModernUI
+; http://github.com/mrfearless/ModernUI64
 ;
-;======================================================================================================================================
+;
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
+;
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
+;
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
+;
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
+;
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
+;
+;==============================================================================
+
 .686
 .MMX
 .XMM
@@ -24,31 +51,35 @@ option stackbase : rsp
 _WIN64 EQU 1
 WINVER equ 0501h
 
-DEBUG64 EQU 1
-
-IFDEF DEBUG64
-    PRESERVEXMMREGS equ 1
-    includelib \JWasm\lib\x64\Debug64.lib
-    DBG64LIB equ 1
-    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
-    include \JWasm\include\debug64.inc
-    .DATA
-    RDBG_DbgWin	DB DEBUGEXE,0
-    .CODE
-ENDIF
+;MUI_DONTUSEGDIPLUS EQU 1 ; exclude (gdiplus) support
+;
+;DEBUG64 EQU 1
+;IFDEF DEBUG64
+;    PRESERVEXMMREGS equ 1
+;    includelib M:\UASM\lib\x64\Debug64.lib
+;    DBG64LIB equ 1
+;    DEBUGEXE textequ <'M:\UASM\bin\DbgWin.exe'>
+;    include M:\UASM\include\debug64.inc
+;    .DATA
+;    RDBG_DbgWin DB DEBUGEXE,0
+;    .CODE
+;ENDIF
 
 include windows.inc
+include commctrl.inc
 includelib user32.lib
 includelib kernel32.lib
+includelib gdi32.lib
+includelib comctl32.lib
 
 include ModernUI.inc
 includelib ModernUI.lib
 
 include ModernUI_Tooltip.inc
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Prototypes for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipWndProc					PROTO :HWND, :UINT, :WPARAM, :LPARAM
 _MUI_TooltipInit                    PROTO :QWORD, :QWORD, :QWORD
 _MUI_TooltipPaint                   PROTO :QWORD
@@ -62,9 +93,9 @@ _MUI_TooltipCheckWidthMultiline     PROTO :QWORD
 _MUI_TooltipCheckTextMultiline      PROTO :QWORD, :QWORD
 _MUI_TooltipParentSubclass          PROTO :HWND, :UINT, :WPARAM, :LPARAM, :UINT, :QWORD
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Structures for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; External public properties
 MUI_TOOLTIP_PROPERTIES          STRUCT
     qwTooltipFont               DQ ?
@@ -124,31 +155,33 @@ qwFadeInAlphaLevel              DQ 0                        ; alpha level (globa
 
 .CODE
 
-ALIGN 8
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Set property for ModernUI_Tooltip control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITooltipSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     Invoke SendMessage, hControl, MUI_SETPROPERTY, qwProperty, qwPropertyValue
     ret
 MUITooltipSetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Get property for ModernUI_Tooltip control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITooltipGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
     Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUITooltipGetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUITooltipRegister - Registers the ModernUI_Tooltip control
 ; can be used at start of program for use with RadASM custom control
 ; Custom control class must be set as ModernUI_Tooltip
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITooltipRegister PROC FRAME
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -181,9 +214,10 @@ MUITooltipRegister PROC FRAME
 MUITooltipRegister ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUITooltipCreate - Returns handle in rax of newly created control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITooltipCreate PROC FRAME hWndBuddyControl:QWORD, lpszText:QWORD, qwWidth:QWORD, qwStyle:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -210,9 +244,10 @@ MUITooltipCreate PROC FRAME hWndBuddyControl:QWORD, lpszText:QWORD, qwWidth:QWOR
 MUITooltipCreate ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TooltipWndProc - Main processing window for our control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL TE:TRACKMOUSEEVENT
     LOCAL rect:RECT
@@ -399,9 +434,10 @@ _MUI_TooltipWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lPa
 _MUI_TooltipWndProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TooltipInit - set initial default values
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipInit PROC FRAME USES RBX hWin:QWORD, hWndParent:QWORD, lpszText:QWORD
     LOCAL ncm:NONCLIENTMETRICS
     LOCAL lfnt:LOGFONT
@@ -474,9 +510,10 @@ _MUI_TooltipInit PROC FRAME USES RBX hWin:QWORD, hWndParent:QWORD, lpszText:QWOR
 _MUI_TooltipInit ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ModernUI_TooltipPaint
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipPaint PROC FRAME hWin:QWORD
     LOCAL ps:PAINTSTRUCT 
     LOCAL rect:RECT
@@ -553,9 +590,10 @@ _MUI_TooltipPaint PROC FRAME hWin:QWORD
 _MUI_TooltipPaint ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TooltipPaintBackground
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
     LOCAL BackColor:QWORD
     LOCAL hBrush:QWORD
@@ -584,9 +622,10 @@ _MUI_TooltipPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
 _MUI_TooltipPaintBackground ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TooltipPaintText
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
     LOCAL TextColor:QWORD
     LOCAL BackColor:QWORD
@@ -664,9 +703,10 @@ _MUI_TooltipPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
 _MUI_TooltipPaintText ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TooltipPaintTextAndTitle
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipPaintTextAndTitle PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD
     LOCAL TextColor:QWORD
     LOCAL BackColor:QWORD
@@ -801,9 +841,10 @@ _MUI_TooltipPaintTextAndTitle PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:
 _MUI_TooltipPaintTextAndTitle ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TooltipPaintBorder
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipPaintBorder PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
     LOCAL BorderColor:QWORD
     LOCAL BorderStyle:QWORD
@@ -833,9 +874,10 @@ _MUI_TooltipPaintBorder PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
 _MUI_TooltipPaintBorder ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TooltipSize - sets the size of our tooltip control based on text and title
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipSize PROC FRAME USES RBX hWin:QWORD, bMultiline:QWORD, lpszText:QWORD
     LOCAL hdc:HDC
     LOCAL sizetext:POINT
@@ -1072,9 +1114,10 @@ _MUI_TooltipSize PROC FRAME USES RBX hWin:QWORD, bMultiline:QWORD, lpszText:QWOR
 _MUI_TooltipSize ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Sets position of the tooltip relative to buddy control or mouse position
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipSetPosition PROC FRAME USES RBX hWin:QWORD
     LOCAL hParent:QWORD
     LOCAL qwStyle:QWORD
@@ -1161,9 +1204,10 @@ _MUI_TooltipSetPosition PROC FRAME USES RBX hWin:QWORD
 _MUI_TooltipSetPosition ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Returns TRUE if width > 0 (assumes multiline usage)
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipCheckWidthMultiline PROC FRAME USES RBX hWin:QWORD
     LOCAL rect:RECT
     LOCAL bMultiline:QWORD
@@ -1180,9 +1224,10 @@ _MUI_TooltipCheckWidthMultiline PROC FRAME USES RBX hWin:QWORD
 _MUI_TooltipCheckWidthMultiline ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Returns TRUE if CR LF found in string, otherwise returns FALSE
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipCheckTextMultiline PROC FRAME USES RBX hWin:QWORD, lpszText:QWORD
     LOCAL lenText:QWORD
     LOCAL Cnt:QWORD
@@ -1217,9 +1262,10 @@ _MUI_TooltipCheckTextMultiline PROC FRAME USES RBX hWin:QWORD, lpszText:QWORD
 _MUI_TooltipCheckTextMultiline ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TooltipParentSubclass - sublcass buddy/parent of the tooltip
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TooltipParentSubclass PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM, uIdSubclass:UINT, qwRefData:QWORD
     LOCAL TE:TRACKMOUSEEVENT
 

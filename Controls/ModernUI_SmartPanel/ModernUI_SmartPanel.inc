@@ -1,56 +1,64 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI x64 Control - ModernUI_SmartPanel x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_SmartPanel x64
 ;
-; Copyright (c) 2016 by fearless
+; Copyright (c) 2018 by fearless
 ;
 ; All Rights Reserved
 ;
 ; http://www.LetTheLight.in
 ;
-; http://github.com/mrfearless/ModernUI
+; http://github.com/mrfearless/ModernUI64
 ;
 ;
-; This software is provided 'as-is', without any express or implied warranty. In no event will the author be held liable for any 
-; damages arising from the use of this software.
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
 ;
-; Permission is granted to anyone to use this software for any non-commercial program. If you use the library in an application, an 
-; acknowledgement in the application or documentation is appreciated but not required. 
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
 ;
-; You are allowed to make modifications to the source code, but you must leave the original copyright notices intact and not 
-; misrepresent the origin of the software. It is not allowed to claim you wrote the original software. Modified files must have a clear 
-; notice that the files are modified, and not in the original state. This includes the name of the person(s) who modified the code. 
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
 ;
-; If you want to distribute or redistribute any portion of this package, you will need to include the full package in it's original 
-; state, including this license and all the copyrights. 
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
 ;
-; While distributing this package (in it's original state) is allowed, it is not allowed to charge anything for this. You may not sell
-; or include the package in any commercial package without having permission of the author. Neither is it allowed to redistribute any 
-; of the package's components with commercial applications.
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
 ;
-;======================================================================================================================================
+;==============================================================================
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; ModernUI_SmartPanel Prototypes
-;--------------------------------------------------------------------------------------------------------------------------------------
-MUISmartPanelRegister		   PROTO																   ; Use 'ModernUI_SmartPanel' as class in RadASM custom class control
-MUISmartPanelCreate		       PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD        	   ; hWndParent, xpos, ypos, qwWidth, qwHeight, qwResourceID, qwStyle
-MUISmartPanelSetProperty	   PROTO :QWORD, :QWORD, :QWORD											   ; hModernUI_SmartPanel, qwProperty, qwPropertyValue
-MUISmartPanelGetProperty	   PROTO :QWORD, :QWORD													   ; hModernUI_SmartPanel, qwProperty
+;------------------------------------------------------------------------------
+MUISmartPanelRegister		   PROTO                                                        ; Use 'ModernUI_SmartPanel' as class in RadASM custom class control
+MUISmartPanelCreate		       PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD ; hWndParent, xpos, ypos, qwWidth, qwHeight, qwResourceID, qwStyle
+MUISmartPanelSetProperty	   PROTO :QWORD, :QWORD, :QWORD                                 ; hModernUI_SmartPanel, qwProperty, qwPropertyValue
+MUISmartPanelGetProperty	   PROTO :QWORD, :QWORD                                         ; hModernUI_SmartPanel, qwProperty
 
-MUISmartPanelGetCurrentPanel   PROTO :QWORD                                                            ; hModernUI_SmartPanel
-MUISmartPanelSetCurrentPanel   PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_SmartPanel, PanelIndex, bNotify
-MUISmartPanelCurrentPanelIndex PROTO :QWORD                                                            ; hModernUI_SmartPanel. Returns PanelIndex in rax
+MUISmartPanelGetCurrentPanel   PROTO :QWORD                                                 ; hModernUI_SmartPanel
+MUISmartPanelSetCurrentPanel   PROTO :QWORD, :QWORD, :QWORD                                 ; hModernUI_SmartPanel, PanelIndex, bNotify
+MUISmartPanelCurrentPanelIndex PROTO :QWORD                                                 ; hModernUI_SmartPanel. Returns PanelIndex in rax
 
-MUISmartPanelNextPanel         PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, bNotify
-MUISmartPanelPrevPanel         PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, bNotify
-MUISmartPanelSetIsDlgMsgVar    PROTO :QWORD, :QWORD                                                    ; hModernUI_SmartPanel, Addr lpqwVar
-MUISmartPanelRegisterPanel     PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_SmartPanel, qwResIdPanelDlg, lpqwPanelProc
+MUISmartPanelNextPanel         PROTO :QWORD, :QWORD                                         ; hModernUI_SmartPanel, bNotify
+MUISmartPanelPrevPanel         PROTO :QWORD, :QWORD                                         ; hModernUI_SmartPanel, bNotify
+MUISmartPanelSetIsDlgMsgVar    PROTO :QWORD, :QWORD                                         ; hModernUI_SmartPanel, Addr lpqwVar
+MUISmartPanelRegisterPanel     PROTO :QWORD, :QWORD, :QWORD                                 ; hModernUI_SmartPanel, qwResIdPanelDlg, lpqwPanelProc
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; ModernUI_SmartPanel Structures
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 
 IFNDEF MUISP_ITEM ; SmartPanel Notification Item
 MUISP_ITEM                 	    STRUCT
@@ -69,9 +77,9 @@ NM_MUISMARTPANEL      	        ENDS
 ENDIF
 
 .CONST
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; ModernUI_SmartPanel Constants
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 
 ; ModernUI_SmartPanel Messages
 MUISPM_REGISTERPANEL            EQU WM_USER+1760 ; wParam Resource id of Dialog, lParam addr of Dialog proc, eax = null or handle panel on success.
@@ -97,9 +105,10 @@ MUISPS_SLIDEPANELS_INSTANT      EQU MUISPS_NORMAL
 MUISPS_SPS_WRAPAROUND           EQU 10h ; for next/prev and showcase, if at end, moves to the right and starts again, otherwise if not specified, at last panel, scrolls left all the way back to start showing all panels along the way.
 MUISPS_SPS_SKIPBETWEEN          EQU 20h ; skips any in between panels, just moves from one to another.
 
-;--------------------------------------------------------------------------------------------------------------------------------------
-; ModernUI_SmartPanel Properties: Use with MUIModernUI_SmartPanelSetProperty / MUIModernUI_SmartPanelGetProperty or MUI_SETPROPERTY / MUI_GETPROPERTY msgs
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
+; ModernUI_SmartPanel Properties: Use with MUISmartPanelSetProperty / 
+; MUISmartPanelGetProperty or MUI_SETPROPERTY / MUI_GETPROPERTY msgs
+;------------------------------------------------------------------------------
 @SmartPanelPanelsColor          EQU 0   ; RGBCOLOR for panel's background. -1 = ignore, use system default. Default value is -1
 @SmartPanelBorderColor          EQU 8   ; RGBCOLOR for border color of MUISmartPanel. -1 = none. Default value is -1
 @SmartPanelDllInstance          EQU 16  ; reserved for future use

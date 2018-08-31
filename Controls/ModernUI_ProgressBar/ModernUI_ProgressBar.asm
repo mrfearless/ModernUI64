@@ -1,16 +1,43 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI x64 Control - ModernUI_ProgressBar x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_ProgressBar x64
 ;
-; Copyright (c) 2016 by fearless
+; Copyright (c) 2018 by fearless
 ;
 ; All Rights Reserved
 ;
 ; http://www.LetTheLight.in
 ;
-; http://github.com/mrfearless/ModernUI
+; http://github.com/mrfearless/ModernUI64
 ;
-;======================================================================================================================================
+;
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
+;
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
+;
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
+;
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
+;
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
+;
+;==============================================================================
+
 .686
 .MMX
 .XMM
@@ -25,39 +52,39 @@ _WIN64 EQU 1
 WINVER equ 0501h
 
 ;DEBUG64 EQU 1
-
 ;IFDEF DEBUG64
 ;    PRESERVEXMMREGS equ 1
-;    includelib \JWasm\lib\x64\Debug64.lib
+;    includelib M:\UASM\lib\x64\Debug64.lib
 ;    DBG64LIB equ 1
-;    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
-;    include \JWasm\include\debug64.inc
+;    DEBUGEXE textequ <'M:\UASM\bin\DbgWin.exe'>
+;    include M:\UASM\include\debug64.inc
 ;    .DATA
-;    RDBG_DbgWin	DB DEBUGEXE,0
+;    RDBG_DbgWin DB DEBUGEXE,0
 ;    .CODE
 ;ENDIF
 
 include windows.inc
 includelib user32.lib
 includelib kernel32.lib
+includelib gdi32.lib
 
 include ModernUI.inc
 includelib ModernUI.lib
 
 include ModernUI_ProgressBar.inc
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Prototypes for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressBarWndProc					PROTO :HWND, :UINT, :WPARAM, :LPARAM
 _MUI_ProgressBarInit					PROTO :QWORD
 _MUI_ProgressBarPaint					PROTO :QWORD
 _MUI_ProgressBarCalcWidth               PROTO :QWORD, :QWORD
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Structures for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; External public properties
 MUI_PROGRESSBAR_PROPERTIES				STRUCT
 	qwTextColor							DQ ?
@@ -96,31 +123,33 @@ hMUIProgressBarFont                     DQ 0                        	; Handle to
 
 .CODE
 
-ALIGN 8
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Set property for ModernUI_ProgressBar control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressBarSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     Invoke SendMessage, hControl, MUI_SETPROPERTY, qwProperty, qwPropertyValue
     ret
 MUIProgressBarSetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Get property for ModernUI_ProgressBar control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressBarGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
     Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUIProgressBarGetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIProgressBarRegister - Registers the ModernUI_ProgressBar control
 ; can be used at start of program for use with RadASM custom control
 ; Custom control class must be set as ModernUI_ProgressBar
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressBarRegister PROC FRAME
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -153,9 +182,10 @@ MUIProgressBarRegister PROC FRAME
 MUIProgressBarRegister ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIProgressBarCreate - Returns handle in rax of newly created control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressBarCreate PROC FRAME hWndParent:QWORD, xpos:QWORD, ypos:QWORD, controlwidth:QWORD, controlheight:QWORD, qwResourceID:QWORD, qwStyle:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -179,10 +209,10 @@ MUIProgressBarCreate PROC FRAME hWndParent:QWORD, xpos:QWORD, ypos:QWORD, contro
 MUIProgressBarCreate ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressBarWndProc - Main processing window for our control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressBarWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     
     mov eax,uMsg
@@ -244,9 +274,10 @@ _MUI_ProgressBarWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM,
 _MUI_ProgressBarWndProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressBarInit - set initial default values
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressBarInit PROC FRAME hControl:QWORD
     LOCAL ncm:NONCLIENTMETRICS
     LOCAL lfnt:LOGFONT
@@ -299,9 +330,10 @@ _MUI_ProgressBarInit PROC FRAME hControl:QWORD
 _MUI_ProgressBarInit ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressBarPaint
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressBarPaint PROC FRAME hWin:QWORD
     LOCAL ps:PAINTSTRUCT 
     LOCAL rectprogress:RECT
@@ -427,10 +459,10 @@ _MUI_ProgressBarPaint PROC FRAME hWin:QWORD
 _MUI_ProgressBarPaint ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressBarCalcWidth
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressBarCalcWidth PROC FRAME USES RBX hControl:QWORD, qwPercent:QWORD
     LOCAL rect:RECT
     LOCAL qwProgressWidth:QWORD
@@ -464,9 +496,10 @@ _MUI_ProgressBarCalcWidth PROC FRAME USES RBX hControl:QWORD, qwPercent:QWORD
 _MUI_ProgressBarCalcWidth ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIProgressBarSetMinMax
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressBarSetMinMax PROC FRAME hControl:QWORD, qwMin:QWORD, qwMax:QWORD
     Invoke MUISetExtProperty, hControl, @ProgressBarMin, qwMin
     Invoke MUISetExtProperty, hControl, @ProgressBarMax, qwMax
@@ -474,10 +507,10 @@ MUIProgressBarSetMinMax PROC FRAME hControl:QWORD, qwMin:QWORD, qwMax:QWORD
 MUIProgressBarSetMinMax ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIProgressBarSetPercent
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressBarSetPercent PROC FRAME hControl:QWORD, qwPercent:QWORD
     LOCAL qwOldPercent:QWORD
     LOCAL qwNewPercent:QWORD
@@ -549,19 +582,20 @@ MUIProgressBarSetPercent PROC FRAME hControl:QWORD, qwPercent:QWORD
 MUIProgressBarSetPercent ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIProgressBarGetPercent
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressBarGetPercent PROC FRAME hControl:QWORD
     Invoke MUIGetExtProperty, hControl, @ProgressBarPercent
     ret
 MUIProgressBarGetPercent ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIProgressBarStep
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressBarStep PROC FRAME hControl:QWORD
     LOCAL qwOldPercent:QWORD
     LOCAL qwNewPercent:QWORD

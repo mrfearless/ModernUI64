@@ -36,7 +36,7 @@ Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 3=7,O,$B\LIB.EXE,3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
@@ -68,7 +68,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2017
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=16
@@ -92,13 +92,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=12534759
+PTimer=12840099
 [Collapse]
 2=
-1=,4096,67371280,2097152,16777232
+1=2147483647,2147483647,2147483647,2147483647,134217727
 [Size]
-2=0,0,0,0,4428
-1=0,0,0,0,14069
+2=0,0,0,0,6648
+1=0,0,0,0,45116
 [GroupExpand]
 GroupExpand=1,0,0,0,0,0
 [BookMark]
@@ -115,12 +115,16 @@ GroupExpand=1,0,0,0,0,0
 [BreakPoint]
 0=
 [Find]
-1="dw"
-2="dq"
-3="Shell_NotifyIcon"
-4="DD 0"
-5="DD ?"
-6="DWORD"
+1=";====================================================================================="
+2=";-----------------------------------------------------------------------------------"
+3=";-------------------------------------------------------------------------------------"
+4=";--------------------------------------------------------------------------------------------------------------------------------------"
+5="dw"
+6="dq"
+7="Shell_NotifyIcon"
+8="DD 0"
+9="DD ?"
+10="DWORD"
 [RADebugBP]
 2=
 1=

@@ -1,8 +1,8 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI x64 Control - ModernUI_Button x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_Button x64
 ;
-; Copyright (c) 2016 by fearless
+; Copyright (c) 2018 by fearless
 ;
 ; All Rights Reserved
 ;
@@ -11,28 +11,36 @@
 ; http://github.com/mrfearless/ModernUI64
 ;
 ;
-; This software is provided 'as-is', without any express or implied warranty. In no event will the author be held liable for any 
-; damages arising from the use of this software.
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
 ;
-; Permission is granted to anyone to use this software for any non-commercial program. If you use the library in an application, an 
-; acknowledgement in the application or documentation is appreciated but not required. 
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
 ;
-; You are allowed to make modifications to the source code, but you must leave the original copyright notices intact and not 
-; misrepresent the origin of the software. It is not allowed to claim you wrote the original software. Modified files must have a clear 
-; notice that the files are modified, and not in the original state. This includes the name of the person(s) who modified the code. 
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
 ;
-; If you want to distribute or redistribute any portion of this package, you will need to include the full package in it's original 
-; state, including this license and all the copyrights. 
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
 ;
-; While distributing this package (in it's original state) is allowed, it is not allowed to charge anything for this. You may not sell
-; or include the package in any commercial package without having permission of the author. Neither is it allowed to redistribute any 
-; of the package's components with commercial applications.
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
 ;
-;======================================================================================================================================
+;==============================================================================
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; ModernUI_Button Prototypes
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonRegister		        PROTO																	; Use 'ModernUI_Button' as class in RadASM custom class control
 MUIButtonCreate		            PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD	; hWndParent, lpszText, xpos, ypos, qwWidth, qwHeight, qwResourceID, qwStyle
 MUIButtonSetProperty	        PROTO :QWORD, :QWORD, :QWORD											; hModernUI_Button, qwProperty, qwPropertyValue
@@ -59,15 +67,15 @@ MUIButtonSetAllProperties       PROTO :QWORD, :QWORD, :QWORD                    
 
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; ModernUI_Button Structures
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 
 
 .CONST
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; ModernUI_Button Constants
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 IFNDEF MUI_BUTTON_PROPERTIES
 MUI_BUTTON_PROPERTIES           STRUCT
     qwTextFont                  DQ ?       ; hFont
@@ -124,9 +132,9 @@ MUI_BUTTON_PROPERTIES			ENDS
 ENDIF
 
 .CONST
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; ModernUI_Button Constants
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 
 ; ModernUI_Button Messages
 MUIBM_GETSTATE                  EQU WM_USER + 1779 ; wParam = NULL, lParam = NULL. EAX contains state (TRUE/FALSE)
@@ -152,9 +160,10 @@ MUIBS_KEEPIMAGES                EQU 40h     ; Dont delete image handles when con
 MUIBS_DROPDOWN                  EQU 80h     ; Show dropdown arrow right side of control
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
-; ModernUI_Button Properties: Use with MUIButtonSetProperty / MUIButtonGetProperty or MUI_SETPROPERTY / MUI_GETPROPERTY msgs
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
+; ModernUI_Button Properties: Use with MUIButtonSetProperty / 
+; MUIButtonGetProperty or MUI_SETPROPERTY / MUI_GETPROPERTY msgs
+;------------------------------------------------------------------------------
 
 
 @ButtonTextFont                 EQU 0       ; hFont
@@ -181,7 +190,7 @@ MUIBS_DROPDOWN                  EQU 80h     ; Show dropdown arrow right side of 
 @ButtonAccentStyle              EQU 168     ; Button Accent Styles - Either MUIBAS_NONE, MUIBAS_ALL or a combination of MUIBAS_LEFT, MUIBAS_TOP, MUIBAS_BOTTOM, MUIBAS_RIGHT
 @ButtonAccentStyleAlt           EQU 176     ; Button Accent Styles - Either MUIBAS_NONE, MUIBAS_ALL or a combination of MUIBAS_LEFT, MUIBAS_TOP, MUIBAS_BOTTOM, MUIBAS_RIGHT
 @ButtonAccentStyleSel           EQU 184     ; Button Accent Styles - Either MUIBAS_NONE, MUIBAS_ALL or a combination of MUIBAS_LEFT, MUIBAS_TOP, MUIBAS_BOTTOM, MUIBAS_RIGHT
-@ButtonAccentStyleSelAlt        EQU 192      ; Button Accent Styles - Either MUIBAS_NONE, MUIBAS_ALL or a combination of MUIBAS_LEFT, MUIBAS_TOP, MUIBAS_BOTTOM, MUIBAS_RIGHT
+@ButtonAccentStyleSelAlt        EQU 192     ; Button Accent Styles - Either MUIBAS_NONE, MUIBAS_ALL or a combination of MUIBAS_LEFT, MUIBAS_TOP, MUIBAS_BOTTOM, MUIBAS_RIGHT
 @ButtonImageType                EQU 200     ; Button Image Types - One of the following: MUIBIT_NONE, MUIBIT_BMP, MUIBIT_ICO or MUIBIT_PNG
 @ButtonImage                    EQU 208     ; hImage
 @ButtonImageAlt                 EQU 216     ; hImage

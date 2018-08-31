@@ -1,16 +1,43 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI x64 Control - ModernUI_SmartPanel x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_SmartPanel x64
 ;
-; Copyright (c) 2016 by fearless
+; Copyright (c) 2018 by fearless
 ;
 ; All Rights Reserved
 ;
 ; http://www.LetTheLight.in
 ;
-; http://github.com/mrfearless/ModernUI
+; http://github.com/mrfearless/ModernUI64
 ;
-;======================================================================================================================================
+;
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
+;
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
+;
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
+;
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
+;
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
+;
+;==============================================================================
+
 .686
 .MMX
 .XMM
@@ -25,15 +52,14 @@ _WIN64 EQU 1
 WINVER equ 0501h
 
 ;DEBUG64 EQU 1
-;
 ;IFDEF DEBUG64
 ;    PRESERVEXMMREGS equ 1
-;    includelib \UASM\lib\x64\Debug64.lib
+;    includelib M:\UASM\lib\x64\Debug64.lib
 ;    DBG64LIB equ 1
 ;    DEBUGEXE textequ <'M:\UASM\bin\DbgWin.exe'>
-;    include \UASM\include\debug64.inc
+;    include M:\UASM\include\debug64.inc
 ;    .DATA
-;    RDBG_DbgWin	DB DEBUGEXE,0
+;    RDBG_DbgWin DB DEBUGEXE,0
 ;    .CODE
 ;ENDIF
 
@@ -49,9 +75,9 @@ includelib ModernUI.lib
 
 include ModernUI_SmartPanel.inc
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Prototypes for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SmartPanelWndProc			        PROTO :HWND, :UINT, :WPARAM, :LPARAM
 _MUI_SmartPanelInit					    PROTO :QWORD
 _MUI_SmartPanelCleanup                  PROTO :QWORD
@@ -65,9 +91,9 @@ _MUI_SP_DialogSubClassProc              PROTO :HWND, :UINT, :WPARAM, :LPARAM, :U
 _MUI_SP_DialogPaintBackground           PROTO :QWORD, :QWORD
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Structures for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; External public properties
 MUI_SMARTPANEL_PROPERTIES				STRUCT
     qwPanelsColor                       DQ ?
@@ -136,31 +162,33 @@ SPNM                    	            NM_MUISMARTPANEL <> ; Notification data pas
 
 .CODE
 
-ALIGN 8
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Set property for ModernUI_SmartPanel control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUISmartPanelSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     Invoke SendMessage, hControl, MUI_SETPROPERTY, qwProperty, qwPropertyValue
     ret
 MUISmartPanelSetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Get property for ModernUI_SmartPanel control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUISmartPanelGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
     Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUISmartPanelGetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUISmartPanelRegister - Registers the ModernUI_SmartPanel control
 ; can be used at start of program for use with RadASM custom control
 ; Custom control class must be set as ModernUI_SmartPanel
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUISmartPanelRegister PROC FRAME
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -193,9 +221,10 @@ MUISmartPanelRegister PROC FRAME
 MUISmartPanelRegister ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUISmartPanelCreate - Returns handle in rax of newly created control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUISmartPanelCreate PROC FRAME hWndParent:QWORD, xpos:QWORD, ypos:QWORD, controlwidth:QWORD, controlheight:QWORD, qwResourceID:QWORD, qwStyle:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -227,9 +256,10 @@ MUISmartPanelCreate PROC FRAME hWndParent:QWORD, xpos:QWORD, ypos:QWORD, control
 MUISmartPanelCreate ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SmartPanelWndProc - Main processing window for our control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SmartPanelWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     
     mov eax,uMsg
@@ -305,9 +335,10 @@ _MUI_SmartPanelWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, 
 _MUI_SmartPanelWndProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SmartPanelInit - set initial default values
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SmartPanelInit PROC FRAME hWin:QWORD
     LOCAL qwStyle:QWORD
     LOCAL qwExStyle:QWORD
@@ -349,9 +380,10 @@ _MUI_SmartPanelInit PROC FRAME hWin:QWORD
 _MUI_SmartPanelInit ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SmartPanelCleanup - cleanup a few things before control is destroyed
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SmartPanelCleanup PROC FRAME hWin:QWORD
     LOCAL TotalItems:QWORD
 
@@ -372,10 +404,11 @@ _MUI_SmartPanelCleanup PROC FRAME hWin:QWORD
 _MUI_SmartPanelCleanup ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUISmartPanelRegisterPanel - Creates the panel dialog and saves the handle in the
 ; MUISP_ITEM. Returns handle of dialog in eax
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUISmartPanelRegisterPanel PROC FRAME USES RBX hControl:QWORD, idPanelDlg:QWORD, lpqwPanelProc:QWORD
     LOCAL hinstance:QWORD
     LOCAL hPanelDlg:QWORD
@@ -442,9 +475,10 @@ MUISmartPanelRegisterPanel PROC FRAME USES RBX hControl:QWORD, idPanelDlg:QWORD,
 MUISmartPanelRegisterPanel endp
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SP_DialogSubClassProc - SUBCLASS of Registered panel (Dialog) for painting panel back color
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SP_DialogSubClassProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM, uIdSubclass:UINT, qwRefData:QWORD
     LOCAL qwBackColor:QWORD
     
@@ -484,9 +518,10 @@ _MUI_SP_DialogSubClassProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPAR
 _MUI_SP_DialogSubClassProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SP_DialogPaintBackground
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SP_DialogPaintBackground PROC FRAME hWin:QWORD, qwBackColor:QWORD
     LOCAL ps:PAINTSTRUCT 
     LOCAL rect:RECT
@@ -553,9 +588,10 @@ _MUI_SP_DialogPaintBackground PROC FRAME hWin:QWORD, qwBackColor:QWORD
 _MUI_SP_DialogPaintBackground ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUISmartPanelGetCurrentPanel - Returns in eax the handle of the current panel or NULL
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUISmartPanelGetCurrentPanel PROC FRAME hControl:QWORD
     Invoke MUIGetIntProperty, hControl, @SmartPanelCurrentPanel
     Invoke _MUI_SmartPanelGetPanelHandle, hControl, eax
@@ -563,10 +599,11 @@ MUISmartPanelGetCurrentPanel PROC FRAME hControl:QWORD
 MUISmartPanelGetCurrentPanel ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUISmartPanelSetCurrentPanel - Returns the index of the previously selected panel 
 ; if successful or - 1 otherwise.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUISmartPanelSetCurrentPanel PROC FRAME USES RBX hControl:QWORD, NewSelection:QWORD, qwNotify:QWORD
     LOCAL OldSelection:QWORD
     LOCAL TotalItems:QWORD
@@ -676,9 +713,10 @@ MUISmartPanelSetCurrentPanel PROC FRAME USES RBX hControl:QWORD, NewSelection:QW
 MUISmartPanelSetCurrentPanel ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SmartPanelNavNotify
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SmartPanelNavNotify PROC FRAME USES RBX hWin:QWORD, OldSelection:QWORD, NewSelection:QWORD
     LOCAL pItemData:QWORD
     LOCAL pOldItemDataEntry:QWORD
@@ -745,9 +783,10 @@ _MUI_SmartPanelNavNotify PROC FRAME USES RBX hWin:QWORD, OldSelection:QWORD, New
 _MUI_SmartPanelNavNotify endp
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SmartPanelSlidePanels - SlideSpeed 0 slow, 1 fast, 2 very fast
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SmartPanelSlidePanels PROC FRAME USES RBX hWin:QWORD, OldSelection:QWORD, NewSelection:QWORD, SlideSpeed:QWORD 
     LOCAL hCurrentPanel:QWORD
     LOCAL hNextPanel:QWORD
@@ -819,9 +858,10 @@ _MUI_SmartPanelSlidePanels PROC FRAME USES RBX hWin:QWORD, OldSelection:QWORD, N
 _MUI_SmartPanelSlidePanels endp
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SmartPanelSlidePanelsLeft - Slides current and next panel left till we show next panel only
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SmartPanelSlidePanelsLeft PROC FRAME hWin:QWORD, hCurrentPanel:QWORD, hNextPanel:QWORD, SlideSpeed:QWORD
     LOCAL rect:RECT
     LOCAL xposnextpanel:SDWORD
@@ -892,9 +932,10 @@ _MUI_SmartPanelSlidePanelsLeft PROC FRAME hWin:QWORD, hCurrentPanel:QWORD, hNext
 _MUI_SmartPanelSlidePanelsLeft endp
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SmartPanelSlidePanelsRight - Slides current and next panel right till we show next panel only
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SmartPanelSlidePanelsRight PROC FRAME hWin:QWORD, hCurrentPanel:QWORD, hNextPanel:QWORD, SlideSpeed:QWORD
     LOCAL rect:RECT
     LOCAL xposnextpanel:SDWORD
@@ -962,9 +1003,10 @@ _MUI_SmartPanelSlidePanelsRight PROC FRAME hWin:QWORD, hCurrentPanel:QWORD, hNex
 _MUI_SmartPanelSlidePanelsRight endp
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUISmartPanelNextPanel - returns previous panel selected in eax or -1 if nothing happening
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUISmartPanelNextPanel PROC FRAME USES RBX hControl:QWORD, qwNotify:QWORD
     LOCAL OldSelection:QWORD
     LOCAL NewSelection:QWORD
@@ -1065,9 +1107,10 @@ MUISmartPanelNextPanel PROC FRAME USES RBX hControl:QWORD, qwNotify:QWORD
 MUISmartPanelNextPanel ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUISmartPanelPrevPanel - returns previous panel selected in eax or -1 if nothing happening
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUISmartPanelPrevPanel PROC FRAME USES RBX hControl:QWORD, qwNotify:QWORD
     LOCAL OldSelection:QWORD
     LOCAL NewSelection:QWORD
@@ -1170,18 +1213,20 @@ MUISmartPanelPrevPanel PROC FRAME USES RBX hControl:QWORD, qwNotify:QWORD
 MUISmartPanelPrevPanel ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUISmartPanelSetIsDlgMsgVar
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUISmartPanelSetIsDlgMsgVar PROC FRAME hControl:QWORD, lpqwIsDlgMsgVar:QWORD
     Invoke MUISetIntProperty, hControl, @SmartPanellpqwIsDlgMsgVar, lpqwIsDlgMsgVar
     ret
 MUISmartPanelSetIsDlgMsgVar ENDP
 
 
-;--------------------------------------------------------------------------------------------------------------------
+MUI_ALIGN
+;-------------------------------------------------------------------------------------------------------------
 ; _MUI_SmartPanelGetPanelHandle
-;--------------------------------------------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------------------
 _MUI_SmartPanelGetPanelHandle PROC FRAME USES RBX hWin:QWORD, nItem:QWORD
     LOCAL TotalItems:QWORD
     LOCAL pItemData:QWORD
@@ -1210,18 +1255,20 @@ _MUI_SmartPanelGetPanelHandle PROC FRAME USES RBX hWin:QWORD, nItem:QWORD
 _MUI_SmartPanelGetPanelHandle endp
 
 
-;--------------------------------------------------------------------------------------------------------------------
+MUI_ALIGN
+;-------------------------------------------------------------------------------------------------------------
 ; MUISmartPanelCurrentPanelIndex - returns current selected panel as a numerical index in eax, or -1 if error.
-;--------------------------------------------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------------------
 MUISmartPanelCurrentPanelIndex PROC FRAME hControl:QWORD
     Invoke MUIGetIntProperty, hControl, @SmartPanelCurrentPanel
     ret
 MUISmartPanelCurrentPanelIndex ENDP
 
 
-;--------------------------------------------------------------------------------------------------------------------
+MUI_ALIGN
+;-------------------------------------------------------------------------------------------------------------
 ; _MUI_SP_ResizePanels - Resize panels to match SmartPanel size
-;--------------------------------------------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------------------
 _MUI_SP_ResizePanels PROC FRAME USES RBX hWin:QWORD
     LOCAL rect:RECT
     LOCAL hPanelDlg:QWORD

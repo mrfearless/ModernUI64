@@ -1,16 +1,43 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI x64 Control - ModernUI_CaptionBar x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_CaptionBar x64
 ;
-; Copyright (c) 2016 by fearless
+; Copyright (c) 2018 by fearless
 ;
 ; All Rights Reserved
 ;
 ; http://www.LetTheLight.in
 ;
-; http://github.com/mrfearless/ModernUI
+; http://github.com/mrfearless/ModernUI64
 ;
-;======================================================================================================================================
+;
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
+;
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
+;
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
+;
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
+;
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
+;
+;==============================================================================
+
 .686
 .MMX
 .XMM
@@ -24,43 +51,44 @@ option stackbase : rsp
 _WIN64 EQU 1
 WINVER equ 0501h
 
-;MUI_USEGDIPLUS EQU 1 ; comment out of you dont require png (gdiplus) support
+MUI_DONTUSEGDIPLUS EQU 1 ; exclude (gdiplus) support
+;
 ;DEBUG64 EQU 1
-
 ;IFDEF DEBUG64
 ;    PRESERVEXMMREGS equ 1
-;    includelib \JWasm\lib\x64\Debug64.lib
+;    includelib M:\UASM\lib\x64\Debug64.lib
 ;    DBG64LIB equ 1
-;    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
-;    include \JWasm\include\debug64.inc
+;    DEBUGEXE textequ <'M:\UASM\bin\DbgWin.exe'>
+;    include M:\UASM\include\debug64.inc
 ;    .DATA
-;    RDBG_DbgWin	DB DEBUGEXE,0
+;    RDBG_DbgWin DB DEBUGEXE,0
 ;    .CODE
 ;ENDIF
 
 include windows.inc
+include commctrl.inc
 includelib user32.lib
 includelib kernel32.lib
-include CommCtrl.INC
-
-IFDEF MUI_USEGDIPLUS
-include gdiplus.inc
-;include ole32.inc
-ENDIF
-
-IFDEF MUI_USEGDIPLUS
-includelib gdiplus.lib
-includelib ole32.lib
-ENDIF
+includelib gdi32.lib
+includelib comctl32.lib
 
 include ModernUI.inc
 includelib ModernUI.lib
 
+IFDEF MUI_USEGDIPLUS
+ECHO MUI_USEGDIPLUS
+include gdiplus.inc
+includelib gdiplus.lib
+includelib ole32.lib
+ELSE
+ECHO MUI_DONTUSEGDIPLUS
+ENDIF
+
 include ModernUI_CaptionBar.inc
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Prototypes for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 
 
 _MUI_CaptionBarWndProc				        PROTO :HWND, :UINT, :WPARAM, :LPARAM
@@ -86,9 +114,9 @@ _MUI_SysButtonGetIconSize                   PROTO :QWORD, :QWORD, :QWORD
 
 _MUI_ApplyMUIStyleToDialog                  PROTO :QWORD, :QWORD
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Structures for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; CaptionBar External Properties
 MUI_CAPTIONBAR_PROPERTIES				    STRUCT 8
 	qwTextColor							    DQ ?
@@ -206,31 +234,33 @@ szMUISysResizeGrip                          DB 'o',0                    ; Resize
 
 .CODE
 
-ALIGN 8
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Set property for CaptionBar control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUICaptionBarSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     Invoke SendMessage, hControl, MUI_SETPROPERTY, qwProperty, qwPropertyValue
     ret
 MUICaptionBarSetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Get property for CaptionBar control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUICaptionBarGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
     Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUICaptionBarGetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUICaptionBarRegister - Registers the ModernUI_CaptionBar control
 ; can be used at start of program for use with RadASM custom control
 ; Custom control class must be set as ModernUI_CaptionBar
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUICaptionBarRegister PROC FRAME
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -265,9 +295,10 @@ MUICaptionBarRegister PROC FRAME
 MUICaptionBarRegister ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUICaptionBarCreate - Returns handle in rax of newly created control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUICaptionBarCreate PROC FRAME USES rbx hWndParent:QWORD, lpszCaptionText:QWORD, qwCaptionHeight:QWORD, qwResourceID:QWORD, qwStyle:QWORD
     LOCAL hinstance:QWORD
 	LOCAL hControl:QWORD
@@ -302,9 +333,10 @@ MUICaptionBarCreate PROC FRAME USES rbx hWndParent:QWORD, lpszCaptionText:QWORD,
 MUICaptionBarCreate ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarWndProc - Main processing window for our CaptionBar control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL TE:TRACKMOUSEEVENT
     LOCAL wp:WINDOWPLACEMENT
@@ -475,10 +507,11 @@ _MUI_CaptionBarWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, 
 _MUI_CaptionBarWndProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarParentSubClassProc - Subclass for caption bar parent window 
 ; qwRefData is the handle to our CaptionBar control in this subclass proc
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM, uIdSubclass:QWORD, qwRefData:QWORD
     LOCAL wp:WINDOWPLACEMENT
     LOCAL qwStyle:QWORD
@@ -526,9 +559,10 @@ _MUI_CaptionBarParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM
 _MUI_CaptionBarParentSubClassProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarInit - set initial default values
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarInit PROC FRAME hWin:QWORD
     LOCAL ncm:NONCLIENTMETRICS
     LOCAL lfnt:LOGFONT
@@ -624,9 +658,10 @@ _MUI_CaptionBarInit PROC FRAME hWin:QWORD
 _MUI_CaptionBarInit ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarCleanup - cleanup a few things before control is destroyed
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarCleanup PROC FRAME hWin:QWORD
     LOCAL ImageType:QWORD
     LOCAL hImage:QWORD
@@ -653,9 +688,10 @@ _MUI_CaptionBarCleanup PROC FRAME hWin:QWORD
 _MUI_CaptionBarCleanup ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarPaint - main CaptionBar painting
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarPaint PROC FRAME hWin:QWORD
     LOCAL ps:PAINTSTRUCT 
     LOCAL rect:RECT
@@ -816,9 +852,10 @@ _MUI_CaptionBarPaint PROC FRAME hWin:QWORD
 _MUI_CaptionBarPaint ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarPaintBackground
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
     LOCAL BackColor:QWORD
     LOCAL hBrush:QWORD
@@ -845,9 +882,10 @@ _MUI_CaptionBarPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
 _MUI_CaptionBarPaintBackground ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarPaintImage - Returns in rax ImageWidth if image painted, or 0
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarPaintImage PROC FRAME hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, lpRect:QWORD
     LOCAL ImageType:QWORD
     LOCAL hImage:QWORD
@@ -963,9 +1001,10 @@ _MUI_CaptionBarPaintImage PROC FRAME hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, l
 _MUI_CaptionBarPaintImage ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CreateCaptionBarSysButtons - create all specified system buttons
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CreateCaptionBarSysButtons PROC FRAME hWin:QWORD, hCaptionBarParent:QWORD
     LOCAL wp:WINDOWPLACEMENT
     LOCAL qwClientWidth:QWORD
@@ -1116,10 +1155,11 @@ _MUI_CreateCaptionBarSysButtons PROC FRAME hWin:QWORD, hCaptionBarParent:QWORD
 _MUI_CreateCaptionBarSysButtons ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarReposition - Reposition window and child system buttons after main
 ; window resizes - called via SendMessage, hControl, WM_SIZE, 0, 0
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
     LOCAL wp:WINDOWPLACEMENT
     LOCAL hDefer:QWORD
@@ -1289,10 +1329,11 @@ _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
 _MUI_CaptionBarReposition ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarSetSysButtonProperty - Sets the system button properties from the message
 ; MUIM_SETPROPERTY set to the parent CaptionBar control 
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarSetSysButtonProperty PROC FRAME hWin:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     LOCAL hSysButtonClose:QWORD
     LOCAL hSysButtonMax:QWORD
@@ -1448,9 +1489,10 @@ _MUI_CaptionBarSetSysButtonProperty PROC FRAME hWin:QWORD, qwProperty:QWORD, qwP
 _MUI_CaptionBarSetSysButtonProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CreateSysButton - create a system button (min, max, restore or close button)
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CreateSysButton PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QWORD, controlwidth:QWORD, controlheight:QWORD, qwResourceID:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -1500,9 +1542,10 @@ _MUI_CreateSysButton PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, yp
 _MUI_CreateSysButton ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SysButtonWndProc - Main processing window for system buttons: min/max/res/close 
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SysButtonWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL TE:TRACKMOUSEEVENT
     
@@ -1568,9 +1611,10 @@ _MUI_SysButtonWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, l
 _MUI_SysButtonWndProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SysButtonInit - default intial values for properties for SysButton
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SysButtonInit PROC FRAME hSysButton:QWORD
     
     ;PrintText '_MUI_SysButtonInit'
@@ -1594,9 +1638,10 @@ _MUI_SysButtonInit PROC FRAME hSysButton:QWORD
 _MUI_SysButtonInit ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SysButtonCleanup - cleanup some stuff on control being destroyed
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SysButtonCleanup PROC FRAME hSysButton:QWORD
     
     Invoke GetParent, hSysButton
@@ -1622,9 +1667,10 @@ _MUI_SysButtonCleanup PROC FRAME hSysButton:QWORD
 _MUI_SysButtonCleanup ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_SysButtonPaint - System button painting
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_SysButtonPaint PROC FRAME USES rbx hSysButton:QWORD
     LOCAL ps:PAINTSTRUCT 
     LOCAL rect:RECT
@@ -1810,12 +1856,13 @@ _MUI_SysButtonPaint PROC FRAME USES rbx hSysButton:QWORD
 _MUI_SysButtonPaint ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Applies the ModernUI style to a dialog to make it a captionless, borderless form. 
 ; User can manually change a form in a resource editor to have the following style
 ; flags: WS_POPUP or WS_VISIBLE and optionally with DS_CENTER /DS_CENTERMOUSE / 
 ; WS_CLIPCHILDREN / WS_CLIPSIBLINGS / WS_MINIMIZE / WS_MAXIMIZE
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ApplyMUIStyleToDialog PROC FRAME hWin:QWORD, qwDropShadow:QWORD
     LOCAL qwStyle:QWORD
     LOCAL qwNewStyle:QWORD
@@ -1899,9 +1946,10 @@ _MUI_ApplyMUIStyleToDialog PROC FRAME hWin:QWORD, qwDropShadow:QWORD
 _MUI_ApplyMUIStyleToDialog ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUICaptionBarLoadIcons
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUICaptionBarLoadIcons PROC FRAME hControl:QWORD, idResMin:QWORD, idResMinAlt:QWORD, idResMax:QWORD, idResMaxAlt:QWORD, idResRes:QWORD, idResResAlt:QWORD, idResClose:QWORD, idResCloseAlt:QWORD 
     LOCAL hinstance:QWORD
     LOCAL hSysButtonClose:QWORD
@@ -1975,9 +2023,10 @@ MUICaptionBarLoadIcons PROC FRAME hControl:QWORD, idResMin:QWORD, idResMinAlt:QW
 MUICaptionBarLoadIcons ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUICaptionBarLoadIcons - version for loading from DLL's that have the icon resources
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUICaptionBarLoadIconsDll PROC FRAME hControl:QWORD, hInst:QWORD, idResMin:QWORD, idResMinAlt:QWORD, idResMax:QWORD, idResMaxAlt:QWORD, idResRes:QWORD, idResResAlt:QWORD, idResClose:QWORD, idResCloseAlt:QWORD 
     LOCAL hSysButtonClose:QWORD
     LOCAL hSysButtonMax:QWORD
@@ -2044,10 +2093,11 @@ MUICaptionBarLoadIconsDll PROC FRAME hControl:QWORD, hInst:QWORD, idResMin:QWORD
 MUICaptionBarLoadIconsDll ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarBackLoadBitmap - if succesful, loads specified bitmap resource into the specified
 ; external property and returns TRUE in eax, otherwise FALSE.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarBackLoadBitmap PROC FRAME hWin:QWORD, qwProperty:QWORD, idResBitmap:QWORD
     LOCAL hinstance:QWORD
 
@@ -2075,10 +2125,11 @@ _MUI_CaptionBarBackLoadBitmap PROC FRAME hWin:QWORD, qwProperty:QWORD, idResBitm
 _MUI_CaptionBarBackLoadBitmap ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_CaptionBarBackLoadIcon - if succesful, loads specified icon resource into the specified
 ; external property and returns TRUE in eax, otherwise FALSE.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_CaptionBarBackLoadIcon PROC FRAME hWin:QWORD, qwProperty:QWORD, idResIcon:QWORD
     LOCAL hinstance:QWORD
 
@@ -2105,10 +2156,11 @@ _MUI_CaptionBarBackLoadIcon PROC FRAME hWin:QWORD, qwProperty:QWORD, idResIcon:Q
 _MUI_CaptionBarBackLoadIcon ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUICaptionBarLoadBackImage - Loads images from resource ids and stores the handles in the
 ; appropriate property.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUICaptionBarLoadBackImage PROC FRAME hControl:QWORD, qwImageType:QWORD, qwResIDImage:QWORD
 
     .IF qwImageType == 0

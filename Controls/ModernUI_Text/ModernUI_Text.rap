@@ -5,6 +5,7 @@ Description=ModernUI_Text
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
+Debug=0
 [Files]
 1=ModernUI_Text.Asm
 2=ModernUI_Text.Inc
@@ -35,7 +36,7 @@ Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 3=7,O,$B\LIB.EXE,3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
@@ -56,16 +57,18 @@ Group=Distribution,Modules,Assembly,Resources,Misc
 4=1
 5=2
 [AutoLoad]
-AutoLoad=2,1
+AutoLoad=1,2
 [RADebugBP]
 2=
 1=
 [Find]
-1="ebx"
-2="dw"
-3="eax"
-4="GetWindowLong"
-5="SetWindowLong"
+1=";-------------------------------------------------------------------------------------"
+2=";--------------------------------------------------------------------------------------------------------------------------------------"
+3="ebx"
+4="dw"
+5="eax"
+6="GetWindowLong"
+7="SetWindowLong"
 [VersionControl]
 Settings=1278
 Milestones=129
@@ -76,7 +79,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=10
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2018
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=5
@@ -100,13 +103,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=3421601
+PTimer=4127973
 [Collapse]
-1=33554464,36896,62
+1=68159520,1075912768,126
 2=
 [Size]
-1=0,0,0,0,32343
-2=0,0,0,0,5477
+1=0,0,0,0,1959
+2=0,0,0,0,1664
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0
 [BookMark]

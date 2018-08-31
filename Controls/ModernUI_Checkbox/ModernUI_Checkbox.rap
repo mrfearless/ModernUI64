@@ -37,7 +37,7 @@ Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 3=7,O,$B\LIB.EXE,3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
@@ -62,11 +62,17 @@ AutoLoad=2,5,1
 [RADebugBP]
 2=
 1=
+5=
 [Find]
-1="dw"
-2="dq"
-3="icoMUICheckboxEmpty"
-4="eax"
+1="SetWindowLong"
+2="GetWindowLong"
+3=";-------------------------------------------------------------------------------------"
+4=";--------------------------------------------------------------------------------------------------------------------------------------"
+5="SetWindowLongPtr"
+6="dw"
+7="dq"
+8="icoMUICheckboxEmpty"
+9="eax"
 [VersionControl]
 Settings=1278
 Milestones=129
@@ -77,7 +83,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2017
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=29
@@ -101,15 +107,15 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=8667493
+PTimer=11517288
 [Collapse]
-1=3073,,131072,536870912,
+1=527937,32772,168951812,1,163840
 2=
 5=
 [Size]
-1=0,0,0,0,25978
-2=0,0,0,0,4672
-5=0,0,0,0,3169
+1=0,0,0,0,32715
+2=0,0,0,0,4419
+5=0,0,0,0,28337
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0
 [BookMark]

@@ -36,7 +36,7 @@ Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 3=7,O,$B\LIB.EXE,3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I" *.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I" *.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I" *.asm
@@ -62,27 +62,27 @@ AutoLoad=2,1
 1=
 2=
 [Find]
-1="dw"
-2="dq"
-3="DrawText"
-4="ImageHeight"
-5="_MUI_ApplyMUIStyleToDialog"
-6="PUBLIC "
-7="PUBLIC"
-8="edx"
-9="ecx"
-10="ebx"
+1=";-------------------------------------------------------------------------------------"
+2=";--------------------------------------------------------------------------------------------------------------------------------------"
+3="dw"
+4="dq"
+5="DrawText"
+6="ImageHeight"
+7="_MUI_ApplyMUIStyleToDialog"
+8="PUBLIC "
+9="PUBLIC"
+10="edx"
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=0
+MilestoneEveryCurrent=1
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=23
@@ -106,13 +106,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=210701705
+PTimer=211086824
 [Collapse]
-1=16779400,262272,134252864,268566528,33555008,3833922
+1=16779400,262272,134252866,268566528,35652160,3833922
 2=
 [Size]
-1=0,0,0,0,26307
-2=0,0,0,0,3196
+1=0,0,0,0,80642
+2=0,0,0,0,2982
 [GroupExpand]
 GroupExpand=1,0,1,0,0,0
 [BookMark]

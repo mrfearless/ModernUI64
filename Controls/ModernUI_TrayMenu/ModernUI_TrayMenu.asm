@@ -1,16 +1,43 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI x64 Control - ModernUI_TrayMenu x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_TrayMenu x64
 ;
-; Copyright (c) 2016 by fearless
+; Copyright (c) 2018 by fearless
 ;
 ; All Rights Reserved
 ;
 ; http://www.LetTheLight.in
 ;
-; http://github.com/mrfearless/ModernUI
+; http://github.com/mrfearless/ModernUI64
 ;
-;======================================================================================================================================
+;
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
+;
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
+;
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
+;
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
+;
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
+;
+;==============================================================================
+
 .686
 .MMX
 .XMM
@@ -25,17 +52,16 @@ _WIN64 EQU 1
 WINVER equ 0501h
 
 ;DEBUG64 EQU 1
-
-IFDEF DEBUG64
-    PRESERVEXMMREGS equ 1
-    includelib \UASM\lib\x64\Debug64.lib
-    DBG64LIB equ 1
-    DEBUGEXE textequ <'\UASM\bin\DbgWin.exe'>
-    include \UASM\include\debug64.inc
-    .DATA
-    RDBG_DbgWin	DB DEBUGEXE,0
-    .CODE
-ENDIF
+;IFDEF DEBUG64
+;    PRESERVEXMMREGS equ 1
+;    includelib M:\UASM\lib\x64\Debug64.lib
+;    DBG64LIB equ 1
+;    DEBUGEXE textequ <'M:\UASM\bin\DbgWin.exe'>
+;    include M:\UASM\include\debug64.inc
+;    .DATA
+;    RDBG_DbgWin DB DEBUGEXE,0
+;    .CODE
+;ENDIF
 
 include windows.inc
 include commctrl.inc
@@ -45,12 +71,11 @@ includelib gdi32.lib
 includelib comctl32.lib
 includelib shell32.lib
 
-include masm64.inc
-includelib masm64.lib
-
-
 include ModernUI.inc
 includelib ModernUI.lib
+
+include masm64.inc
+includelib masm64.lib
 
 include ModernUI_TrayMenu.inc
 
@@ -104,9 +129,9 @@ NOTIFYICONDATA  equ  <NOTIFYICONDATAA>
 ENDIF
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Prototypes for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ModernUI_TrayMenuWndProc			PROTO :HWND, :UINT, :WPARAM, :LPARAM
 _MUI_TrayMenuSetSubclass                PROTO :QWORD
 _MUI_TrayMenuWindowSubClass_Proc        PROTO :HWND, :UINT, :WPARAM, :LPARAM, :UINT, :QWORD
@@ -120,9 +145,9 @@ _MUI_TM_IconText                        PROTO :QWORD, :QWORD, :QWORD
 _MUI_TM_HideNotification                PROTO :QWORD
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Structures for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; External public properties
 IFNDEF MUI_TRAYMENU_PROPERTIES
 MUI_TRAYMENU_PROPERTIES                 STRUCT
@@ -159,29 +184,34 @@ szMUITrayMenuFont                       DB 'Tahoma',0                   ; Font u
 
 
 .CODE
-;-------------------------------------------------------------------------------------
+
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Set property for ModernUI_TrayMenu control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     Invoke SendMessage, hControl, MUI_SETPROPERTY, qwProperty, qwPropertyValue
     ret
 MUITrayMenuSetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Get property for ModernUI_TrayMenu control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
     Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUITrayMenuGetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUITrayMenuRegister - Registers the ModernUI_TrayMenu control
 ; can be used at start of program for use with RadASM custom control
 ; Custom control class must be set as ModernUI_TrayMenu
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuRegister PROC FRAME
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -214,9 +244,10 @@ MUITrayMenuRegister PROC FRAME
 MUITrayMenuRegister ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIModernUI_TrayMenuCreate - Returns handle in rax of newly created control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuCreate PROC FRAME hWndParent:QWORD, hTrayMenuIcon:QWORD, lpszTooltip:QWORD, qwMenuType:QWORD, qwMenu:QWORD, qwOptions:QWORD, hWndExtra:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -263,10 +294,10 @@ MUITrayMenuCreate PROC FRAME hWndParent:QWORD, hTrayMenuIcon:QWORD, lpszTooltip:
 MUITrayMenuCreate ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TrayMenuWndProc - Main processing window for our control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TrayMenuWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL TE:TRACKMOUSEEVENT
     LOCAL wp:WINDOWPLACEMENT
@@ -353,9 +384,10 @@ _MUI_TrayMenuWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lP
 _MUI_TrayMenuWndProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TrayMenuSetSubclass - Set sublcass for TrayMenu control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TrayMenuSetSubclass PROC FRAME hControl:QWORD
     LOCAL hWndSubClass:QWORD
     LOCAL hParent:QWORD
@@ -396,9 +428,10 @@ _MUI_TrayMenuSetSubclass PROC FRAME hControl:QWORD
 _MUI_TrayMenuSetSubclass ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TrayMenuWindowSubClass_Proc - sublcass main window to handle our WM_SHELLNOTIFY
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TrayMenuWindowSubClass_Proc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM, uIdSubclass:UINT, qwRefData:QWORD
     LOCAL qwStyle:QWORD
     
@@ -462,9 +495,10 @@ _MUI_TrayMenuWindowSubClass_Proc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wPara
 _MUI_TrayMenuWindowSubClass_Proc endp
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TrayMenuInit - set initial default values
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TrayMenuInit PROC FRAME hControl:QWORD
     LOCAL hParent:QWORD
     LOCAL qwStyle:QWORD
@@ -484,9 +518,10 @@ _MUI_TrayMenuInit PROC FRAME hControl:QWORD
 _MUI_TrayMenuInit ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TrayMenuCleanup - Frees memory used by control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TrayMenuCleanup PROC FRAME hControl:QWORD
     LOCAL NID:QWORD
     
@@ -502,19 +537,20 @@ _MUI_TrayMenuCleanup PROC FRAME hControl:QWORD
 _MUI_TrayMenuCleanup ENDP
 
 
-;=====================================================================================
+;==============================================================================
 ; TRAY MENU Functions
-;=====================================================================================
+;==============================================================================
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Assigns a menu to the ModernUI_TrayMenu control, using a popup menu created with 
 ; CreatePopupMenu or by building a menu from a block of MUITRAYMENUITEM structures
 ; qwMenuType determines which qwMenu contains
 ; if qwMenuType == MUITMT_POPUPMENU, qwMenu is a handle to a popup menu
 ; if qwMenuType == MUITMT_MENUITEMS, qwMenu is pointer to array of structures
 ; Returns in rax TRUE of succesful or FALSE otherwise.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuAssignMenu PROC FRAME USES RBX hControl:QWORD, qwMenuType:QWORD, qwMenu:QWORD
     LOCAL mi:MENUITEMINFO
     LOCAL hTrayMenu:QWORD
@@ -650,12 +686,11 @@ MUITrayMenuAssignMenu PROC FRAME USES RBX hControl:QWORD, qwMenuType:QWORD, qwMe
 MUITrayMenuAssignMenu ENDP
 
 
-
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Changes a menu item's state
 ; Returns in rax TRUE of succesful or FALSE otherwise.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuChangeMenuItemState PROC FRAME hControl:QWORD, MenuItemID:QWORD, MenuItemState:QWORD
     LOCAL mi:MENUITEMINFO
     LOCAL hTrayMenu:QWORD
@@ -687,11 +722,11 @@ MUITrayMenuChangeMenuItemState PROC FRAME hControl:QWORD, MenuItemID:QWORD, Menu
 MUITrayMenuChangeMenuItemState endp
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Enables a menu item on the tray menu
 ; Returns in rax TRUE of succesful or FALSE otherwise.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuEnableMenuItem PROC FRAME hControl:QWORD, MenuItemID:QWORD
     LOCAL mi:MENUITEMINFO
     LOCAL hTrayMenu:QWORD
@@ -721,11 +756,11 @@ MUITrayMenuEnableMenuItem PROC FRAME hControl:QWORD, MenuItemID:QWORD
 MUITrayMenuEnableMenuItem ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Disables (greys out) a menu item on the tray menu. 
 ; Returns in rax TRUE of succesful or FALSE otherwise.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuDisableMenuItem PROC FRAME hControl:QWORD, MenuItemID:QWORD
     LOCAL mi:MENUITEMINFO
     LOCAL hTrayMenu:QWORD
@@ -754,10 +789,11 @@ MUITrayMenuDisableMenuItem PROC FRAME hControl:QWORD, MenuItemID:QWORD
 MUITrayMenuDisableMenuItem ENDP
 
 
-;------------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Sets the icon of the tray menu
 ; Returns in rax TRUE of succesful or FALSE otherwise.
-;------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuSetTrayIcon PROC FRAME USES RBX hControl:QWORD, hTrayIcon:QWORD
     LOCAL NID:QWORD
     LOCAL lpszTooltip:QWORD
@@ -829,10 +865,11 @@ MUITrayMenuSetTrayIcon PROC FRAME USES RBX hControl:QWORD, hTrayIcon:QWORD
 MUITrayMenuSetTrayIcon endp
 
 
-;------------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Set tooltip of the tray menu
 ; Returns in rax TRUE of succesful or FALSE otherwise.
-;------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuSetTooltipText PROC FRAME USES RBX hControl:QWORD, lpszTooltip:QWORD
     LOCAL NID:QWORD
     LOCAL hTrayIcon:QWORD
@@ -892,13 +929,13 @@ MUITrayMenuSetTooltipText PROC FRAME USES RBX hControl:QWORD, lpszTooltip:QWORD
 MUITrayMenuSetTooltipText ENDP
 
 
-
-;------------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Returns in rax icon created and set as the tray menu icon. Use DeleteObject once finished
 ; using this icon, and before calling this function again (if icon was previously created
 ; with this function)
 ; Returns in rax hIcon or NULL
-;------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuSetTrayIconText PROC FRAME hControl:QWORD, lpszText:QWORD, lpszFont:QWORD, qwTextColorRGB:QWORD
     LOCAL hTrayIcon:QWORD
 
@@ -922,11 +959,11 @@ MUITrayMenuSetTrayIconText PROC FRAME hControl:QWORD, lpszText:QWORD, lpszFont:Q
 MUITrayMenuSetTrayIconText ENDP
 
 
-
-;------------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ;
 ; Returns in rax TRUE of succesful or FALSE otherwise.
-;------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuHideTrayIcon PROC FRAME hControl:QWORD
     LOCAL NID:QWORD
 
@@ -953,11 +990,11 @@ MUITrayMenuHideTrayIcon PROC FRAME hControl:QWORD
 MUITrayMenuHideTrayIcon ENDP
 
 
-
-;------------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ;
 ; Returns in rax TRUE of succesful or FALSE otherwise.
-;------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuShowTrayIcon PROC FRAME hControl:QWORD
     LOCAL hParent:QWORD
     LOCAL hTrayIcon:QWORD
@@ -997,7 +1034,8 @@ MUITrayMenuShowTrayIcon PROC FRAME hControl:QWORD
 MUITrayMenuShowTrayIcon ENDP
 
 
-;------------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Show a balloon style tooltip over tray menu with custom information
 ;
 ; MUITMNI_NONE           EQU 0 ; No icon.
@@ -1008,7 +1046,7 @@ MUITrayMenuShowTrayIcon ENDP
 ;
 ;
 ; Returns in rax TRUE of succesful or FALSE otherwise.
-;------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayMenuShowNotification PROC FRAME USES RBX hControl:QWORD, lpszNotificationMessage:QWORD, lpszNotificationTitle:QWORD, qwTimeout:QWORD, qwStyle:QWORD
     LOCAL hTrayIcon:QWORD
     LOCAL NID:QWORD
@@ -1095,15 +1133,16 @@ MUITrayMenuShowNotification PROC FRAME USES RBX hControl:QWORD, lpszNotification
 MUITrayMenuShowNotification ENDP
 
 
-;=====================================================================================
+;==============================================================================
 ; TRAY ICON Functions
-;=====================================================================================
+;==============================================================================
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Creates a tray icon and tooltip text. Standalone without any menu
 ; Returns in rax hTI (handle of TrayIcon = NID)
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayIconCreate PROC FRAME USES RBX hWndParent:QWORD, qwTrayIconResID:QWORD, hTrayIcon:QWORD, lpszTooltip:QWORD
     LOCAL NID:QWORD
 
@@ -1175,9 +1214,10 @@ MUITrayIconCreate PROC FRAME USES RBX hWndParent:QWORD, qwTrayIconResID:QWORD, h
 MUITrayIconCreate ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; TrayIconDestroy
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayIconDestroy PROC FRAME hTI:QWORD
     LOCAL NID:QWORD
     
@@ -1198,10 +1238,10 @@ MUITrayIconDestroy PROC FRAME hTI:QWORD
 MUITrayIconDestroy ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; TrayIconSetTrayIcon
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayIconSetTrayIcon PROC FRAME USES RBX hTI:QWORD, hTrayIcon:QWORD
     LOCAL NID:QWORD
     LOCAL hWndParent:QWORD
@@ -1244,10 +1284,10 @@ MUITrayIconSetTrayIcon PROC FRAME USES RBX hTI:QWORD, hTrayIcon:QWORD
 MUITrayIconSetTrayIcon ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; TrayIconSetTooltipText
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayIconSetTooltipText PROC FRAME USES RBX hTI:QWORD, lpszTooltip:QWORD
     LOCAL NID:QWORD
     LOCAL hWndParent:QWORD
@@ -1304,7 +1344,8 @@ MUITrayIconSetTooltipText PROC FRAME USES RBX hTI:QWORD, lpszTooltip:QWORD
 MUITrayIconSetTooltipText ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Show a balloon style tooltip over tray icon with custom information
 ;
 ; MUITMNI_NONE           EQU 0 ; No icon.
@@ -1315,7 +1356,7 @@ MUITrayIconSetTooltipText ENDP
 ;
 ;
 ; Returns in rax TRUE of succesful or FALSE otherwise.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITrayIconShowNotification PROC FRAME USES RBX hTI:QWORD, lpszNotificationMessage:QWORD, lpszNotificationTitle:QWORD, qwTimeout:QWORD, qwStyle:QWORD
     LOCAL NID:QWORD
     LOCAL hWndParent:QWORD
@@ -1403,14 +1444,15 @@ MUITrayIconShowNotification PROC FRAME USES RBX hTI:QWORD, lpszNotificationMessa
 MUITrayIconShowNotification ENDP
 
 
-;=====================================================================================
+;==============================================================================
 ; Internal Functions
-;=====================================================================================
+;==============================================================================
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Adds tray menu icon and tooltip text. Called from TrayMenuCreate
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TM_AddIconAndTooltip PROC FRAME USES RBX hControl:QWORD, hWndParent:QWORD, hTrayMenuIcon:QWORD, lpszTooltip:QWORD
     LOCAL NID:QWORD
 
@@ -1486,9 +1528,10 @@ _MUI_TM_AddIconAndTooltip PROC FRAME USES RBX hControl:QWORD, hWndParent:QWORD, 
 _MUI_TM_AddIconAndTooltip ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Shows the main window if minimized when right clicking on tray menu icon
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TM_ShowTrayMenu PROC FRAME hWin:QWORD, hControl:QWORD
     LOCAL TrayMenuPoint:POINT
     LOCAL hTrayMenu:QWORD
@@ -1515,9 +1558,10 @@ _MUI_TM_ShowTrayMenu PROC FRAME hWin:QWORD, hControl:QWORD
 _MUI_TM_ShowTrayMenu ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Restore the application from the tray when left clicking on tray menu icon
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TM_RestoreFromTray PROC FRAME hWin:QWORD, hControl:QWORD
     LOCAL hParent:QWORD
     ;LOCAL qwStyle:DWORD
@@ -1570,9 +1614,10 @@ _MUI_TM_RestoreFromTray PROC FRAME hWin:QWORD, hControl:QWORD
 _MUI_TM_RestoreFromTray ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Minimize to Tray - Called from WM_SIZE (wParam==SIZE_MINIMIZED) in sublclass
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TM_MinimizeToTray PROC FRAME hWin:QWORD, qwHideWindow:QWORD
     Invoke ShowWindow, hWin, SW_MINIMIZE
     
@@ -1583,9 +1628,10 @@ _MUI_TM_MinimizeToTray PROC FRAME hWin:QWORD, qwHideWindow:QWORD
 _MUI_TM_MinimizeToTray  ENDP
 
 
-;------------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Hides Notification After Timeout value has passed
-;------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TM_HideNotification PROC FRAME USES RBX hControl:QWORD
     LOCAL NID:QWORD
     
@@ -1616,14 +1662,14 @@ _MUI_TM_HideNotification PROC FRAME USES RBX hControl:QWORD
 _MUI_TM_HideNotification ENDP
 
 
-
-;------------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Create Transparent Text Icon For Traybar
 ; Original sourcecode: http://www.techpowerup.com/forums/showthread.php?t=141783
 ;
 ; Returns handle to an icon (cursor) in eax, use DeleteObject to free this when you have
 ; finished with it
-;------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TM_IconText PROC FRAME lpszText:QWORD, lpszFont:QWORD, qwTextColorRGB:QWORD
     ;// Creates a DC for use in multithreaded programs (works in single threaded as well)
     LOCAL hdc:HDC

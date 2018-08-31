@@ -5,6 +5,7 @@ Description=ModernUI_Tooltip
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
+Debug=0
 [Files]
 1=ModernUI_Tooltip.asm
 2=ModernUI_Tooltip.inc
@@ -35,7 +36,7 @@ Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 3=7,O,$B\LIB.EXE,3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
@@ -60,13 +61,15 @@ AutoLoad=2,1
 [RADebugBP]
 1=
 [Find]
-1="dw"
-2="@TooltipOffsetX"
-3="@TooltipShowTimeout"
-4="SetClassLong"
-5="GetClassLong"
-6="SetWindowLong"
-7="GetWindowLong"
+1=";-------------------------------------------------------------------------------------"
+2=";--------------------------------------------------------------------------------------------------------------------------------------"
+3="dw"
+4="@TooltipOffsetX"
+5="@TooltipShowTimeout"
+6="SetClassLong"
+7="GetClassLong"
+8="SetWindowLong"
+9="GetWindowLong"
 [VersionControl]
 Settings=1278
 Milestones=129
@@ -77,7 +80,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2018
 MilestoneOnDateTimeMonth=2
 MilestoneOnDateTimeDate=1
@@ -101,13 +104,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=4317765
+PTimer=4522002
 [Collapse]
-1=536879752,34115842,239616
+1=536879744,561410,239616
 2=
 [Size]
-1=0,0,0,0,37844
-2=0,0,0,0,4848
+1=0,0,0,0,40473
+2=0,0,0,0,3678
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0
 [BookMark]

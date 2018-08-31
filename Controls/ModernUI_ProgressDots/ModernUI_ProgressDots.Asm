@@ -1,6 +1,6 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI x64 Control - ModernUI_ProgressDots x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_ProgressDots x64
 ;
 ; Copyright (c) 2018 by fearless
 ;
@@ -10,7 +10,34 @@
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;
-;======================================================================================================================================
+;
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
+;
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
+;
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
+;
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
+;
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
+;
+;==============================================================================
+
 .686
 .MMX
 .XMM
@@ -25,15 +52,14 @@ _WIN64 EQU 1
 WINVER equ 0501h
 
 ;DEBUG64 EQU 1
-;
 ;IFDEF DEBUG64
 ;    PRESERVEXMMREGS equ 1
-;    includelib \UASM\lib\x64\Debug64.lib
+;    includelib M:\UASM\lib\x64\Debug64.lib
 ;    DBG64LIB equ 1
-;    DEBUGEXE textequ <'M:\UASM64\bin\DbgWin.exe'>
-;    include \UASM\include\debug64.inc
+;    DEBUGEXE textequ <'M:\UASM\bin\DbgWin.exe'>
+;    include M:\UASM\include\debug64.inc
 ;    .DATA
-;    RDBG_DbgWin	DB DEBUGEXE,0
+;    RDBG_DbgWin DB DEBUGEXE,0
 ;    .CODE
 ;ENDIF
 
@@ -49,9 +75,9 @@ includelib ModernUI.lib
 
 include ModernUI_ProgressDots.inc
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Prototypes for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressDotsWndProc			PROTO :HWND, :UINT, :WPARAM, :LPARAM
 _MUI_ProgressDotsParentSubClassProc PROTO :HWND, :UINT, :WPARAM, :LPARAM, :UINT, :QWORD
 _MUI_ProgressDotsInit               PROTO :QWORD
@@ -65,9 +91,9 @@ _MUI_ProgressDotsInitDots           PROTO :QWORD
 _MUI_ProgressBarTimerProc           PROTO :QWORD, :QWORD
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Structures for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; External public properties
 MUI_PROGRESSDOTS_PROPERTIES             STRUCT
     qwBackColor                         DQ ?
@@ -130,29 +156,34 @@ szMUIProgressDotsClass                  DB 'ModernUI_ProgressDots',0    ; Class 
 
 
 .CODE
-;-------------------------------------------------------------------------------------
+
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Set property for ModernUI_ProgressDots control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressDotsSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     Invoke SendMessage, hControl, MUI_SETPROPERTY, qwProperty, qwPropertyValue
     ret
 MUIProgressDotsSetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Get property for ModernUI_ProgressDots control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressDotsGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
     Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUIProgressDotsGetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIProgressDotsRegister - Registers the ModernUI_ProgressDots control
 ; can be used at start of program for use with RadASM custom control
 ; Custom control class must be set as ModernUI_ProgressDots
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressDotsRegister PROC FRAME
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -185,9 +216,10 @@ MUIProgressDotsRegister PROC FRAME
 MUIProgressDotsRegister ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIProgressDotsCreate - Returns handle in rax of newly created control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressDotsCreate PROC FRAME hWndParent:QWORD, ypos:QWORD, controlheight:QWORD, qwResourceID:QWORD, dwStyle:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -225,9 +257,10 @@ MUIProgressDotsCreate PROC FRAME hWndParent:QWORD, ypos:QWORD, controlheight:QWO
 MUIProgressDotsCreate ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressDotsWndProc - Main processing window for our control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressDotsWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 
     mov eax, uMsg
@@ -295,10 +328,11 @@ _MUI_ProgressDotsWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM
 _MUI_ProgressDotsWndProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressDotsParentSubClassProc - Subclass for progressdots parent window 
 ; qwRefData is the handle to our progressdots control in this subclass proc
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressDotsParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM, uIdSubclass:UINT, qwRefData:QWORD
 
     mov eax, uMsg
@@ -317,9 +351,10 @@ _MUI_ProgressDotsParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPAR
 _MUI_ProgressDotsParentSubClassProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressDotsInit - set initial default values
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressDotsInit PROC FRAME USES RBX RDX hWin:QWORD
     LOCAL hParent:QWORD
     LOCAL qwStyle:QWORD
@@ -403,9 +438,10 @@ _MUI_ProgressDotsInit PROC FRAME USES RBX RDX hWin:QWORD
 _MUI_ProgressDotsInit ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressDotsResize
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressDotsResize PROC FRAME USES RBX RDX hWin:QWORD
     LOCAL hParent:QWORD
     LOCAL rect:RECT
@@ -482,9 +518,10 @@ _MUI_ProgressDotsResize PROC FRAME USES RBX RDX hWin:QWORD
 _MUI_ProgressDotsResize ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressDotsPaint
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressDotsPaint PROC FRAME hWin:QWORD
     LOCAL ps:PAINTSTRUCT 
     LOCAL rect:RECT
@@ -558,9 +595,10 @@ _MUI_ProgressDotsPaint PROC FRAME hWin:QWORD
 _MUI_ProgressDotsPaint ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressDotsPaintBackground
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressDotsPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
     LOCAL BackColor:QWORD
     LOCAL hBrush:QWORD
@@ -587,9 +625,10 @@ _MUI_ProgressDotsPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
 _MUI_ProgressDotsPaintBackground ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressDotsCalcPositions - calculate x, y positions of images, text etc
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressDotsCalcPositions PROC FRAME USES RBX hWin:QWORD
     LOCAL rect:RECT
     LOCAL qwWidth:QWORD
@@ -693,9 +732,10 @@ _MUI_ProgressDotsCalcPositions PROC FRAME USES RBX hWin:QWORD
 _MUI_ProgressDotsCalcPositions ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressDotsPaintDots
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressDotsPaintDots PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, lpRect:QWORD
     LOCAL pDotsArray:QWORD
     LOCAL pCurrentDot:QWORD
@@ -765,9 +805,10 @@ _MUI_ProgressDotsPaintDots PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDes
 _MUI_ProgressDotsPaintDots ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ProgressDotsInitDots
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ProgressDotsInitDots PROC FRAME USES RBX hWin:QWORD
     LOCAL pDotsArray:QWORD
     LOCAL pCurrentDot:QWORD
@@ -821,9 +862,10 @@ _MUI_ProgressDotsInitDots PROC FRAME USES RBX hWin:QWORD
 _MUI_ProgressDotsInitDots ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIProgressDotsAnimateStart
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressDotsAnimateStart PROC FRAME hControl:QWORD
     LOCAL qwTimeInterval:QWORD
     IFDEF DOTS_USE_TIMERQUEUE
@@ -896,9 +938,10 @@ MUIProgressDotsAnimateStart PROC FRAME hControl:QWORD
 MUIProgressDotsAnimateStart ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIProgressDotsAnimateStop
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIProgressDotsAnimateStop PROC FRAME hControl:QWORD
     IFDEF DOTS_USE_TIMERQUEUE
     LOCAL hQueue:QWORD
@@ -943,10 +986,11 @@ MUIProgressDotsAnimateStop PROC FRAME hControl:QWORD
 MUIProgressDotsAnimateStop ENDP
 
 
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; _MUI_ProgressBarTimerProc for TimerQueue
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 IFDEF DOTS_USE_TIMERQUEUE
+MUI_ALIGN
 _MUI_ProgressBarTimerProc PROC FRAME USES RBX lpParam:QWORD, TimerOrWaitFired:QWORD
     ; lpParam is hControl
     Invoke _MUI_ProgressDotsCalcPositions, lpParam

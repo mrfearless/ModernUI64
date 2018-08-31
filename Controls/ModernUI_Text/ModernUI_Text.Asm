@@ -1,6 +1,6 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI x64 Control - ModernUI_Text x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_Text x64
 ;
 ; Copyright (c) 2018 by fearless
 ;
@@ -10,7 +10,34 @@
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;
-;======================================================================================================================================
+;
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
+;
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
+;
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
+;
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
+;
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
+;
+;==============================================================================
+
 .686
 .MMX
 .XMM
@@ -24,22 +51,39 @@ option stackbase : rsp
 _WIN64 EQU 1
 WINVER equ 0501h
 
+;------------------------------------------
+; Remove comment to include unicode support
+;------------------------------------------
+;MUI_UNICODE TEXTEQU <UNICODE>
+IFDEF MUI_UNICODE
+UNICODE EQU 1
+% ECHO MUI_UNICODE BUILD
+ELSE
+ECHO ANSI BUILD
+ENDIF
+;------------------------------------------
+
+
+;------------------------------------------
+; Remove comment to include debug64 macros
+;------------------------------------------
 ;DEBUG64 EQU 1
-;
 ;IFDEF DEBUG64
 ;    PRESERVEXMMREGS equ 1
-;    includelib \UASM\lib\x64\Debug64.lib
+;    includelib M:\UASM\lib\x64\Debug64.lib
 ;    DBG64LIB equ 1
-;    DEBUGEXE textequ <'\UASM\bin\DbgWin.exe'>
-;    include \UASM\include\debug64.inc
+;    DEBUGEXE textequ <'M:\UASM\bin\DbgWin.exe'>
+;    include M:\UASM\include\debug64.inc
 ;    .DATA
-;    RDBG_DbgWin	DB DEBUGEXE,0
+;    RDBG_DbgWin DB DEBUGEXE,0
 ;    .CODE
 ;ENDIF
+;------------------------------------------
 
 include windows.inc
 includelib user32.lib
 includelib kernel32.lib
+includelib gdi32.lib
 
 include ModernUI.inc
 includelib ModernUI.lib
@@ -49,9 +93,9 @@ include ModernUI_Text.inc
 PUBLIC MUITextFontTable
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Prototypes for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TextWndProc				PROTO :HWND, :UINT, :WPARAM, :LPARAM
 _MUI_TextInit                   PROTO :QWORD
 _MUI_TextPaint                  PROTO :QWORD
@@ -63,9 +107,9 @@ _MUI_TextSetFontFamilySize      PROTO :QWORD, :QWORD
 _MUI_TextGetFontTableHandle     PROTO :QWORD, :QWORD
 _MUI_TextSetFontTableHandle     PROTO :QWORD, :QWORD, :QWORD
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Structures for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; External public properties
 MUI_TEXT_PROPERTIES             STRUCT
     qwTextFont                  DQ ?
@@ -81,6 +125,7 @@ MUI_TEXT_PROPERTIES             ENDS
 _MUI_TEXT_PROPERTIES            STRUCT
     qwEnabledState              DQ ?
     qwMouseOver                 DQ ?
+    qwTextBuffer                DQ ?
 _MUI_TEXT_PROPERTIES            ENDS
 
 MUI_TEXT_FONT_ENTRY             STRUCT
@@ -95,7 +140,13 @@ MUI_TEXT_FONT_ENTRY             STRUCT
 MUI_TEXT_FONT_ENTRY             ENDS
 
 .CONST
-MUI_TEXT_MAX_CHARS              EQU 2048
+IFDEF MUI_UNICODE
+MUI_WIDE_CRLF                   EQU 13,0,10,0
+MUI_WIDE_NULL                   EQU 0,0,0,0
+MUI_TEXT_MAX_CHARS              EQU 8192
+ELSE
+MUI_TEXT_MAX_CHARS              EQU 4096
+ENDIF
 MUI_TEXT_NO_FONTTYPES           EQU 7
 MUI_TEXT_NO_FONTSIZES           EQU 16
 MUI_TEXT_FONT_ENTRIES_SIZE      EQU (MUI_TEXT_NO_FONTSIZES * SIZEOF MUI_TEXT_FONT_ENTRY)
@@ -108,10 +159,125 @@ MUI_TEXT_ALIGN_MASK             EQU 0000000000000300h
 ; Internal properties
 @TextEnabledState				EQU 0
 @TextMouseOver					EQU 8
-
+@TextBuffer                     EQU 16
 
 
 .DATA
+IFDEF MUI_UNICODE
+szLorumIpsumText                DB "L",0,"o",0,"r",0,"e",0,"m",0," ",0,"i",0,"p",0,"s",0,"u",0,"m",0," ",0,"d",0,"o",0,"l",0,"o",0,"r",0," ",0,"s",0,"i",0,"t",0
+                                DB "a",0,"m",0,"e",0,"t",0,",",0," ",0,"e",0,"x",0,"p",0,"l",0,"i",0,"c",0,"a",0,"r",0,"i",0," ",0,"m",0,"a",0,"l",0,"u",0,"i",0
+                                DB "s",0,"s",0,"e",0,"t",0," ",0,"t",0,"e",0," ",0,"c",0,"u",0,"m",0,",",0," ",0,"e",0,"a",0," ",0,"v",0,"e",0,"l",0," ",0,"d",0
+                                DB "e",0,"b",0,"i",0,"t",0,"i",0,"s",0," ",0,"o",0,"m",0,"i",0,"t",0,"t",0,"a",0,"m",0,".",0," ",0,"D",0,"u",0,"i",0,"s",0," ",0
+                                DB "s",0,"a",0,"l",0,"e",0," ",0,"f",0,"e",0,"u",0,"g",0,"a",0,"i",0,"t",0," ",0,"i",0,"d",0," ",0,"d",0,"u",0,"o",0,",",0," ",0
+                                DB "s",0,"i",0,"t",0," ",0,"m",0,"i",0,"n",0,"i",0,"m",0,"u",0,"m",0," ",0,"d",0,"e",0,"l",0,"e",0,"n",0,"i",0,"t",0,"i",0," ",0
+                                DB "f",0,"a",0,"c",0,"i",0,"l",0,"i",0,"s",0,"i",0,"s",0," ",0,"n",0,"e",0,".",0," ",0
+                                DB "S",0,"e",0,"a",0," ",0,"e",0,"t",0," ",0,"p",0,"r",0,"o",0,"m",0,"p",0,"t",0,"a",0," ",0,"l",0,"e",0,"g",0,"e",0,"n",0,"d",0
+                                DB "o",0,"s",0,".",0," ",0,"B",0,"o",0,"n",0,"o",0,"r",0,"u",0,"m",0," ",0,"r",0,"e",0,"p",0,"r",0,"e",0,"h",0,"e",0,"n",0,"d",0
+                                DB "u",0,"n",0,"t",0," ",0,"e",0,"t",0," ",0,"n",0,"a",0,"m",0,".",0," ",0,"N",0,"u",0,"l",0,"l",0,"a",0,"m",0," ",0,"v",0,"o",0
+                                DB "l",0,"u",0,"t",0,"p",0,"a",0,"t",0," ",0,"u",0,"t",0," ",0,"v",0,"i",0,"m",0,",",0," ",0,"i",0,"n",0," ",0,"t",0,"e",0,"m",0
+                                DB "p",0,"o",0,"r",0," ",0,"n",0,"o",0,"s",0,"t",0,"r",0,"u",0,"m",0," ",0,"a",0,"s",0,"s",0,"e",0,"n",0,"t",0,"i",0,"o",0,"r",0
+                                DB " ",0,"s",0,"e",0,"d",0,".",0," ",0,"I",0,"n",0," ",0,"l",0,"i",0,"b",0,"r",0,"i",0,"s",0," ",0,"s",0,"i",0,"n",0,"g",0,"u",0
+                                DB "l",0,"i",0,"s",0," ",0,"g",0,"l",0,"o",0,"r",0,"i",0,"a",0,"t",0,"u",0,"r",0," ",0,"p",0,"r",0,"i",0,",",0," ",0
+                                DB "m",0,"e",0,"i",0," ",0,"c",0,"e",0,"t",0,"e",0,"r",0,"o",0," ",0,"c",0,"o",0,"m",0,"p",0,"r",0,"e",0,"h",0,"e",0,"n",0,"s",0
+                                DB "a",0,"m",0," ",0,"n",0,"o",0,".",0," ",0,"H",0,"a",0,"s",0," ",0,"n",0,"e",0," ",0,"d",0,"o",0,"m",0,"i",0,"n",0,"g",0," ",0
+                                DB "l",0,"a",0,"b",0,"o",0,"r",0,"e",0," ",0,"s",0,"a",0,"l",0,"u",0,"t",0,"a",0,"t",0,"u",0,"s",0,",",0," ",0,"v",0,"i",0,"x",0
+                                DB " ",0,"e",0,"x",0," ",0,"t",0,"i",0,"m",0,"e",0,"a",0,"m",0," ",0,"a",0,"r",0,"g",0,"u",0,"m",0,"e",0,"n",0,"t",0,"u",0,"m",0
+                                DB ".",0
+                                DB MUI_WIDE_CRLF,MUI_WIDE_CRLF
+                                DB "Q",0,"u",0,"i",0,"d",0,"a",0,"m",0," ",0,"m",0,"e",0,"l",0,"i",0,"u",0,"s",0," ",0,"c",0,"u",0,"m",0," ",0,"e",0,"i",0,".",0
+                                DB " ",0,"I",0,"d",0," ",0,"i",0,"n",0,"v",0,"e",0,"n",0,"i",0,"r",0,"e",0," ",0,"p",0,"e",0,"r",0,"c",0,"i",0,"p",0,"i",0,"t",0
+                                DB "u",0,"r",0," ",0,"h",0,"a",0,"s",0,",",0," ",0,"d",0,"i",0,"c",0,"a",0,"n",0,"t",0," ",0,"p",0,"a",0,"r",0,"t",0,"i",0,"e",0
+                                DB "n",0,"d",0,"o",0," ",0,"s",0,"i",0,"t",0," ",0,"e",0,"i",0,".",0," ",0,"S",0,"e",0,"a",0," ",0,"e",0,"t",0," ",0,"a",0,"f",0
+                                DB "f",0,"e",0,"r",0,"t",0," ",0,"p",0,"e",0,"r",0,"c",0,"i",0,"p",0,"i",0,"t",0," ",0,"n",0,"o",0,"m",0,"i",0,"n",0,"a",0,"t",0
+                                DB "i",0,",",0," ",0,"m",0,"e",0,"a",0," ",0,"e",0,"x",0," ",0,"m",0,"i",0,"n",0,"i",0,"m",0,"u",0,"m",0," ",0,"p",0,"h",0,"i",0
+                                DB "l",0,"o",0,"s",0,"o",0,"p",0,"h",0,"i",0,"a",0,",",0," ",0
+                                DB "a",0,"d",0," ",0,"a",0,"l",0,"i",0,"q",0,"u",0,"i",0,"d",0," ",0,"p",0,"o",0,"n",0,"d",0,"e",0,"r",0,"u",0,"m",0," ",0,"p",0
+                                DB "h",0,"a",0,"e",0,"d",0,"r",0,"u",0,"m",0," ",0,"n",0,"e",0,"c",0,".",0," ",0,"A",0,"t",0," ",0,"o",0,"p",0,"t",0,"i",0,"o",0
+                                DB "n",0," ",0,"n",0,"u",0,"m",0,"q",0,"u",0,"a",0,"m",0," ",0,"m",0,"e",0,"a",0,".",0," ",0,"N",0,"e",0,"c",0," ",0,"r",0,"e",0
+                                DB "q",0,"u",0,"e",0," ",0,"s",0,"c",0,"r",0,"i",0,"p",0,"t",0,"a",0," ",0,"e",0,"t",0,",",0," ",0,"t",0,"e",0," ",0,"m",0,"e",0
+                                DB "a",0," ",0,"r",0,"e",0,"g",0,"i",0,"o",0,"n",0,"e",0," ",0,"s",0,"e",0,"n",0,"s",0,"e",0,"r",0,"i",0,"t",0,",",0," ",0,"s",0
+                                DB "e",0,"d",0," ",0,"e",0,"a",0," ",0,"p",0,"a",0,"r",0,"t",0,"i",0,"e",0,"n",0,"d",0,"o",0," ",0,"s",0,"a",0,"p",0,"i",0,"e",0
+                                DB "n",0,"t",0,"e",0,"m",0," ",0,"d",0,"e",0,"l",0,"i",0,"c",0,"a",0,"t",0,"i",0,"s",0,"s",0,"i",0,"m",0,"i",0,".",0," ",0
+                                DB "O",0,"p",0,"o",0,"r",0,"t",0,"e",0,"a",0,"t",0," ",0,"a",0,"c",0,"c",0,"o",0,"m",0,"m",0,"o",0,"d",0,"a",0,"r",0,"e",0," ",0
+                                DB "s",0,"e",0,"d",0," ",0,"a",0,"n",0,".",0," ",0,"A",0,"t",0," ",0,"h",0,"a",0,"s",0," ",0,"o",0,"r",0,"n",0,"a",0,"t",0,"u",0
+                                DB "s",0," ",0,"a",0,"d",0,"o",0,"l",0,"e",0,"s",0,"c",0,"e",0,"n",0,"s",0," ",0,"e",0,"l",0,"a",0,"b",0,"o",0,"r",0,"a",0,"r",0
+                                DB "e",0,"t",0,".",0
+                                DB MUI_WIDE_CRLF,MUI_WIDE_CRLF
+                                DB "C",0,"u",0," ",0,"e",0,"a",0,"m",0," ",0,"a",0,"d",0,"m",0,"o",0,"d",0,"u",0,"m",0," ",0,"s",0,"e",0,"n",0,"s",0,"e",0,"r",0
+                                DB "i",0,"t",0," ",0,"m",0,"a",0,"l",0,"u",0,"i",0,"s",0,"s",0,"e",0,"t",0,".",0," ",0,"M",0,"e",0,"l",0," ",0,"i",0,"d",0," ",0
+                                DB "p",0,"r",0,"o",0,"b",0,"o",0," ",0,"e",0,"l",0,"i",0,"t",0,"r",0," ",0,"i",0,"n",0,"s",0,"t",0,"r",0,"u",0,"c",0,"t",0,"i",0
+                                DB "o",0,"r",0,".",0," ",0,"I",0,"l",0,"l",0,"u",0,"d",0," ",0,"v",0,"e",0,"l",0,"i",0,"t",0," ",0,"e",0,"f",0,"f",0,"i",0,"c",0
+                                DB "i",0,"a",0,"n",0,"t",0,"u",0,"r",0," ",0,"m",0,"e",0,"a",0," ",0,"n",0,"e",0,",",0," ",0,"a",0,"u",0,"d",0,"i",0,"r",0,"e",0
+                                DB " ",0,"a",0,"d",0,"o",0,"l",0,"e",0,"s",0,"c",0,"e",0,"n",0,"s",0," ",0,"n",0,"o",0," ",0,"p",0,"r",0,"i",0,",",0," ",0,"p",0
+                                DB "r",0,"o",0," ",0,"f",0,"a",0,"b",0,"e",0,"l",0,"l",0,"a",0,"s",0," ",0,"i",0,"n",0,"t",0,"e",0,"l",0,"l",0,"e",0,"g",0,"a",0
+                                DB "t",0," ",0,"e",0,"x",0,".",0 
+                                DB "V",0,"i",0,"s",0," ",0,"i",0,"l",0,"l",0,"u",0,"m",0," ",0,"f",0,"a",0,"l",0,"l",0,"i",0," ",0,"c",0,"o",0,"n",0,"s",0,"t",0
+                                DB "i",0,"t",0,"u",0,"t",0,"o",0," ",0,"a",0,"d",0,",",0," ",0,"e",0,"u",0,"m",0," ",0,"t",0,"a",0,"n",0,"t",0,"a",0,"s",0," ",0
+                                DB "d",0,"o",0,"l",0,"o",0,"r",0,"e",0," ",0,"e",0,"i",0,"r",0,"m",0,"o",0,"d",0," ",0,"c",0,"u",0,".",0," ",0,"E",0,"t",0," ",0
+                                DB "z",0,"r",0,"i",0,"l",0," ",0,"m",0,"a",0,"l",0,"o",0,"r",0,"u",0,"m",0," ",0,"m",0,"e",0,"l",0,"i",0,"o",0,"r",0,"e",0," ",0
+                                DB "u",0,"s",0,"u",0,".",0
+                                DB MUI_WIDE_CRLF,MUI_WIDE_CRLF
+                                DB "N",0,"o",0," ",0,"s",0,"e",0,"a",0," ",0,"m",0,"o",0,"d",0,"u",0,"s",0," ",0,"m",0,"e",0,"n",0,"a",0,"n",0,"d",0,"r",0,"i",0
+                                DB " ",0,"s",0,"c",0,"r",0,"i",0,"p",0,"t",0,"o",0,"r",0,"e",0,"m",0,",",0," ",0,"n",0,"e",0,"c",0," ",0,"c",0,"u",0," ",0,"p",0
+                                DB "e",0,"t",0,"e",0,"n",0,"t",0,"i",0,"u",0,"m",0," ",0,"s",0,"i",0,"g",0,"n",0,"i",0,"f",0,"e",0,"r",0,"u",0,"m",0,"q",0,"u",0
+                                DB "e",0,".",0," ",0,"C",0,"u",0," ",0,"c",0,"a",0,"u",0,"s",0,"a",0,"e",0," ",0,"s",0,"u",0,"s",0,"c",0,"i",0,"p",0,"i",0,"a",0
+                                DB "n",0,"t",0,"u",0,"r",0," ",0,"d",0,"u",0,"o",0,",",0," ",0,"n",0,"a",0,"m",0," ",0,"n",0,"i",0,"b",0,"h",0," ",0,"i",0,"n",0
+                                DB "a",0,"n",0,"i",0," ",0,"c",0,"o",0,"r",0,"r",0,"u",0,"m",0,"p",0,"i",0,"t",0," ",0,"a",0,"d",0,".",0," ",0,"P",0,"o",0,"r",0
+                                DB "r",0,"o",0," ",0,"c",0,"a",0,"u",0,"s",0,"a",0,"e",0," ",0,"u",0,"t",0," ",0,"p",0,"r",0,"i",0,".",0," ",0
+                                DB "D",0,"u",0,"o",0," ",0,"p",0,"a",0,"u",0,"l",0,"o",0," ",0,"a",0,"p",0,"e",0,"r",0,"i",0,"r",0,"i",0," ",0,"a",0,"t",0,",",0
+                                DB " ",0,"q",0,"u",0,"i",0," ",0,"n",0,"e",0," ",0,"e",0,"r",0,"i",0,"p",0,"u",0,"i",0,"t",0," ",0,"v",0,"u",0,"l",0,"p",0,"u",0
+                                DB "t",0,"a",0,"t",0,"e",0,",",0," ",0,"s",0,"i",0,"t",0," ",0,"f",0,"a",0,"c",0,"i",0,"l",0,"i",0,"s",0,"i",0," ",0,"a",0,"n",0
+                                DB "t",0,"i",0,"o",0,"p",0,"a",0,"m",0," ",0,"s",0,"a",0,"l",0,"u",0,"t",0,"a",0,"n",0,"d",0,"i",0," ",0,"i",0,"d",0,".",0," ",0
+                                DB "A",0,"t",0," ",0,"v",0,"i",0,"d",0,"i",0,"s",0,"s",0,"e",0," ",0,"e",0,"f",0,"f",0,"i",0,"c",0,"i",0,"e",0,"n",0,"d",0,"i",0
+                                DB " ",0,"c",0,"u",0,"m",0,".",0
+                                DB MUI_WIDE_CRLF,MUI_WIDE_CRLF
+                                DB "E",0,"o",0,"s",0," ",0,"v",0,"i",0,"d",0,"i",0,"s",0,"s",0,"e",0," ",0,"i",0,"n",0,"d",0,"o",0,"c",0,"t",0,"u",0,"m",0," ",0
+                                DB "d",0,"i",0,"s",0,"s",0,"e",0,"n",0,"t",0,"i",0,"u",0,"n",0,"t",0," ",0,"i",0,"d",0,".",0," ",0,"A",0,"l",0,"i",0,"a",0," ",0
+                                DB "d",0,"u",0,"i",0,"s",0," ",0,"t",0,"o",0,"t",0,"a",0," ",0,"n",0,"e",0," ",0,"e",0,"s",0,"t",0,",",0," ",0,"i",0,"n",0," ",0
+                                DB "m",0,"e",0,"a",0," ",0,"d",0,"e",0,"l",0,"e",0,"n",0,"i",0,"t",0,"i",0," ",0,"p",0,"e",0,"r",0,"t",0,"i",0,"n",0,"a",0,"x",0
+                                DB ",",0," ",0,"a",0,"m",0,"e",0,"t",0," ",0,"s",0,"e",0,"n",0,"s",0,"e",0,"r",0,"i",0,"t",0," ",0,"n",0,"o",0," ",0,"h",0,"i",0
+                                DB "s",0,".",0," ",0,"H",0,"i",0,"s",0," ",0,"m",0,"o",0,"l",0,"l",0,"i",0,"s",0," ",0,"i",0,"n",0,"t",0,"e",0,"l",0,"l",0,"e",0
+                                DB "g",0,"e",0,"b",0,"a",0,"t",0," ",0,"u",0,"t",0,".",0," ",0
+                                DB "S",0,"e",0,"d",0," ",0,"r",0,"e",0,"q",0,"u",0,"e",0," ",0,"q",0,"u",0,"a",0,"n",0,"d",0,"o",0," ",0,"e",0,"i",0,".",0," ",0
+                                DB "E",0,"a",0," ",0,"p",0,"e",0,"r",0," ",0,"a",0,"t",0,"q",0,"u",0,"i",0," ",0,"i",0,"n",0,"t",0,"e",0,"g",0,"r",0,"e",0," ",0
+                                DB "d",0,"e",0,"s",0,"e",0,"r",0,"u",0,"i",0,"s",0,"s",0,"e",0,",",0," ",0,"p",0,"r",0,"i",0," ",0,"e",0,"t",0," ",0,"s",0,"u",0
+                                DB "m",0,"m",0,"o",0," ",0,"c",0,"o",0,"n",0,"g",0,"u",0,"e",0,".",0," ",0,"A",0,"f",0,"f",0,"e",0,"r",0,"t",0," ",0,"f",0,"u",0
+                                DB "i",0,"s",0,"s",0,"e",0,"t",0," ",0,"s",0,"a",0,"l",0,"u",0,"t",0,"a",0,"n",0,"d",0,"i",0," ",0,"p",0,"e",0,"r",0," ",0,"t",0
+                                DB "e",0,".",0
+                                DB MUI_WIDE_CRLF,MUI_WIDE_CRLF
+                                DB "E",0,"a",0," ",0,"d",0,"i",0,"c",0,"o",0," ",0,"t",0,"i",0,"m",0,"e",0,"a",0,"m",0," ",0,"v",0,"o",0,"l",0,"u",0,"p",0,"t",0
+                                DB "a",0,"r",0,"i",0,"a",0," ",0,"q",0,"u",0,"i",0,",",0," ",0,"v",0,"e",0,"l",0," ",0,"e",0,"a",0," ",0,"v",0,"i",0,"d",0,"e",0
+                                DB "r",0,"e",0,"r",0," ",0,"r",0,"e",0,"c",0,"t",0,"e",0,"q",0,"u",0,"e",0,".",0," ",0,"Q",0,"u",0,"a",0,"s",0," ",0,"s",0,"c",0
+                                DB "a",0,"e",0,"v",0,"o",0,"l",0,"a",0," ",0,"a",0,"d",0," ",0,"v",0,"i",0,"m",0,",",0," ",0,"h",0,"a",0,"r",0,"u",0,"m",0," ",0
+                                DB "o",0,"m",0,"n",0,"e",0,"s",0," ",0,"v",0,"u",0,"l",0,"p",0,"u",0,"t",0,"a",0,"t",0,"e",0," ",0,"h",0,"i",0,"s",0," ",0,"e",0
+                                DB "x",0,",",0," ",0,"q",0,"u",0,"o",0," ",0,"a",0,"c",0,"c",0,"u",0,"s",0,"a",0,"m",0,"u",0,"s",0," ",0,"h",0,"e",0,"n",0,"d",0
+                                DB "r",0,"e",0,"r",0,"i",0,"t",0," ",0,"i",0,"d",0,".",0," ",0
+                                DB "E",0,"x",0," ",0,"m",0,"e",0,"a",0," ",0,"s",0,"o",0,"l",0,"u",0,"m",0," ",0,"c",0,"o",0,"n",0,"s",0,"t",0,"i",0,"t",0,"u",0
+                                DB "a",0,"m",0,",",0," ",0,"n",0,"o",0," ",0,"q",0,"u",0,"o",0," ",0,"t",0,"r",0,"i",0,"t",0,"a",0,"n",0,"i",0," ",0,"d",0,"e",0
+                                DB "f",0,"i",0,"n",0,"i",0,"e",0,"b",0,"a",0,"s",0," ",0,"i",0,"n",0,"t",0,"e",0,"l",0,"l",0,"e",0,"g",0,"e",0,"b",0,"a",0,"t",0
+                                DB ".",0," ",0,"Q",0,"u",0,"i",0," ",0,"s",0,"a",0,"p",0,"e",0,"r",0,"e",0,"t",0," ",0,"i",0,"n",0,"s",0,"o",0,"l",0,"e",0,"n",0
+                                DB "s",0," ",0,"n",0,"o",0,",",0," ",0,"e",0,"x",0," ",0,"p",0,"r",0,"i",0," ",0,"h",0,"o",0,"m",0,"e",0,"r",0,"o",0," ",0,"a",0
+                                DB "c",0,"c",0,"u",0,"m",0,"s",0,"a",0,"n",0,".",0," ",0,"A",0,"d",0," ",0,"n",0,"e",0,"m",0,"o",0,"r",0,"e",0," ",0,"v",0,"o",0
+                                DB "c",0,"i",0,"b",0,"u",0,"s",0," ",0,"q",0,"u",0,"i",0,".",0," ",0
+                                DB "M",0,"u",0,"n",0,"d",0,"i",0," ",0,"v",0,"o",0,"l",0,"u",0,"m",0,"u",0,"s",0," ",0,"c",0,"o",0,"m",0,"p",0,"r",0,"e",0,"h",0
+                                DB "e",0,"n",0,"s",0,"a",0,"m",0," ",0,"a",0,"d",0," ",0,"p",0,"e",0,"r",0,",",0," ",0,"i",0,"n",0," ",0,"a",0,"s",0,"s",0,"e",0
+                                DB "n",0,"t",0,"i",0,"o",0,"r",0," ",0,"c",0,"o",0,"t",0,"i",0,"d",0,"i",0,"e",0,"q",0,"u",0,"e",0," ",0,"s",0,"i",0,"t",0,".",0
+                                DB " ",0,"P",0,"r",0,"o",0," ",0,"u",0,"t",0," ",0,"i",0,"u",0,"d",0,"i",0,"c",0,"o",0," ",0,"i",0,"n",0,"c",0,"o",0,"r",0,"r",0
+                                DB "u",0,"p",0,"t",0,"e",0,",",0," ",0,"d",0,"u",0,"o",0," ",0,"i",0,"n",0," ",0,"p",0,"o",0,"p",0,"u",0,"l",0,"o",0," ",0,"s",0
+                                DB "u",0,"s",0,"c",0,"i",0,"p",0,"i",0,"t",0,".",0
+                                DB MUI_WIDE_NULL,MUI_WIDE_NULL
+
+szMUITextClass                  DB 'M',0,'o',0,'d',0,'e',0,'r',0,'n',0,'U',0,'I',0,'_',0,'T',0,'e',0,'x',0,'t',0,MUI_WIDE_NULL    ; Class name for creating our ModernUI_Text control
+
+szMUITextFontSegoe              DB 'S',0,'e',0,'g',0,'o',0,'e',0,' ',0,'U',0,'I',0 ,MUI_WIDE_NULL
+szMUITextFontTahoma             DB 'T',0,'a',0,'h',0,'o',0,'m',0,'a',0,MUI_WIDE_NULL
+szMUITextFontArial              DB 'A',0,'r',0,'i',0,'a',0,'l',0,MUI_WIDE_NULL
+szMUITextFontTimes              DB 'T',0,'i',0,'m',0,'e',0,'s',0,' ',0,'N',0,'e',0,'w',0,' ',0,'R',0,'o',0,'m',0,'a',0,'n',0,MUI_WIDE_NULL
+szMUITextFontCourier            DB 'C',0,'o',0,'u',0,'r',0,'i',0,'e',0,'r',0,' ',0,'N',0,'e',0,'w',0,MUI_WIDE_NULL
+szMUITextFontVerdana            DB 'V',0,'e',0,'r',0,'d',0,'a',0,'n',0,'a',0,MUI_WIDE_NULL
+
+ELSE ; ANSI
+
 szLorumIpsumText                DB "Lorem ipsum dolor sit amet, explicari maluisset te cum, ea vel debitis omittam. Duis sale feugait id duo, sit minimum deleniti facilisis ne. "
                                 DB "Sea et prompta legendos. Bonorum reprehendunt et nam. Nullam volutpat ut vim, in tempor nostrum assentior sed. In libris singulis gloriatur pri, "
                                 DB "mei cetero comprehensam no. Has ne doming labore salutatus, vix ex timeam argumentum."
@@ -133,9 +299,8 @@ szLorumIpsumText                DB "Lorem ipsum dolor sit amet, explicari maluis
                                 DB "Ex mea solum constituam, no quo tritani definiebas intellegebat. Qui saperet insolens no, ex pri homero accumsan. Ad nemore vocibus qui. "
                                 DB "Mundi volumus comprehensam ad per, in assentior cotidieque sit. Pro ut iudico incorrupte, duo in populo suscipit."
                                 DB 0,0,0,0
-
-szMUITextClass                  DB 'ModernUI_Text',0            ; Class name for creating our ModernUI_Text control
-
+                                
+szMUITextClass                  DB 'ModernUI_Text',0    ; Class name for creating our ModernUI_Text control
 
 szMUITextFontSegoe              DB 'Segoe UI',0 
 szMUITextFontTahoma             DB 'Tahoma',0
@@ -144,35 +309,39 @@ szMUITextFontTimes              DB 'Times New Roman',0
 szMUITextFontCourier            DB 'Courier New',0
 szMUITextFontVerdana            DB 'Verdana',0
 
+ENDIF
+
 MUITextFontTable                MUI_TEXT_FONT_ENTRY ((MUI_TEXT_NO_FONTTYPES+1) * (MUI_TEXT_NO_FONTSIZES+1)) DUP (<>)
 
 .CODE
 
-align 8
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Set property for ModernUI_Text control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITextSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     Invoke SendMessage, hControl, MUI_SETPROPERTY, qwProperty, qwPropertyValue
     ret
 MUITextSetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Get property for ModernUI_Text control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITextGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
     Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUITextGetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUITextRegister - Registers the ModernUI_Text control
 ; can be used at start of program for use with RadASM custom control
 ; Custom control class must be set as ModernUI_Text
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITextRegister PROC FRAME
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -205,9 +374,10 @@ MUITextRegister PROC FRAME
 MUITextRegister ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUITextCreate - Returns handle in rax of newly created control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITextCreate PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QWORD, controlwidth:QWORD, controlheight:QWORD, qwResourceID:QWORD, qwStyle:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -236,9 +406,10 @@ MUITextCreate PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QWOR
 MUITextCreate ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TextWndProc - Main processing window for our control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TextWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL TE:TRACKMOUSEEVENT
 
@@ -370,9 +541,10 @@ _MUI_TextWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam
 _MUI_TextWndProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TextInit - set initial default values
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TextInit PROC FRAME hWin:QWORD
     LOCAL hParent:QWORD
     LOCAL qwStyle:QWORD
@@ -425,9 +597,10 @@ _MUI_TextInit PROC FRAME hWin:QWORD
 _MUI_TextInit ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TextPaint
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TextPaint PROC FRAME hWin:QWORD
     LOCAL ps:PAINTSTRUCT 
     LOCAL rect:RECT
@@ -506,9 +679,10 @@ _MUI_TextPaint PROC FRAME hWin:QWORD
 _MUI_TextPaint ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TextPaintBackground
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TextPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD
     LOCAL BackColor:QWORD
     LOCAL hBrush:QWORD
@@ -550,9 +724,10 @@ _MUI_TextPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnable
 _MUI_TextPaintBackground ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TextPaintText
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TextPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD
     LOCAL TextColor:QWORD
     LOCAL BackColor:QWORD
@@ -646,9 +821,10 @@ _MUI_TextPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState
 _MUI_TextPaintText ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Returns TRUE if CR LF found in string, otherwise returns FALSE
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TextCheckMultiline PROC FRAME USES RBX hWin:QWORD, lpszText:QWORD
     LOCAL lenText:QWORD
     LOCAL Cnt:QWORD
@@ -668,6 +844,20 @@ _MUI_TextCheckMultiline PROC FRAME USES RBX hWin:QWORD, lpszText:QWORD
     mov Cnt, 0
     mov rax, 0
     .WHILE rax < lenText
+        IFDEF MUI_UNICODE
+        movzx rax, word ptr [rbx]
+        .IF ax == 0
+            mov bMultiline, FALSE
+            .BREAK
+        .ELSEIF ax == 10 || ax == 13
+            mov bMultiline, TRUE
+            .BREAK 
+        .ENDIF
+        inc rbx
+        inc rbx
+        inc Cnt
+        inc Cnt        
+        ELSE
         movzx rax, byte ptr [rbx]
         .IF al == 0
             mov bMultiline, FALSE
@@ -678,6 +868,7 @@ _MUI_TextCheckMultiline PROC FRAME USES RBX hWin:QWORD, lpszText:QWORD
         .ENDIF
         inc rbx
         inc Cnt
+        ENDIF
         mov rax, Cnt
     .ENDW
 
@@ -698,9 +889,10 @@ _MUI_TextCheckMultiline PROC FRAME USES RBX hWin:QWORD, lpszText:QWORD
 _MUI_TextCheckMultiline ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Create Text size and font family based on style flags passed to control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TextSetFontFamilySize PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
     LOCAL MUITextFont:QWORD
     LOCAL hFont:QWORD
@@ -840,7 +1032,8 @@ _MUI_TextSetFontFamilySize PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
 _MUI_TextSetFontFamilySize ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TextGetFontTableHandle
 ;
 ; Gets handle to font in our font table, allows us to re-use existing font handle
@@ -848,7 +1041,7 @@ _MUI_TextSetFontFamilySize ENDP
 ; creating many fonts for each control individually this allows us to share the font
 ; handle when its already been created for a specific font family, and size and for
 ; bold or italic or underline (or combination)
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TextGetFontTableHandle PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
     LOCAL qwFontSizeValue:QWORD
     LOCAL qwFontTypeValue:QWORD
@@ -946,7 +1139,8 @@ _MUI_TextGetFontTableHandle PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
 _MUI_TextGetFontTableHandle ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_TextSetFontTableHandle
 ;
 ; Sets handle to font in our font table, allows us to re-use existing font handle
@@ -954,7 +1148,7 @@ _MUI_TextGetFontTableHandle ENDP
 ; creating many fonts for each control individually this allows us to share the font
 ; handle when its already been created for a specific font family, and size and for
 ; bold or italic or underline (or combination)
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_TextSetFontTableHandle PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD, hFont:QWORD
     LOCAL qwFontSizeValue:QWORD
     LOCAL qwFontTypeValue:QWORD

@@ -1,16 +1,43 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI x64 Control - ModernUI_Button x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_Button x64
 ;
-; Copyright (c) 2016 by fearless
+; Copyright (c) 2018 by fearless
 ;
 ; All Rights Reserved
 ;
 ; http://www.LetTheLight.in
 ;
-; http://github.com/mrfearless/ModernUI
+; http://github.com/mrfearless/ModernUI64
 ;
-;======================================================================================================================================
+;
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
+;
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
+;
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
+;
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
+;
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
+;
+;==============================================================================
+
 .686
 .MMX
 .XMM
@@ -24,17 +51,17 @@ option stackbase : rsp
 _WIN64 EQU 1
 WINVER equ 0501h
 
-MUI_USEGDIPLUS EQU 1 ; comment out of you dont require png (gdiplus) support
-;DEBUG64 EQU 1
+;MUI_DONTUSEGDIPLUS EQU 1 ; exclude (gdiplus) support
 ;
+;DEBUG64 EQU 1
 ;IFDEF DEBUG64
 ;    PRESERVEXMMREGS equ 1
-;    includelib \JWasm\lib\x64\Debug64.lib
+;    includelib M:\UASM\lib\x64\Debug64.lib
 ;    DBG64LIB equ 1
-;    DEBUGEXE textequ <'\Jwasm\bin\DbgWin.exe'>
-;    include \JWasm\include\debug64.inc
+;    DEBUGEXE textequ <'M:\UASM\bin\DbgWin.exe'>
+;    include M:\UASM\include\debug64.inc
 ;    .DATA
-;    RDBG_DbgWin	DB DEBUGEXE,0
+;    RDBG_DbgWin DB DEBUGEXE,0
 ;    .CODE
 ;ENDIF
 
@@ -43,24 +70,23 @@ includelib user32.lib
 includelib kernel32.lib
 includelib gdi32.lib
 
-IFDEF MUI_USEGDIPLUS
-include gdiplus.inc
-;include ole32.inc
-ENDIF
-
-IFDEF MUI_USEGDIPLUS
-includelib gdiplus.lib
-includelib ole32.lib
-ENDIF
-
 include ModernUI.inc
 includelib ModernUI.lib
 
+IFDEF MUI_USEGDIPLUS
+ECHO MUI_USEGDIPLUS
+include gdiplus.inc
+includelib gdiplus.lib
+includelib ole32.lib
+ELSE
+ECHO MUI_DONTUSEGDIPLUS
+ENDIF
+
 include ModernUI_Button.inc
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Prototypes for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonWndProc					        PROTO :HWND, :UINT, :WPARAM, :LPARAM
 _MUI_ButtonInit					            PROTO :QWORD
 _MUI_ButtonCleanup                          PROTO :QWORD
@@ -85,9 +111,9 @@ _MUI_ButtonPngReleaseIStream                PROTO :QWORD
 ENDIF
 _MUI_ButtonSetPropertyEx                    PROTO :QWORD, :QWORD, :QWORD
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Structures for internal use
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; External public properties
 IFNDEF MUI_BUTTON_PROPERTIES
 MUI_BUTTON_PROPERTIES				        STRUCT
@@ -255,31 +281,33 @@ ENDIF
 
 .CODE
 
-ALIGN 8
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Set property for ModernUI_Button control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     Invoke SendMessage, hControl, MUI_SETPROPERTY, qwProperty, qwPropertyValue
     ret
 MUIButtonSetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; Get property for ModernUI_Button control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
     Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUIButtonGetProperty ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonRegister - Registers the ModernUI_Button control
 ; can be used at start of program for use with RadASM custom control
 ; Custom control class must be set as ModernUI_Button
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonRegister PROC FRAME
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -314,9 +342,10 @@ MUIButtonRegister PROC FRAME
 MUIButtonRegister ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonCreate - Returns handle in rax of newly created control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonCreate PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QWORD, controlwidth:QWORD, controlheight:QWORD, qwResourceID:QWORD, qwStyle:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
@@ -349,10 +378,10 @@ MUIButtonCreate PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QW
 MUIButtonCreate ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonWndProc - Main processing window for our control
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL TE:TRACKMOUSEEVENT
     LOCAL hParent:QWORD
@@ -613,9 +642,10 @@ _MUI_ButtonWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lPar
 _MUI_ButtonWndProc ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonInit - set initial default values
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonInit PROC FRAME hControl:QWORD
     LOCAL ncm:NONCLIENTMETRICS
     LOCAL lfnt:LOGFONT
@@ -707,9 +737,10 @@ _MUI_ButtonInit PROC FRAME hControl:QWORD
 _MUI_ButtonInit ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonCleanup - cleanup a few things before control is destroyed
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonCleanup PROC FRAME hControl:QWORD
     LOCAL qwImageType:QWORD
     LOCAL hIStreamImage:QWORD
@@ -882,9 +913,10 @@ _MUI_ButtonCleanup PROC FRAME hControl:QWORD
 _MUI_ButtonCleanup ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonPaint
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonPaint PROC FRAME hWin:QWORD
     LOCAL ps:PAINTSTRUCT 
     LOCAL rect:RECT
@@ -1047,9 +1079,10 @@ _MUI_ButtonPaint PROC FRAME hWin:QWORD
 _MUI_ButtonPaint ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonPaintBackground
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD, bSelectedState:QWORD
     LOCAL BackColor:QWORD
     LOCAL hBrush:QWORD
@@ -1097,9 +1130,10 @@ _MUI_ButtonPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnab
 _MUI_ButtonPaintBackground ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonPaintAccent
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonPaintAccent PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD, bSelectedState:QWORD
     LOCAL AccentColor:QWORD
     LOCAL AccentStyle:QWORD
@@ -1333,10 +1367,10 @@ _MUI_ButtonPaintAccent PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, 
 _MUI_ButtonPaintAccent ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonCalcPositions - calculate x, y positions of images, text etc
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonCalcPositions PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD, bSelectedState:QWORD
     LOCAL qwStyle:QWORD
     LOCAL hImage:QWORD
@@ -1567,10 +1601,10 @@ _MUI_ButtonCalcPositions PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:
 _MUI_ButtonCalcPositions ENDP
 
 
-
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonPaintText
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD, bSelectedState:QWORD
     LOCAL TextColor:QWORD
     LOCAL BackColor:QWORD
@@ -1905,9 +1939,10 @@ _MUI_ButtonPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, bE
 _MUI_ButtonPaintText ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonPaintImages
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD, bSelectedState:QWORD
     LOCAL qwStyle:QWORD
     LOCAL qwImageType:QWORD
@@ -2151,9 +2186,10 @@ _MUI_ButtonPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:QW
 _MUI_ButtonPaintImages ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonPaintBorder
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonPaintBorder PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState:QWORD, bMouseOver:QWORD, bSelectedState:QWORD
     LOCAL BorderColor:QWORD
     LOCAL BorderStyle:QWORD
@@ -2260,9 +2296,10 @@ _MUI_ButtonPaintBorder PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledS
 _MUI_ButtonPaintBorder ENDP
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonSetPropertyEx
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonSetPropertyEx PROC FRAME USES RBX hWin:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     
     mov rax, qwProperty
@@ -2418,31 +2455,36 @@ _MUI_ButtonSetPropertyEx PROC FRAME USES RBX hWin:QWORD, qwProperty:QWORD, qwPro
 _MUI_ButtonSetPropertyEx ENDP
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; Other PUBLIC function wrappers - most equate to same as custom messages
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 
 
-;-------------------------------------------------------------------------------------
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonGetState
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonGetState PROC FRAME hControl:QWORD
     Invoke SendMessage, hControl, MUIBM_GETSTATE, 0, 0
     ret
 MUIButtonGetState ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonSetState
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonSetState PROC FRAME hControl:QWORD, bState:QWORD
     Invoke SendMessage, hControl, MUIBM_SETSTATE, bState, 0
     ret
 MUIButtonSetState ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonLoadImages - Loads images from resource ids and stores the handles in the
 ; appropriate property.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonLoadImages PROC FRAME hControl:QWORD, qwImageType:QWORD, qwResIDImage:QWORD, qwResIDImageAlt:QWORD, qwResIDImageSel:QWORD, qwResIDImageSelAlt:QWORD, qwResIDImageDisabled:QWORD
 
     .IF qwImageType == 0
@@ -2521,9 +2563,11 @@ MUIButtonLoadImages PROC FRAME hControl:QWORD, qwImageType:QWORD, qwResIDImage:Q
     ret
 MUIButtonLoadImages ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonSetImages - Sets the property handles for image types
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonSetImages PROC FRAME hControl:QWORD, qwImageType:QWORD, hImage:QWORD, hImageAlt:QWORD, hImageSel:QWORD, hImageSelAlt:QWORD, hImageDisabled:QWORD
 
     .IF qwImageType == 0
@@ -2558,66 +2602,82 @@ MUIButtonSetImages PROC FRAME hControl:QWORD, qwImageType:QWORD, hImage:QWORD, h
 
 MUIButtonSetImages ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonNotifySetText
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonNotifySetText PROC FRAME hControl:QWORD, lpszNotifyText:QWORD, bRedraw:QWORD
     Invoke SendMessage, hControl, MUIBM_NOTIFYSETTEXT, lpszNotifyText, bRedraw
     ret
 MUIButtonNotifySetText ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonNotifyLoadImage
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonNotifyLoadImage PROC FRAME hControl:QWORD, qwImageType:QWORD, qwResIDNotifyImage:QWORD
     Invoke SendMessage, hControl, MUIBM_NOTIFYLOADIMAGE, qwImageType, qwResIDNotifyImage
     ret
 MUIButtonNotifyLoadImage ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonNotifySetImage
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonNotifySetImage PROC FRAME hControl:QWORD, qwImageType:QWORD, hNotifyImage:QWORD
     Invoke SendMessage, hControl, MUIBM_NOTIFYSETIMAGE, qwImageType, hNotifyImage
     ret
 MUIButtonNotifySetImage ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonNotifySetFont
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonNotifySetFont PROC FRAME hControl:QWORD, hFont:QWORD, bRedraw:QWORD
     Invoke SendMessage, hControl, MUIBM_NOTIFYSETFONT, hFont, bRedraw
     ret
 MUIButtonNotifySetFont ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonNotify
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonNotify PROC FRAME hControl:QWORD, bNotify:QWORD
     Invoke SendMessage, hControl, MUIBM_NOTIFY, bNotify, 0 
     ret
 MUIButtonNotify ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonNoteSetText
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonNoteSetText PROC FRAME hControl:QWORD, lpszNoteText:QWORD, bRedraw:QWORD
     Invoke SendMessage, hControl, MUIBM_NOTESETTEXT, lpszNoteText, bRedraw
     ret
 MUIButtonNoteSetText ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonNoteSetFont
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonNoteSetFont PROC FRAME hControl:QWORD, hFont:QWORD, bRedraw:QWORD
     Invoke SendMessage, hControl, MUIBM_NOTESETFONT, hFont, bRedraw
     ret
 MUIButtonNoteSetFont ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; MUIButtonSetAllProperties - Set all properties at once from long poiner to a 
 ; MUI_BUTTON_PROPERTIES structure.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUIButtonSetAllProperties PROC FRAME USES RBX RCX hControl:QWORD, lpMUIBUTTONPROPERTIES:QWORD, qwSizeMUIBP:QWORD
     LOCAL lpqwExternalProperties:QWORD
     
@@ -2879,10 +2939,12 @@ MUIButtonSetAllProperties PROC FRAME USES RBX RCX hControl:QWORD, lpMUIBUTTONPRO
 
 MUIButtonSetAllProperties ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonLoadIcon - if succesful, loads specified bitmap resource into the specified
 ; external property and returns TRUE in rax, otherwise FALSE.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonLoadBitmap PROC FRAME hWin:QWORD, qwProperty:QWORD, idResBitmap:QWORD
     LOCAL hinstance:QWORD
 
@@ -2905,10 +2967,12 @@ _MUI_ButtonLoadBitmap PROC FRAME hWin:QWORD, qwProperty:QWORD, idResBitmap:QWORD
 
 _MUI_ButtonLoadBitmap ENDP
 
-;-------------------------------------------------------------------------------------
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
 ; _MUI_ButtonLoadIcon - if succesful, loads specified icon resource into the specified
 ; external property and returns TRUE in rax, otherwise FALSE.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 _MUI_ButtonLoadIcon PROC FRAME hWin:QWORD, qwProperty:QWORD, idResIcon:QWORD
     LOCAL hinstance:QWORD
 
@@ -2931,7 +2995,8 @@ _MUI_ButtonLoadIcon PROC FRAME hWin:QWORD, qwProperty:QWORD, idResIcon:QWORD
 
 _MUI_ButtonLoadIcon ENDP
 
-;-------------------------------------------------------------------------------------
+
+;------------------------------------------------------------------------------
 ; Load JPG/PNG from resource using GDI+
 ;   Actually, this function can load any image format supported by GDI+
 ;
@@ -2940,8 +3005,9 @@ _MUI_ButtonLoadIcon ENDP
 ; Addendum KSR 2014 : Needs OLE32 include and lib for CreateStreamOnHGlobal and 
 ; GetHGlobalFromStream calls. Underlying stream needs to be left open for the life of
 ; the bitmap or corruption of png occurs. store png as RCDATA in resource file.
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 IFDEF MUI_USEGDIPLUS
+MUI_ALIGN
 _MUI_ButtonLoadPng PROC FRAME hWin:QWORD, qwProperty:QWORD, idResPng:QWORD
 	local rcRes:HRSRC
 	local hResData:HRSRC
@@ -3048,10 +3114,12 @@ _MUI_ButtonLoadPng@Close:
 _MUI_ButtonLoadPng ENDP
 ENDIF
 
-;-------------------------------------------------------------------------------------
+
+;------------------------------------------------------------------------------
 ; _MUI_ButtonPngReleaseIStream - releases png stream handle
-;-------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 IFDEF MUI_USEGDIPLUS
+MUI_ALIGN
 _MUI_ButtonPngReleaseIStream PROC FRAME hIStream:QWORD
     
     mov rax, hIStream

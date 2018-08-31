@@ -1,6 +1,6 @@
-;======================================================================================================================================
+;==============================================================================
 ;
-; ModernUI Control - ModernUI_Text x64 v1.0.0.0
+; ModernUI x64 Control - ModernUI_Text x64
 ;
 ; Copyright (c) 2018 by fearless
 ;
@@ -11,42 +11,50 @@
 ; http://github.com/mrfearless/ModernUI64
 ;
 ;
-; This software is provided 'as-is', without any express or implied warranty. In no event will the author be held liable for any 
-; damages arising from the use of this software.
+; This software is provided 'as-is', without any express or implied warranty. 
+; In no event will the author be held liable for any damages arising from the 
+; use of this software.
 ;
-; Permission is granted to anyone to use this software for any non-commercial program. If you use the library in an application, an 
-; acknowledgement in the application or documentation is appreciated but not required. 
+; Permission is granted to anyone to use this software for any non-commercial 
+; program. If you use the library in an application, an acknowledgement in the
+; application or documentation is appreciated but not required. 
 ;
-; You are allowed to make modifications to the source code, but you must leave the original copyright notices intact and not 
-; misrepresent the origin of the software. It is not allowed to claim you wrote the original software. Modified files must have a clear 
-; notice that the files are modified, and not in the original state. This includes the name of the person(s) who modified the code. 
+; You are allowed to make modifications to the source code, but you must leave
+; the original copyright notices intact and not misrepresent the origin of the
+; software. It is not allowed to claim you wrote the original software. 
+; Modified files must have a clear notice that the files are modified, and not
+; in the original state. This includes the name of the person(s) who modified 
+; the code. 
 ;
-; If you want to distribute or redistribute any portion of this package, you will need to include the full package in it's original 
-; state, including this license and all the copyrights. 
+; If you want to distribute or redistribute any portion of this package, you 
+; will need to include the full package in it's original state, including this
+; license and all the copyrights.  
 ;
-; While distributing this package (in it's original state) is allowed, it is not allowed to charge anything for this. You may not sell
-; or include the package in any commercial package without having permission of the author. Neither is it allowed to redistribute any 
-; of the package's components with commercial applications.
+; While distributing this package (in it's original state) is allowed, it is 
+; not allowed to charge anything for this. You may not sell or include the 
+; package in any commercial package without having permission of the author. 
+; Neither is it allowed to redistribute any of the package's components with 
+; commercial applications.
 ;
-;======================================================================================================================================
+;==============================================================================
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; ModernUI_Text Prototypes
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 MUITextRegister         PROTO                                                                   ; Use 'ModernUI_Text' as class in RadASM custom class control
 MUITextCreate           PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD    ; hWndParent, lpszText, xpos, ypos, qwWidth, qwHeight, qwResourceID, qwStyle
 MUITextSetProperty      PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_Text, qwProperty, qwPropertyValue
 MUITextGetProperty      PROTO :QWORD, :QWORD                                                    ; hModernUI_Text, dwProperty
 
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; ModernUI_Text Structures
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 
 
 .CONST
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 ; ModernUI_Text Constants
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 
 ; Font size - AND 0Fh to get value                          : 0000 0000 0000 XXXX
 MUITS_7PT               EQU 1  ; 7pt
@@ -93,9 +101,10 @@ MUITS_HAND              EQU 1 shl 14 ; 0100 0000 0000 0000 - Show a hand instead
 MUITS_LORUMIPSUM        EQU 1 shl 15 ; 1000 0000 0000 0000 - Show lorum ipsum in text box - for demo purposes etc.
 
 
-;--------------------------------------------------------------------------------------------------------------------------------------
-; ModernUI_Text Properties: Use with MUITextSetProperty / MUITextGetProperty or MUI_SETPROPERTY / MUI_GETPROPERTY msgs
-;--------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
+; ModernUI_Text Properties: Use with MUITextSetProperty / MUITextGetProperty or
+; MUI_SETPROPERTY / MUI_GETPROPERTY msgs
+;------------------------------------------------------------------------------
 @TextFont               EQU 0       ; hFont
 @TextColor              EQU 8       ; COLORREF
 @TextColorAlt           EQU 16      ; COLORREF
