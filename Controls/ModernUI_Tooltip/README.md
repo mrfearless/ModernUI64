@@ -12,8 +12,8 @@ For the x86 version of the ModernUI_Tooltip control, visit [here](https://github
 ## Setup ModernUI_Tooltip
 
 * Download the latest version of the ModernUI_Tooltip and extract the files. The latest release can be found in the [Release](https://github.com/mrfearless/ModernUI64/tree/master/Release) folder, or via the [releases](https://github.com/mrfearless/ModernUI64/releases) section of this Github repository or can be downloaded directly from [here](https://github.com/mrfearless/ModernUI64/blob/master/Release/ModernUI_Tooltip.zip?raw=true).
-* Copy the `ModernUI_Tooltip.inc` file to your `masm32\include` folder (or wherever your includes are located)
-* Copy the `ModernUI_Tooltip.lib` file to your `masm32\lib` folder (or wherever your libraries are located)
+* Copy the `ModernUI_Tooltip.inc` file to your `UASM\include` folder (or wherever your includes are located)
+* Copy the `ModernUI_Tooltip.lib` file to your `UASM\lib` folder (or wherever your libraries are located)
 * Add the main ModernUI library to your project (if you haven't done so already):
 ```assembly
 include ModernUI.inc

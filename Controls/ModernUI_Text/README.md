@@ -12,8 +12,8 @@ For the x86 version of the ModernUI_Text control, visit [here](https://github.co
 ## Setup ModernUI_Text
 
 * Download the latest version of the ModernUI_Text and extract the files. The latest release can be found in the [Release](https://github.com/mrfearless/ModernUI64/tree/master/Release) folder, or via the [releases](https://github.com/mrfearless/ModernUI64/releases) section of this Github repository or can be downloaded directly from [here](https://github.com/mrfearless/ModernUI64/blob/master/Release/ModernUI_Text.zip?raw=true).
-* Copy the `ModernUI_Text.inc` file to your `masm32\include` folder (or wherever your includes are located)
-* Copy the `ModernUI_Text.lib` file to your `masm32\lib` folder (or wherever your libraries are located)
+* Copy the `ModernUI_Text.inc` file to your `UASM\include` folder (or wherever your includes are located)
+* Copy the `ModernUI_Text.lib` file to your `UASM\lib` folder (or wherever your libraries are located)
 * Add the main ModernUI library to your project (if you haven't done so already):
 ```assembly
 include ModernUI.inc
