@@ -33,6 +33,16 @@ includelib ModernUI_Button.lib
 ```
 * Repeat for all other ModernUI x64 Controls that you wish to add to your project.
 
+## 64bit Builds with RadASM and UASM
+
+* The ModernUI x64 Library and ModernUI x64 Controls come with [RadASM](http://www.softpedia.com/get/Programming/File-Editors/RadASM.shtml) projects to help build the sources. 
+
+* The ModernUI x64 Library and ModernUI x64 Controls use the **x64** version of the [UASM](http://www.terraspace.co.uk/uasm.html) assembler **exclusively**. 
+
+* To **build 64bit versions** of the ModernUI x64 Library and ModernUI x64 Controls you will **need** to download and install additional files. Please see the wiki page for more details: [RadASM-Building](https://github.com/mrfearless/ModernUI64/wiki/RadASM-Building)
+
+* Manual build instructions are also available on the wiki.
+
 ## General Information
 
 * The main ModernUI x64 Library is stored in the [ModernUI](https://github.com/mrfearless/ModernUI64/tree/master/ModernUI) folder. It comes with a RadASM project to help with building the library from the source files. Manual build instructions can be found in the [wiki](https://github.com/mrfearless/ModernUI64/wiki).
