@@ -39,11 +39,11 @@ Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I" *.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
-12=3,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I" *.asm
+12=3,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I" *.asm
 13=9,O,$B\LINK -lib *.obj /out:"$9"
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-16=*.obj,O,$B\JWASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I" *.asm
+16=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd  /I"$I" *.asm
 17=0,0,"$E\x64\x64dbg",5
 [Resource]
 [StringTable]
@@ -82,7 +82,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=31
+MilestoneOnDateDate=20
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=23
@@ -106,12 +106,12 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=211086824
+PTimer=211714151
 [Collapse]
 1=16779400,262272,134252866,268566528,35652160,3833922
 2=
 [Size]
-1=0,0,0,0,80642
+1=0,0,0,0,8636
 2=0,0,0,0,2982
 [GroupExpand]
 GroupExpand=1,0,1,0,0,0

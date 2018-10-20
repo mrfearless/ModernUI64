@@ -219,8 +219,8 @@ WM_DWMCOMPOSITIONCHANGED                    EQU 031Eh ; 0x031E
 
 .DATA
 align 8
-szMUICaptionBarClass					    DB 'ModernUICaptionBar',0   ; Class name for our CaptionBar control
-szMUISysButtonClass                         DB 'ModernUISysButton',0    ; Class name for our system buttons (min/max/restore or close buttons)
+szMUICaptionBarClass					    DB 'ModernUI_CaptionBar',0  ; Class name for our CaptionBar control
+szMUISysButtonClass                         DB 'ModernUI_SysButton',0   ; Class name for our system buttons (min/max/restore or close buttons)
 szMUISysButtonFont                          DB 'Marlett',0              ; System font used for drawing min/max/restore/close glyphs from marlett font
 szMUICaptionBarFont                         DB 'Segoe UI',0             ; Font used for caption text
 hMUISysButtonFont                           DQ 0                        ; Handle to system button font (marlett)
