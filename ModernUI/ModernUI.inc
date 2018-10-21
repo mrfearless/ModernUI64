@@ -41,7 +41,7 @@
 
 
 ;------------------------------------------------------------------------------
-; ModernUI Prototypes for users of controls
+; ModernUI64 Prototypes for users of controls
 ;------------------------------------------------------------------------------
 ; ModernUI Base Functions:
 MUIGetExtProperty               PROTO :QWORD,:QWORD                             ; hControl, qwProperty
@@ -85,7 +85,16 @@ MUICreateIconFromMemory         PROTO :QWORD,:QWORD                             
 MUICreateCursorFromMemory       PROTO :QWORD                                    ; pCursorData
 MUICreateBitmapFromMemory       PROTO :QWORD                                    ; pBitmapData
 
-
+; ModernUI DPI & Scaling Functions:
+MUIDPI                          PROTO :QWORD,:QWORD                             ; lpqwDPIX, lpqwDPIY
+MUIDPIScaleX                    PROTO :QWORD                                    ; qwValueX
+MUIDPIScaleY                    PROTO :QWORD                                    ; qwValueY
+MUIDPIScaleRect                 PROTO :QWORD                                    ; lpRect
+MUIDPIScaleControl              PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; lpqwLeft, lpqwTop, lpqwWidth, lpqwHeight
+MUIDPIScaleFontSize             PROTO :QWORD                                    ; qwPointSize
+MUIDPIScaleFont                 PROTO :QWORD                                    ; hFont
+MUIDPIScaledScreen              PROTO :QWORD,:QWORD                             ; lpqwScreenWidth, lpqwScreenHeight
+MUIDPISetDPIAware               PROTO
 
 
 .CONST
@@ -160,10 +169,10 @@ ENDM
 ;------------------------------------------
 ; Notes
 ;------------------------------------------
-; Custom controls: dwStyle parameter of 
+; Custom controls: qwStyle parameter of 
 ; CreateWindowEx.
 ;
-; The low 16 bits of the dwStyle parameter 
+; The low 16 bits of the qwStyle parameter 
 ; are defined by the implementor of the 
 ; window class (by the person who calls 
 ; RegisterClass) - Raymond Chen
