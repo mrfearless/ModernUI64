@@ -91,114 +91,181 @@ include ModernUI_CaptionBar.inc
 ;------------------------------------------------------------------------------
 
 
-_MUI_CaptionBarWndProc				        PROTO :HWND, :UINT, :WPARAM, :LPARAM
-_MUI_CaptionBarInit                         PROTO :QWORD
-_MUI_CaptionBarCleanup                      PROTO :QWORD
-_MUI_CaptionBarPaint					    PROTO :QWORD
-_MUI_CaptionBarPaintBackground              PROTO :QWORD, :QWORD, :QWORD
-_MUI_CaptionBarPaintImage                   PROTO :QWORD, :QWORD, :QWORD, :QWORD
-_MUI_CaptionBarReposition                   PROTO :QWORD
-_MUI_CaptionBarParentSubClassProc           PROTO :HWND, :UINT, :WPARAM, :LPARAM, :QWORD, :QWORD
-_MUI_CaptionBarSetSysButtonProperty         PROTO :QWORD, :QWORD, :QWORD
+_MUI_CaptionBarWndProc			PROTO :HWND, :UINT, :WPARAM, :LPARAM
+_MUI_CaptionBarInit             PROTO :QWORD
+_MUI_CaptionBarCleanup          PROTO :QWORD
+_MUI_CaptionBarPaint			PROTO :QWORD
+_MUI_CaptionBarPaintBackground  PROTO :QWORD, :QWORD, :QWORD
+_MUI_CaptionBarPaintImage       PROTO :QWORD, :QWORD, :QWORD, :QWORD
+_MUI_CaptionBarReposition       PROTO :QWORD
+_MUI_CaptionBarParentSubClassProc PROTO :HWND, :UINT, :WPARAM, :LPARAM, :QWORD, :QWORD
 
-_MUI_CaptionBarBackLoadBitmap               PROTO :QWORD, :QWORD, :QWORD
-_MUI_CaptionBarBackLoadIcon                 PROTO :QWORD, :QWORD, :QWORD
+_MUI_CaptionBarBackLoadBitmap   PROTO :QWORD, :QWORD, :QWORD
+_MUI_CaptionBarBackLoadIcon     PROTO :QWORD, :QWORD, :QWORD
 
-_MUI_CreateCaptionBarSysButtons             PROTO :QWORD, :QWORD
-_MUI_CreateSysButton                        PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD
-_MUI_SysButtonWndProc                       PROTO :HWND, :UINT, :WPARAM, :LPARAM
-_MUI_SysButtonInit                          PROTO :QWORD
-_MUI_SysButtonCleanup                       PROTO :QWORD
-_MUI_SysButtonPaint                         PROTO :QWORD
-_MUI_SysButtonGetIconSize                   PROTO :QWORD, :QWORD, :QWORD
+_MUI_CreateCaptionBarSysButtons PROTO :QWORD, :QWORD
+_MUI_CreateSysButton            PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD
+_MUI_SysButtonWndProc           PROTO :HWND, :UINT, :WPARAM, :LPARAM
+_MUI_SysButtonInit              PROTO :QWORD
+_MUI_SysButtonCleanup           PROTO :QWORD
+_MUI_SysButtonPaint             PROTO :QWORD
+_MUI_SysButtonSetPropertyEx     PROTO :QWORD, :QWORD, :QWORD
 
-_MUI_ApplyMUIStyleToDialog                  PROTO :QWORD, :QWORD
+_MUI_ApplyMUIStyleToDialog      PROTO :QWORD, :QWORD
+
+
+_MUI_CreateCapButton            PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD
+_MUI_CapButtonWndProc           PROTO :HWND, :UINT, :WPARAM, :LPARAM
+_MUI_CapButtonInit              PROTO :QWORD
+_MUI_CapButtonCleanup           PROTO :QWORD
+_MUI_CapButtonPaint             PROTO :QWORD
+_MUI_CapButtonsReposition       PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD
+_MUI_CapButtonSetPropertyEx     PROTO :QWORD, :QWORD, :QWORD
+
+_CBP_MouseOverBorders           PROTO :QWORD, :QWORD
+
+
 
 ;------------------------------------------------------------------------------
 ; Structures for internal use
 ;------------------------------------------------------------------------------
 ; CaptionBar External Properties
-MUI_CAPTIONBAR_PROPERTIES				    STRUCT 8
-	qwTextColor							    DQ ?
-	qwTextFont							    DQ ?
-	qwBackColor							    DQ ?
-    qwBackImageType                         DQ ?
-    qwBackImage                             DQ ?
-    qwBackImageOffsetX                      DQ ? ; QWORD. Offset x +/- to set position of hImage
-    qwBackImageOffsetY                      DQ ? ; QWORD. Offset y +/- to set position of hImage   
-	qwSysButtonTextRollColor                DQ ? ;
-	qwSysButtonBackRollColor                DQ ? ;
-    qwSysButtonBorderColor                  DQ ? ; 0 = use same as @CaptionBarBackColor
-    qwSysButtonBorderRollColor              DQ ? ; 0 = use @CaptionBarBtnBckRollColor    	
-	qwSysButtonsWidth                       DQ ? ; defaults to 32
-	qwSysButtonsHeight                      DQ ? ; defaults to 28
-    qwSysButtonsOffsetX                     DQ ? ; QWORD. Offset y +/- to set position of system buttons (min/max/restore/close) in relation to right of captionbar
-    qwSysButtonsOffsetY                     DQ ? ; QWORD. Offset y + to set position of system buttons (min/max/restore/close) in relation to top of captionbar    	
-	qwBtnIcoMin                             DQ ?
-	qwBtnIcoMinAlt                          DQ ?
-	qwBtnIcoMax                             DQ ?
-	qwBtnIcoMaxAlt                          DQ ?
-	qwBtnIcoRes                             DQ ?
-	qwBtnIcoResAlt                          DQ ?
-	qwBtnIcoClose                           DQ ?
-	qwBtnIcoCloseAlt                        DQ ?
-	qwDllInstance                           DQ ?
-    qwCaptionBarParam                       DQ ?	
-MUI_CAPTIONBAR_PROPERTIES				    ENDS
+IFNDEF MUI_CAPTIONBAR_PROPERTIES
+MUI_CAPTIONBAR_PROPERTIES       STRUCT 8
+    qwTextColor                 DQ ?    ; RGBCOLOR. Text color for captionbar text and system buttons (min/max/restore/close)
+    qwTextFont                  DQ ?    ; hFont. Font for captionbar text
+    qwBackColor                 DQ ?    ; RGBCOLOR. Background color of captionbar and system buttons (min/max/restore/close)
+    qwBackImageType             DQ ?    ; QWORD. Image Type - One of the following: MUICBIT_NONE,MUICBIT_BMP, MUICBIT_ICO, MUICBIT_PNG
+    qwBackImage                 DQ ?    ; hImage. Image to display in captionbar background.
+    qwBackImageOffsetX          DQ ?    ; QWORD. Offset x +/- to set position of hImage
+    qwBackImageOffsetY          DQ ?    ; QWORD. Offset y +/- to set position of hImage    
+    qwButtonTextRollColor       DQ ?    ; RGBCOLOR. Text color for system buttons (min/max/restore/close) when mouse moves over button
+    qwButtonBackRollColor       DQ ?    ; RGBCOLOR. Background color for system buttons (min/max/restore/close) when mouse moves over button
+    qwButtonBorderColor         DQ ?    ; RGBCOLOR. Border color for system buttons (min/max/restore/close). 0 = use same as @CaptionBarBackColor
+    qwButtonBorderRollColor     DQ ?    ; RGBCOLOR. Border color for system buttons (min/max/restore/close) when mouse moves over button. 0 = use @CaptionBarBtnBckRollColor  
+    qwButtonsWidth              DQ ?    ; QWORD. System buttons width. Defaults = 32px
+    qwButtonsHeight             DQ ?    ; QWORD. System buttons height. Defaults = 28px
+    qwButtonsOffsetX            DQ ?    ; QWORD. Offset y +/- to set position of system buttons (min/max/restore/close) in relation to right of captionbar
+    qwButtonsOffsetY            DQ ?    ; QWORD. Offset y + to set position of system buttons (min/max/restore/close) in relation to top of captionbar    
+    qwBtnIcoMin                 DQ ?    ; hIcon. For minimize button
+    qwBtnIcoMinAlt              DQ ?    ; hIcon. For minimize button when mouse moves over button
+    qwBtnIcoMax                 DQ ?    ; hIcon. For maximize button
+    qwBtnIcoMaxAlt              DQ ?    ; hIcon. For maximize button when mouse moves over button
+    qwBtnIcoRes                 DQ ?    ; hIcon. For restore button
+    qwBtnIcoResAlt              DQ ?    ; hIcon. For restore button when mouse moves over button
+    qwBtnIcoClose               DQ ?    ; hIcon. For close button
+    qwBtnIcoCloseAlt            DQ ?    ; hIcon. For close button when mouse moves over button
+    qwWindowBackColor           DQ ?    ; RGBCOLOR. If -1 = No painting of window/dialog background, handled by user or default system.
+    qwWindowBorderColor         DQ ?    ; RGBCOLOR. If -1 = No border. if WindowBackColor != -1 then color of border to paint on window.    
+    qwDllInstance               DQ ?    ; hInstance. For loading resources (icons) - normally set to 0 (current module) but when resources are in a dll set this before calling MUICaptionBarLoadIcons
+    qwCaptionBarParam           DQ ?    ; QWORD. Custom user data
+MUI_CAPTIONBAR_PROPERTIES       ENDS
+ENDIF
 
 ; CaptionBar Internal Poperties
-_MUI_CAPTIONBAR_PROPERTIES				    STRUCT 8
-	qwEnabledState						    DQ ?
-	qwMouseOver							    DQ ?
-	hSysButtonClose                         DQ ?
-	hSysButtonMax                           DQ ?
-	hSysButtonRes                           DQ ?
-	hSysButtonMin                           DQ ?
-	qwNoMoveWindow                          DQ ?
-	qwUseIcons                              DQ ?
-_MUI_CAPTIONBAR_PROPERTIES				    ENDS
+_MUI_CAPTIONBAR_PROPERTIES		STRUCT 8
+	qwEnabledState				DQ ?
+	qwMouseOver					DQ ?
+    qwMouseDown                 DQ ? 	
+	hSysButtonClose             DQ ?
+	hSysButtonMax               DQ ?
+	hSysButtonRes               DQ ?
+	hSysButtonMin               DQ ?
+	qwNoMoveWindow              DQ ?
+	qwUseIcons                  DQ ?
+    qwButtonsLeftOffset         DQ ? ; calced left offset of all buttons including x offsets
+    qwTotalButtons              DQ ?
+    qwButtonArray               DQ ?    	
+_MUI_CAPTIONBAR_PROPERTIES		ENDS
 
 ; SysButton External Properties
-MUI_SYSBUTTON_PROPERTIES                    STRUCT 8
-	qwTextColor							    DQ ?
-	qwTextRollColor                         DQ ?
-	qwBackColor							    DQ ?
-	qwBackRollColor                         DQ ?
-    qwBorderColor                           DQ ?
-    qwBorderRollColor                       DQ ?	
-    qwSysButtonType                         DQ ?
-    qwIco                                   DQ ?
-    qwIcoAlt                                DQ ?
-MUI_SYSBUTTON_PROPERTIES                    ENDS
+IFNDEF MUI_SYSBUTTON_PROPERTIES
+MUI_SYSBUTTON_PROPERTIES        STRUCT 8
+	qwTextColor					DQ ?
+	qwTextRollColor             DQ ?
+	qwBackColor					DQ ?
+	qwBackRollColor             DQ ?
+    qwBorderColor               DQ ?
+    qwBorderRollColor           DQ ?	
+    qwSysButtonType             DQ ?
+    qwIco                       DQ ?
+    qwIcoAlt                    DQ ?
+    qwParam                     DQ ?
+    qwResourceID                DQ ?    
+MUI_SYSBUTTON_PROPERTIES        ENDS
+ENDIF
 
 ; SysButton Internal Properties
-_MUI_SYSBUTTON_PROPERTIES                   STRUCT 8
-    qwSysButtonFont						    DQ ?
-	qwEnabledState						    DQ ?
-	qwMouseOver							    DQ ?
-    qwUseIcons                              DQ ?	
-_MUI_SYSBUTTON_PROPERTIES                   ENDS
+_MUI_SYSBUTTON_PROPERTIES       STRUCT 8
+    qwSysButtonFont				DQ ?
+	qwEnabledState				DQ ?
+	qwMouseOver					DQ ?
+    qwUseIcons                  DQ ?	
+_MUI_SYSBUTTON_PROPERTIES       ENDS
+
+
+IFNDEF MUI_CAPBUTTON_PROPERTIES
+MUI_CAPBUTTON_PROPERTIES        STRUCT 8
+    qwTextColor                 DQ ?    ; RGBCOLOR
+    qwTextRollColor             DQ ?    ; RGBCOLOR
+    qwBackColor                 DQ ?    ; RGBCOLOR. Color of back of button.
+    qwBackRollColor             DQ ?    ; RGBCOLOR. Color of back of button when mouse moves over.
+    qwBorderColor               DQ ?    ; RGBCOLOR. Color of border of button. 0 = use same as qwBackColor
+    qwBorderRollColor           DQ ?    ; RGBCOLOR. Color of border of button when mouse moves over. 0 = use same as qwBackRollColor
+    qwIco                       DQ ?    ; hIcon. Handle of icon to use for button
+    qwIcoAlt                    DQ ?    ; hIcon. Handle of icon to use for button when mouse moves over it
+    qwParam                     DQ ?    ; QWORD. Custom user data. Passed as wNotifyCode (HIWORD of wParam) in WM_COMMAND
+    qwResourceID                DQ ?    ; QWORD. Resource ID for button    
+MUI_CAPBUTTON_PROPERTIES        ENDS
+ENDIF
+
+_MUI_CAPBUTTON_PROPERTIES       STRUCT 8
+    qwSysButtonFont             DQ ?
+    qwEnabledState              DQ ?
+    qwMouseOver                 DQ ?
+    qwWidth                     DQ ?
+_MUI_CAPBUTTON_PROPERTIES       ENDS
 
 
 .CONST
 align 8
-MUI_CAPTIONBAR_IMAGETEXT_PADDING            EQU 10d
-MUI_CAPTIONBAR_TEXTLEFT_PADDING             EQU 6d
-MUI_DEFAULT_CAPTION_HEIGHT                  EQU 32d
-MUI_SYSBUTTON_WIDTH                         EQU 32d
-MUI_SYSBUTTON_HEIGHT                        EQU 28d
-WM_DWMCOMPOSITIONCHANGED                    EQU 031Eh ; 0x031E
+WM_DWMCOMPOSITIONCHANGED        EQU  031Eh
+; Resource IDs for System Buttons: Min, Max, Restore and Close
+; IDs for custom buttons are 1 to (MUI_SYSBUTTON_CLOSE-4)
+MUI_SYSBUTTON_CLS_ID                        EQU 0FFFFh
+MUI_SYSBUTTON_MAX_ID                        EQU (MUI_SYSBUTTON_CLS_ID -1)
+MUI_SYSBUTTON_RES_ID                        EQU (MUI_SYSBUTTON_CLS_ID -2)
+MUI_SYSBUTTON_MIN_ID                        EQU (MUI_SYSBUTTON_CLS_ID -3)
+
+
+MUI_BORDER_SIZE                             EQU 8d
+MUI_CAPTIONBAR_IMAGETEXT_PADDING            EQU 10d ; Padding space between end of image and start of text
+MUI_CAPTIONBAR_TEXTLEFT_PADDING             EQU 6d  ; Padding space from left of ModernUI_CaptionBar to start of text if no image present
+MUI_DEFAULT_CAPTION_HEIGHT                  EQU 32d ; Default height of caption bar control
+MUI_SYSBUTTON_WIDTH                         EQU 32d ; Default width of system buttons
+MUI_SYSBUTTON_HEIGHT                        EQU 28d ; Default height of system buttons
+MUI_SYSBUTTONS_SPACING                      EQU 0   ; Spacing between each system button
+MUI_SYSCAPBUTTON_SPACING                    EQU 12  ; Spacing between system buttons and capbuttons
+MUI_CAPBUTTON_MAX                           EQU 8   ; Max no of capbuttons
+MUI_CAPBUTTON_TEXT_PADDING                  EQU 3   ; Padding space from left of capbutton to start of text (if any text) 
+MUI_CAPBUTTON_IMAGETEXT_PADDING             EQU 3   ; Padding space between end of image and start of text in capbutton 
+MUI_CAPBUTTONS_SPACING                      EQU 4   ; Spacing between each capbutton
+MUI_CAPBUTTON_TEXT_MAX                      EQU 32  ; Default max length of captionbutton text
 
 
 ; CaptionBar Internal Properties
-@CaptionBarEnabledState				        EQU 0
-@CaptionBarMouseOver					    EQU 8
-@CaptionBar_hSysButtonClose                 EQU 16
-@CaptionBar_hSysButtonMax                   EQU 24
-@CaptionBar_hSysButtonRes                   EQU 32
-@CaptionBar_hSysButtonMin                   EQU 40
-@CaptionBarNoMoveWindow                     EQU 48
-@CaptionBarUseIcons                         EQU 56
+@CaptionBarEnabledState                     EQU 0
+@CaptionBarMouseOver                        EQU 8
+@CaptionBarMouseDown                        EQU 16
+@CaptionBar_hSysButtonClose                 EQU 24
+@CaptionBar_hSysButtonMax                   EQU 32
+@CaptionBar_hSysButtonRes                   EQU 40
+@CaptionBar_hSysButtonMin                   EQU 48
+@CaptionBarNoMoveWindow                     EQU 56
+@CaptionBarUseIcons                         EQU 64
+@CaptionBarButtonsLeftOffset                EQU 72
+@CaptionBarTotalButtons                     EQU 80
+@CaptionBarButtonArray                      EQU 88
 
 ; SysButton Internal Properties
 @SysButtonFont                              EQU 0
@@ -207,24 +274,35 @@ WM_DWMCOMPOSITIONCHANGED                    EQU 031Eh ; 0x031E
 @SysButtonUseIcons                          EQU 24
 
 ; SysButton External Properties
-@SysButtonTextColor							EQU 0 
+@SysButtonTextColor                         EQU 0 
 @SysButtonTextRollColor                     EQU 8
-@SysButtonBackColor							EQU 16
+@SysButtonBackColor                         EQU 16
 @SysButtonBackRollColor                     EQU 24
 @SysButtonBorderColor                       EQU 32
 @SysButtonBorderRollColor                   EQU 40
-@SysButtonType                              EQU 48
-@SysButtonIco                               EQU 56
-@SysButtonIcoAlt                            EQU 64
+@SysButtonIco                               EQU 48
+@SysButtonIcoAlt                            EQU 56
+@SysButtonParam                             EQU 64
+@SysButtonResourceID                        EQU 72
+
+; CapButton Internal Properties
+@CapButtonFont                              EQU 0
+@CapButtonEnabledState                      EQU 8
+@CapButtonMouseOver                         EQU 16
+@CapButtonWidth                             EQU 24
+
 
 .DATA
 align 8
-szMUICaptionBarClass					    DB 'ModernUI_CaptionBar',0  ; Class name for our CaptionBar control
+szMUICaptionBarClass                        DB 'ModernUI_CaptionBar',0  ; Class name for our CaptionBar control
 szMUISysButtonClass                         DB 'ModernUI_SysButton',0   ; Class name for our system buttons (min/max/restore or close buttons)
+szMUICapButtonClass                         DB 'ModernUI_CapButton',0   ; Class name for our custom captionbar buttons (shown before system buttons)
 szMUISysButtonFont                          DB 'Marlett',0              ; System font used for drawing min/max/restore/close glyphs from marlett font
+szMUICapButtonFont                          DB 'Segoe UI',0             ; Font used for drawing custom captionbar buttons
 szMUICaptionBarFont                         DB 'Segoe UI',0             ; Font used for caption text
-hMUISysButtonFont                           DQ 0                        ; Handle to system button font (marlett)
 hMUICaptionBarFont                          DQ 0                        ; Handle to caption button font (segoe ui)
+hMUISysButtonFont                           DQ 0                        ; Handle to system button font (marlett)
+hMUICapButtonFont                           DQ 0                        ; Handle to capbutton font
 szMUISysMinButton                           DB '0',0                    ; Minimize button glyph from Marlett font
 szMUISysMaxButton                           DB '1',0                    ; Maximize button glyph from Marlett font
 szMUISysResButton                           DB '2',0                    ; Restore button glyph from Marlett font
@@ -371,30 +449,38 @@ _MUI_CaptionBarWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, 
     .ELSEIF eax == WM_COMMAND
         mov rax, wParam
         and rax, 0FFFFh
-        .IF eax == 1 ; close button
+        .IF eax == MUI_SYSBUTTON_CLS_ID ; close button
             Invoke GetParent, hWin
             Invoke SendMessage, rax, WM_SYSCOMMAND, SC_CLOSE, 0
             ;Invoke SendMessage, rax, WM_CLOSE, 0, 0
             ret
-        .ELSEIF eax == 2 ; max button
+        .ELSEIF eax == MUI_SYSBUTTON_MAX_ID ; max button
             Invoke GetParent, hWin
             Invoke SendMessage, rax, WM_SYSCOMMAND, SC_MAXIMIZE, 0
             ;Invoke ShowWindow, rax, SW_MAXIMIZE
             Invoke _MUI_CaptionBarReposition, hWin
             ret            
-        .ELSEIF eax == 3 ; res button
+        .ELSEIF eax == MUI_SYSBUTTON_RES_ID ; res button
             Invoke GetParent, hWin
             Invoke SendMessage, rax, WM_SYSCOMMAND, SC_RESTORE, 0
             ;Invoke ShowWindow, rax, SW_RESTORE
             Invoke _MUI_CaptionBarReposition, hWin
             ret
-        .ELSEIF eax == 4 ; min button
+        .ELSEIF eax == MUI_SYSBUTTON_MIN_ID ; min button
             Invoke GetParent, hWin
             Invoke SendMessage, rax, WM_SYSCOMMAND, SC_MINIMIZE, 0
             ;Invoke ShowWindow, rax, SW_MINIMIZE
             ret
+        .ELSE ; pass on any WM_COMMANDS back to parent - Main window proc for processing
+            Invoke GetParent, hWin
+            Invoke PostMessage, rax, WM_COMMAND, wParam, lParam ; useful for hosted controls inside CaptionBar            
         .ENDIF
         xor rax, rax
+        ret
+
+    .ELSEIF eax == WM_NOTIFY ; pass on any WM_NOTIFY back to parent - Main window proc for notifications
+        Invoke GetParent, hWin
+        Invoke PostMessage, rax, WM_NOTIFY, wParam, lParam ; useful for hosted controls inside CaptionBar
         ret
 
     .ELSEIF eax == WM_ERASEBKGND
@@ -429,17 +515,33 @@ _MUI_CaptionBarWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, 
             mov rax, 0
         .ENDIF
 
+    .ELSEIF eax == WM_LBUTTONDOWN
+        Invoke MUISetIntProperty, hWin, @CaptionBarMouseDown, TRUE
+        
+    .ELSEIF eax == WM_LBUTTONUP
+        Invoke MUISetIntProperty, hWin, @CaptionBarMouseDown, FALSE
+
     .ELSEIF eax == WM_NCHITTEST
-        Invoke MUIGetIntProperty, hWin, @CaptionBarNoMoveWindow
-        .IF rax == TRUE
-            Invoke GetParent, hWin
-            Invoke SendMessage, rax, WM_NCLBUTTONDOWN, HTCAPTION, 0
+        ; https://github.com/mrfearless/ModernUI/issues/7
+        ; add additonal logic to prevent wine sticky (until ESC pressed) of the mouse cursor on the caption
+            
+        Invoke MUIGetIntProperty, hWin, @CaptionBarMouseDown
+        .IF rax == TRUE ; mouse is actually down
+            Invoke MUIGetIntProperty, hWin, @CaptionBarNoMoveWindow
+            .IF rax == FALSE
+                Invoke GetParent, hWin
+                Invoke SendMessage, rax, WM_NCLBUTTONDOWN, HTCAPTION, 0
+            .ENDIF
+        .ELSE ; otherwise we didnt detect mouse down ourselves, so no sticky move of caption hopefully
+            ; do we need to force it to nowhere?
+            ;Invoke GetParent, hWin
+            ;Invoke SendMessage, eax, WM_NCLBUTTONDOWN, HTNOWHERE, 0
         .ENDIF
 
    .ELSEIF eax == WM_MOUSEMOVE
         Invoke MUIGetIntProperty, hWin, @CaptionBarEnabledState
         .IF rax == TRUE   
-    		Invoke MUISetIntProperty, hWin, @CaptionBarMouseOver , TRUE
+    		Invoke MUISetIntProperty, hWin, @CaptionBarMouseOver, TRUE
     		.IF rax != TRUE
     		    Invoke InvalidateRect, hWin, NULL, TRUE
     		    mov TE.cbSize, SIZEOF TRACKMOUSEEVENT
@@ -450,13 +552,17 @@ _MUI_CaptionBarWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, 
     		    Invoke TrackMouseEvent, Addr TE
     		.ENDIF
         .ENDIF
+        ;Invoke GetParent, hWin
+        ;Invoke PostMessage, rax, WM_MOUSEMOVE, wParam, lParam ; pass mousemove to parent            
         
     .ELSEIF eax == WM_MOUSELEAVE
-        Invoke MUISetIntProperty, hWin, @CaptionBarMouseOver , FALSE
+        Invoke MUISetIntProperty, hWin, @CaptionBarMouseOver, FALSE
+        Invoke MUISetIntProperty, hWin, @CaptionBarMouseDown, FALSE
 		Invoke InvalidateRect, hWin, NULL, TRUE
 
     .ELSEIF eax == WM_KILLFOCUS
-        Invoke MUISetIntProperty, hWin, @CaptionBarMouseOver , FALSE
+        Invoke MUISetIntProperty, hWin, @CaptionBarMouseOver, FALSE
+        Invoke MUISetIntProperty, hWin, @CaptionBarMouseDown, FALSE
 		Invoke InvalidateRect, hWin, NULL, TRUE
 	
 	.ELSEIF eax == WM_SIZE
@@ -489,15 +595,30 @@ _MUI_CaptionBarWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, 
 	.ELSEIF eax == MUI_SETPROPERTY
 		Invoke MUISetExtProperty, hWin, wParam, lParam
 		
-		; also set child system button properties as well if they apply
-		Invoke _MUI_CaptionBarSetSysButtonProperty, hWin, wParam, lParam
+        ; also set child system button properties as well if they apply
+        Invoke _MUI_SysButtonSetPropertyEx, hWin, wParam, lParam
+        ; also set child CapButton properties as well if they apply
+        Invoke _MUI_CapButtonSetPropertyEx, hWin, wParam, lParam
 		
 		mov rax, wParam
 		.IF rax == @CaptionBarBtnWidth || rax == @CaptionBarBtnHeight || rax == @CaptionBarBtnOffsetX || rax == @CaptionBarBtnOffsetY
             Invoke _MUI_CaptionBarReposition, hWin
         .ELSEIF rax == @CaptionBarBackImageOffsetX || rax == @CaptionBarBackImageOffsetY
-            Invoke InvalidateRect, hWin, NULL, FALSE            
-		.ENDIF
+            Invoke InvalidateRect, hWin, NULL, FALSE
+        .ELSEIF rax == @CaptionBarWindowBorderColor 
+            .IF lParam == -1
+                Invoke GetWindowLongPtr, hWin, GWL_STYLE
+                or rax, MUICS_NOBORDER ; no border color, so set no border style on as we want pos 0,0
+            .ELSE
+                Invoke GetWindowLongPtr, hWin, GWL_STYLE
+                and rax, (-1 xor MUICS_NOBORDER) ; we have border color so set no border style off as we want pos 1,1
+            .ENDIF
+            Invoke SetWindowLongPtr, hWin, GWL_STYLE, rax
+            Invoke _MUI_CaptionBarReposition, hWin
+        .ELSEIF rax == @CaptionBarWindowBackColor
+            Invoke GetParent, hWin
+            Invoke InvalidateRect, rax, NULL, TRUE
+        .ENDIF            
 		ret
 
     .ENDIF
@@ -515,6 +636,7 @@ MUI_ALIGN
 _MUI_CaptionBarParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM, uIdSubclass:QWORD, qwRefData:QWORD
     LOCAL wp:WINDOWPLACEMENT
     LOCAL qwStyle:QWORD
+    LOCAL BackColor:QWORD    
     
     mov eax, uMsg
     .IF eax == WM_NCDESTROY
@@ -525,6 +647,8 @@ _MUI_CaptionBarParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM
     ; Handle resize of dialog/window and invalidate it if we are painting a border via MUIPaintBackground
     .ELSEIF eax == WM_NCCALCSIZE
         Invoke InvalidateRect, hWin, NULL, TRUE
+        Invoke DefSubclassProc, hWin, uMsg, wParam, lParam
+        ret
     
     .ELSEIF eax == WM_THEMECHANGED  || eax == WM_DWMCOMPOSITIONCHANGED ;  0x031E
         Invoke GetWindowLongPtr, qwRefData, GWL_STYLE
@@ -542,6 +666,70 @@ _MUI_CaptionBarParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM
             Invoke InvalidateRect, hWin, NULL, TRUE
             Invoke UpdateWindow, hWin            
         .ENDIF
+
+    .ELSEIF eax == WM_ERASEBKGND
+        Invoke MUIGetExtProperty, qwRefData, @CaptionBarWindowBackColor
+        .IF rax == -1
+            Invoke DefSubclassProc, hWin, uMsg, wParam, lParam
+            ret
+        .ELSE
+            ;PrintText 'Parent WM_ERASEBKGND'
+            mov rax, 1
+            ret
+        .ENDIF
+
+    .ELSEIF eax == WM_PAINT
+        Invoke MUIGetExtProperty, qwRefData, @CaptionBarWindowBackColor
+        .IF rax == -1
+            Invoke DefSubclassProc, hWin, uMsg, wParam, lParam         
+            ret
+        .ELSE
+            ;PrintText 'Parent WM_PAINT'
+            mov BackColor, rax
+            Invoke MUIGetExtProperty, qwRefData, @CaptionBarWindowBorderColor
+            Invoke MUIPaintBackground, hWin, BackColor, rax
+            ret
+        .ENDIF
+
+    .ELSEIF eax == WM_LBUTTONDOWN
+        Invoke GetWindowLongPtr, qwRefData, GWL_STYLE
+        and rax, MUICS_WINSIZE
+        .IF rax == MUICS_WINSIZE    
+            Invoke _CBP_MouseOverBorders, hWin, TRUE
+            .IF rax != 0
+                .IF rax == 1 ; left
+                    Invoke SendMessage, hWin, WM_NCLBUTTONDOWN, HTLEFT, 0
+                .ELSEIF rax == 2 ; top
+                    Invoke SendMessage, hWin, WM_NCLBUTTONDOWN, HTTOP, 0
+                .ELSEIF rax == 3 ; right
+                    Invoke SendMessage, hWin, WM_NCLBUTTONDOWN, HTRIGHT, 0
+                .ELSEIF rax == 4 ; bottom
+                    Invoke SendMessage, hWin, WM_NCLBUTTONDOWN, HTBOTTOM, 0
+                .ELSEIF rax == 5 ; NW
+                    Invoke SendMessage, hWin, WM_NCLBUTTONDOWN, HTTOPLEFT, 0
+                .ELSEIF rax == 6 ; NE
+                    Invoke SendMessage, hWin, WM_NCLBUTTONDOWN, HTTOPRIGHT, 0
+                .ELSEIF rax == 7 ; SW
+                    Invoke SendMessage, hWin, WM_NCLBUTTONDOWN, HTBOTTOMLEFT, 0
+                .ELSEIF rax == 8 ; SE
+                    Invoke SendMessage, hWin, WM_NCLBUTTONDOWN, HTBOTTOMRIGHT, 0
+                .ENDIF
+                ; todo investigate weird artifacts on resizing, its like parts of the dropshadow are showing, or maybe its the border?
+                ;Invoke SetWindowPos, hWin, NULL, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_FRAMECHANGED ;or SWP_NOSENDCHANGING
+                ;Invoke InvalidateRect, hWin, NULL, TRUE
+                ;Invoke UpdateWindow, hWin
+            .ENDIF
+        .ENDIF
+        Invoke DefSubclassProc, hWin, uMsg, wParam, lParam
+        ret  
+
+    .ELSEIF eax == WM_MOUSEMOVE
+        Invoke GetWindowLongPtr, qwRefData, GWL_STYLE
+        and rax, MUICS_WINSIZE
+        .IF rax == MUICS_WINSIZE 
+            Invoke _CBP_MouseOverBorders, hWin, TRUE
+        .ENDIF
+        Invoke DefSubclassProc, hWin, uMsg, wParam, lParam
     
     ; If user pulls caption down whilst maximized this will be caught by this handler and we can adjust the CaptionBar control to reflect the 
     ; restore state it will be in. Or if user programmatically changes window this should catch it as well.
@@ -552,11 +740,179 @@ _MUI_CaptionBarParentSubClassProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM
         .ELSEIF rax == SIZE_RESTORED
             Invoke SendMessage, qwRefData, WM_SIZE, 0, 0 ; force reposition of CaptionBar and its child controls
         .ENDIF
+        Invoke DefSubclassProc, hWin, uMsg, wParam, lParam
+        
+    .ELSE
+        Invoke DefSubclassProc, hWin, uMsg, wParam, lParam
+        ret
     .ENDIF
-    
-    Invoke DefSubclassProc, hWin, uMsg, wParam, lParam 
     ret        
 _MUI_CaptionBarParentSubClassProc ENDP
+
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; _CBP_MouseOverBorders - set initial default values
+;------------------------------------------------------------------------------
+; precalc rects? store somewhere for checking later on, recalc on resize
+_CBP_MouseOverBorders PROC FRAME hWin:QWORD, bShowCursor:QWORD
+    LOCAL qwPos:QWORD
+    LOCAL winrect:RECT
+    LOCAL borderleft:RECT
+    LOCAL bordertop:RECT
+    LOCAL borderright:RECT
+    LOCAL borderbottom:RECT
+    LOCAL cornernw:RECT
+    LOCAL cornerne:RECT
+    LOCAL cornersw:RECT
+    LOCAL cornerse:RECT
+    LOCAL pt:POINT
+    
+    Invoke GetWindowRect, hWin, Addr winrect
+    Invoke GetCursorPos, Addr pt
+    Invoke CopyRect, Addr borderleft, Addr winrect
+    Invoke CopyRect, Addr bordertop, Addr winrect
+    Invoke CopyRect, Addr borderright, Addr winrect
+    Invoke CopyRect, Addr borderbottom, Addr winrect
+    Invoke CopyRect, Addr cornernw, Addr winrect
+    Invoke CopyRect, Addr cornerne, Addr winrect
+    Invoke CopyRect, Addr cornersw, Addr winrect
+    Invoke CopyRect, Addr cornerse, Addr winrect
+    
+    xor rax, rax
+    mov eax, borderleft.left
+    add eax, MUI_BORDER_SIZE
+    mov borderleft.right, eax
+    add borderleft.top, MUI_BORDER_SIZE
+    sub borderleft.bottom, MUI_BORDER_SIZE
+    
+    mov eax, bordertop.top
+    add eax, MUI_BORDER_SIZE
+    mov bordertop.bottom, eax
+    add bordertop.left, MUI_BORDER_SIZE
+    sub bordertop.right, MUI_BORDER_SIZE
+   
+    mov eax, borderright.right
+    sub eax, MUI_BORDER_SIZE
+    mov borderright.left, eax
+    add borderright.top, MUI_BORDER_SIZE
+    sub borderright.bottom, MUI_BORDER_SIZE
+    
+    mov eax, borderbottom.bottom
+    sub eax, MUI_BORDER_SIZE
+    mov borderbottom.top, eax
+    add borderbottom.left, MUI_BORDER_SIZE
+    sub borderbottom.right, MUI_BORDER_SIZE
+    
+    ; Corner NW
+    mov eax, cornernw.left
+    add eax, MUI_BORDER_SIZE
+    mov cornernw.right, eax
+    mov eax, cornernw.top
+    add eax, MUI_BORDER_SIZE
+    mov cornernw.bottom, eax
+    
+    ; Corner NE
+    mov eax, cornerne.right
+    sub eax, MUI_BORDER_SIZE
+    mov cornerne.left, eax
+    mov eax, cornerne.top
+    add eax, MUI_BORDER_SIZE
+    mov cornerne.bottom, eax
+    
+    ; Corner SW
+    mov eax, cornersw.left
+    add eax, MUI_BORDER_SIZE
+    mov cornersw.right, eax
+    mov eax, cornersw.bottom
+    sub eax, MUI_BORDER_SIZE
+    mov cornersw.top, eax
+    
+    ; Corner SE
+    mov eax, cornerse.right
+    sub eax, MUI_BORDER_SIZE
+    mov cornerse.left, eax
+    mov eax, cornerse.bottom
+    sub eax, MUI_BORDER_SIZE
+    mov cornerse.top, eax
+    
+    mov qwPos, 0
+    Invoke PtInRect, Addr borderleft, Addr pt ;pt.x, pt.y
+    .IF rax == TRUE
+        ;PrintText 'leftborder'
+        mov qwPos, 1
+    .ENDIF
+    
+    Invoke PtInRect, Addr bordertop, Addr pt ;pt.x, pt.y
+    .IF rax == TRUE
+        ;PrintText 'topborder'
+        mov qwPos, 2
+    .ENDIF
+    
+    Invoke PtInRect, Addr borderright, Addr pt ;pt.x, pt.y
+    .IF rax == TRUE
+        ;PrintText 'rightborder'
+        mov qwPos, 3
+    .ENDIF
+    
+    Invoke PtInRect, Addr borderbottom, Addr pt ;pt.x, pt.y
+    .IF rax == TRUE
+        ;PrintText 'bottomborder'
+        mov qwPos, 4
+    .ENDIF
+    
+    Invoke PtInRect, Addr cornernw, Addr pt ;pt.x, pt.y
+    .IF rax == TRUE
+        ;PrintText 'NW'
+        mov qwPos, 5
+    .ENDIF
+    
+    Invoke PtInRect, Addr cornerne, Addr pt ;pt.x, pt.y
+    .IF rax == TRUE
+        ;PrintText 'NE'
+        mov qwPos, 6
+    .ENDIF
+    
+    Invoke PtInRect, Addr cornersw, Addr pt ;pt.x, pt.y
+    .IF rax == TRUE
+        ;PrintText 'SW'
+        mov qwPos, 7
+    .ENDIF
+    
+    Invoke PtInRect, Addr cornerse, Addr pt ;pt.x, pt.y
+    .IF rax == TRUE
+        ;PrintText 'SE'
+        mov qwPos, 8
+    .ENDIF
+    
+    .IF bShowCursor == TRUE
+        mov rax, qwPos
+        .IF rax == 1
+            Invoke LoadCursor, NULL, IDC_SIZEWE
+        .ELSEIF rax == 2 
+            Invoke LoadCursor, NULL, IDC_SIZENS
+        .ELSEIF rax == 3
+            Invoke LoadCursor, NULL, IDC_SIZEWE
+        .ELSEIF rax == 4
+            Invoke LoadCursor, NULL, IDC_SIZENS
+        .ELSEIF rax == 5 ; NW
+            Invoke LoadCursor, NULL, IDC_SIZENWSE
+        .ELSEIF rax == 6 ; NE
+            Invoke LoadCursor, NULL, IDC_SIZENESW
+        .ELSEIF rax == 7 ; SW
+            Invoke LoadCursor, NULL, IDC_SIZENESW
+        .ELSEIF rax == 8 ; SE
+            Invoke LoadCursor, NULL, IDC_SIZENWSE
+        .ELSE
+            Invoke LoadCursor, NULL, IDC_ARROW
+        .ENDIF
+        Invoke SetCursor, rax
+    .ENDIF
+    
+    mov rax, qwPos
+    ret
+
+_CBP_MouseOverBorders ENDP
 
 
 MUI_ALIGN
@@ -603,10 +959,10 @@ _MUI_CaptionBarInit PROC FRAME hWin:QWORD
     ; Allow caption bar to be clicked and held to move window?
     mov rax, qwStyle
     and rax, MUICS_NOMOVEWINDOW
-    .IF rax == MUICS_NOMOVEWINDOW    
+    .IF rax == MUICS_NOMOVEWINDOW
         Invoke MUISetIntProperty, hWin, @CaptionBarNoMoveWindow, TRUE
     .ELSE
-        Invoke MUISetIntProperty, hWin, @CaptionBarNoMoveWindow, TRUE
+        Invoke MUISetIntProperty, hWin, @CaptionBarNoMoveWindow, FALSE
     .ENDIF
     
     ; Check if to use icons or not?
@@ -619,9 +975,10 @@ _MUI_CaptionBarInit PROC FRAME hWin:QWORD
     .ENDIF
     
     ; Set default initial external property values     
-    ; Set default initial external property values     
     Invoke MUISetExtProperty, hWin, @CaptionBarTextColor, MUI_RGBCOLOR(255,255,255)
-    Invoke MUISetExtProperty, hWin, @CaptionBarBackColor, MUI_RGBCOLOR(21,133,181)
+    Invoke MUISetExtProperty, hWin, @CaptionBarBackColor, MUI_RGBCOLOR(27,161,226);MUI_RGBCOLOR(21,133,181)
+    Invoke MUISetExtProperty, hWin, @CaptionBarBtnTxtRollColor, MUI_RGBCOLOR(61,61,61)
+    Invoke MUISetExtProperty, hWin, @CaptionBarBtnBckRollColor, MUI_RGBCOLOR(87,193,244) 
     Invoke MUISetExtProperty, hWin, @CaptionBarBtnWidth, MUI_SYSBUTTON_WIDTH ;32d
     Invoke MUISetExtProperty, hWin, @CaptionBarBtnHeight, MUI_SYSBUTTON_HEIGHT ;28d
     Invoke MUISetExtProperty, hWin, @CaptionBarDllInstance, 0
@@ -629,6 +986,8 @@ _MUI_CaptionBarInit PROC FRAME hWin:QWORD
     Invoke MUISetExtProperty, hWin, @CaptionBarBackImageOffsetY, 0
     Invoke MUISetExtProperty, hWin, @CaptionBarBtnOffsetX, 0
     Invoke MUISetExtProperty, hWin, @CaptionBarBtnOffsetY, 0
+    Invoke MUISetExtProperty, hWin, @CaptionBarWindowBackColor, -1
+    Invoke MUISetExtProperty, hWin, @CaptionBarWindowBorderColor, -1
     
     .IF hMUICaptionBarFont == 0
     	mov ncm.cbSize, SIZEOF NONCLIENTMETRICS
@@ -652,6 +1011,15 @@ _MUI_CaptionBarInit PROC FRAME hWin:QWORD
         ; only need to subclass to handle catching restore/maximize - no need if max/res button is not present 
         Invoke SetWindowSubclass, hParent, Addr _MUI_CaptionBarParentSubClassProc, hWin, hWin
     ;.ENDIF
+
+    ; alloc space for capbuttons
+    mov rax, SIZEOF DWORD
+    mov rbx, MUI_CAPBUTTON_MAX
+    mul rbx
+    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+    .IF rax != 0
+        Invoke MUISetIntProperty, hWin, @CaptionBarButtonArray, rax
+    .ENDIF
 
     ret
 
@@ -684,6 +1052,12 @@ _MUI_CaptionBarCleanup PROC FRAME hWin:QWORD
         ;    ENDIF
         .ENDIF
     .ENDIF
+    
+    Invoke MUIGetIntProperty, hWin, @CaptionBarButtonArray
+    .IF rax != 0
+        Invoke GlobalFree, rax
+    .ENDIF    
+    
     ret
 _MUI_CaptionBarCleanup ENDP
 
@@ -1025,7 +1399,7 @@ _MUI_CreateCaptionBarSysButtons PROC FRAME hWin:QWORD, hCaptionBarParent:QWORD
     mov qwTopOffset, 0
     Invoke MUIGetExtProperty, hWin, @CaptionBarBtnWidth
     mov qwSysButtonWidth, rax
-    mov qwLeftOffset, rax ;32d ; start with width of first button
+    mov qwLeftOffset, 0 ;32d ; start with width of first button
     Invoke MUIGetExtProperty, hWin, @CaptionBarBtnHeight
     mov qwSysButtonHeight, rax
     Invoke MUIGetExtProperty, hWin, @CaptionBarBtnOffsetX
@@ -1052,8 +1426,8 @@ _MUI_CreateCaptionBarSysButtons PROC FRAME hWin:QWORD, hCaptionBarParent:QWORD
     .IF rax != MUICS_NOCLOSEBUTTON
         ; create close button
         mov rax, qwClientWidth
-        sub rax, qwLeftOffset
-        Invoke _MUI_CreateSysButton, hWin, Addr szMUISysCloseButton, rax, qwTopOffset, qwSysButtonWidth, qwSysButtonHeight, 1 ; 32d, 24d, 1  
+        sub rax, qwSysButtonWidth ;qwLeftOffset
+        Invoke _MUI_CreateSysButton, hWin, Addr szMUISysCloseButton, rax, qwTopOffset, qwSysButtonWidth, qwSysButtonHeight, MUI_SYSBUTTON_CLS_ID ; 32d, 24d, 1  
         mov hSysButtonClose, rax
         ;PrintQWORD rax
         ;PrintText 'CLOSEBUTTON'
@@ -1072,6 +1446,7 @@ _MUI_CreateCaptionBarSysButtons PROC FRAME hWin:QWORD, hCaptionBarParent:QWORD
             Invoke MUISetIntProperty, hSysButtonClose, @SysButtonUseIcons, FALSE
         .ENDIF
         mov rax, qwSysButtonWidth
+        add rax, MUI_SYSBUTTONS_SPACING
         add qwLeftOffset, rax ;32d
     .ELSE
         ;PrintText 'NO CLOSEBUTTON'
@@ -1083,18 +1458,20 @@ _MUI_CreateCaptionBarSysButtons PROC FRAME hWin:QWORD, hCaptionBarParent:QWORD
     .IF rax != MUICS_NOMAXBUTTON
         ; create max and restore buttons
         mov rax, qwClientWidth
+        sub rax, qwSysButtonWidth
         sub rax, qwLeftOffset
         mov xpos, rax
-        Invoke _MUI_CreateSysButton, hWin, Addr szMUISysMaxButton, xpos, qwTopOffset, qwSysButtonWidth, qwSysButtonHeight, 2 ;32d, 24d, 2
+        Invoke _MUI_CreateSysButton, hWin, Addr szMUISysMaxButton, xpos, qwTopOffset, qwSysButtonWidth, qwSysButtonHeight, MUI_SYSBUTTON_MAX_ID ;32d, 24d, 2
         mov hSysButtonMax, rax
         ;PrintText 'MAXBUTTON'
         ;PrintQWORD hSysButtonMax
-        Invoke _MUI_CreateSysButton, hWin, Addr szMUISysResButton, xpos, qwTopOffset, qwSysButtonWidth, qwSysButtonHeight, 3 ;32d, 24d, 3
+        Invoke _MUI_CreateSysButton, hWin, Addr szMUISysResButton, xpos, qwTopOffset, qwSysButtonWidth, qwSysButtonHeight, MUI_SYSBUTTON_RES_ID ;32d, 24d, 3
         mov hSysButtonRes, rax
         ;PrintQWORD rax 
         ;PrintText 'RESBUTTON'
                
         mov rax, qwSysButtonWidth
+        add rax, MUI_SYSBUTTONS_SPACING
         add qwLeftOffset, rax ;32d
         ; hide max/res button depending on current window placement
         Invoke GetWindowPlacement, hCaptionBarParent, Addr wp
@@ -1123,14 +1500,12 @@ _MUI_CreateCaptionBarSysButtons PROC FRAME hWin:QWORD, hCaptionBarParent:QWORD
     .IF rax != MUICS_NOMINBUTTON
         ; create min button
         mov rax, qwClientWidth
+        sub rax, qwSysButtonWidth
         sub rax, qwLeftOffset
-        Invoke _MUI_CreateSysButton, hWin, Addr szMUISysMinButton, rax, qwTopOffset, qwSysButtonWidth, qwSysButtonHeight, 4 ;32d, 24d, 4
+        Invoke _MUI_CreateSysButton, hWin, Addr szMUISysMinButton, rax, qwTopOffset, qwSysButtonWidth, qwSysButtonHeight, MUI_SYSBUTTON_MIN_ID ;32d, 24d, 4
         mov hSysButtonMin, rax
-        ;PrintQWORD rax
-        ;PrintQWORD hSysButtonMin
-        ;PrintText 'MINBUTTON'
-                  
         mov rax, qwSysButtonWidth
+        add rax, MUI_SYSBUTTONS_SPACING
         add qwLeftOffset, rax ;32d
         
         .IF qwUseIcons == TRUE
@@ -1143,6 +1518,8 @@ _MUI_CreateCaptionBarSysButtons PROC FRAME hWin:QWORD, hCaptionBarParent:QWORD
         ;PrintText 'NO MINBUTTON'
         mov hSysButtonMin, 0
     .ENDIF
+
+    Invoke MUISetIntProperty, hWin, @CaptionBarButtonsLeftOffset, qwLeftOffset
 
     ; save handles to child system buttons in our internal properties of CaptionBar
     Invoke MUISetIntProperty, hWin, @CaptionBar_hSysButtonClose, hSysButtonClose
@@ -1178,8 +1555,9 @@ _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
     LOCAL hParent:QWORD
     LOCAL rect:RECT
     LOCAL qwStyle:QWORD
+    LOCAL bBorder:QWORD    
 
-    Invoke GetWindowLong, hWin, GWL_STYLE
+    Invoke GetWindowLongPtr, hWin, GWL_STYLE
     mov qwStyle, rax
 
     Invoke GetParent, hWin
@@ -1188,7 +1566,7 @@ _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
     mov qwTopOffset, 0
     Invoke MUIGetExtProperty, hWin, @CaptionBarBtnWidth
     mov qwSysButtonWidth, rax
-    mov qwLeftOffset, rax ;32d
+    mov qwLeftOffset, 0 ;32d
     Invoke MUIGetExtProperty, hWin, @CaptionBarBtnHeight
     mov qwSysButtonHeight, rax
     Invoke MUIGetExtProperty, hWin, @CaptionBarBtnOffsetX
@@ -1212,7 +1590,6 @@ _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
     .IF sqword ptr rax < 6
         mov qwCaptionHeight, MUI_DEFAULT_CAPTION_HEIGHT
     .ENDIF
-
     Invoke GetWindowPlacement, hParent, Addr wp
     
     mov rax, qwStyle
@@ -1230,6 +1607,14 @@ _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
     mov eax, rect.bottom
     sub eax, rect.top
     mov qwClientHeight, rax
+
+    mov rax, qwStyle
+    and rax, MUICS_NOBORDER
+    .IF rax == MUICS_NOBORDER
+        mov bBorder, FALSE
+    .ELSE
+        mov bBorder, TRUE
+    .ENDIF
     
     mov TotalItems, 0
     Invoke MUIGetIntProperty, hWin, @CaptionBar_hSysButtonClose
@@ -1257,14 +1642,26 @@ _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
     mov hDefer, rax
     ; have to move this caption bar first, so that child controls can be moved inside of the new width (cant use defer on this window)
     .IF wp.showCmd == SW_SHOWNORMAL
-        sub qwClientWidth, 2
-        Invoke SetWindowPos, hWin, NULL, 1, 1, qwClientWidth, qwCaptionHeight, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOREDRAW or SWP_NOACTIVATE or SWP_NOSENDCHANGING	 ;SWP_NOCOPYBITS	 or SWP_NOREDRAW
+        .IF bBorder == TRUE
+            sub qwClientWidth, 2
+            mov rax, 1
+        .ELSE
+            mov rax, 0
+        .ENDIF
+        Invoke SetWindowPos, hWin, NULL, rax, rax, qwClientWidth, qwCaptionHeight, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOREDRAW or SWP_NOACTIVATE or SWP_NOSENDCHANGING	 ;SWP_NOCOPYBITS	 or SWP_NOREDRAW
     .ELSE
-        Invoke SetWindowPos, hWin, NULL, 1, 1, qwClientWidth, qwCaptionHeight, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOREDRAW or SWP_NOACTIVATE or SWP_NOSENDCHANGING	 ;SWP_NOCOPYBITS	 or SWP_NOREDRAW
+        .IF bBorder == TRUE
+            sub qwClientWidth, 2
+            mov rax, 1
+        .ELSE
+            mov rax, 0
+        .ENDIF       
+        Invoke SetWindowPos, hWin, NULL, rax, rax, qwClientWidth, qwCaptionHeight, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOREDRAW or SWP_NOACTIVATE or SWP_NOSENDCHANGING	 ;SWP_NOCOPYBITS	 or SWP_NOREDRAW
     .ENDIF 
 
     .IF hSysButtonClose != NULL
         mov rax, qwClientWidth
+        sub rax, qwSysButtonWidth
         sub rax, qwLeftOffset
         .IF hDefer == NULL
             Invoke SetWindowPos, hSysButtonClose, NULL, rax, qwTopOffset, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER  or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	;or SWP_NOCOPYBITS
@@ -1273,11 +1670,13 @@ _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
             mov hDefer, rax
         .ENDIF
         mov rax, qwSysButtonWidth
+        add rax, MUI_SYSBUTTONS_SPACING
         add qwLeftOffset, rax ;32d
     .ENDIF
 
     .IF hSysButtonMax != NULL && hSysButtonRes != NULL
         mov rax, qwClientWidth
+        sub rax, qwSysButtonWidth
         sub rax, qwLeftOffset
         .IF hDefer == NULL
             Invoke SetWindowPos, hSysButtonMax, NULL, rax, qwTopOffset, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	
@@ -1287,7 +1686,8 @@ _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
         .ENDIF
 
         mov rax, qwClientWidth
-        sub rax, qwLeftOffset        
+        sub rax, qwSysButtonWidth
+        sub rax, qwLeftOffset         
         .IF hDefer == NULL
             Invoke SetWindowPos, hSysButtonRes, NULL, rax, qwTopOffset, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	
         .ELSE
@@ -1295,11 +1695,13 @@ _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
             mov hDefer, rax	
         .ENDIF
         mov rax, qwSysButtonWidth
+        add rax, MUI_SYSBUTTONS_SPACING
         add qwLeftOffset, rax ;32d
     .ENDIF
     
     .IF hSysButtonMin != NULL
         mov rax, qwClientWidth
+        sub rax, qwSysButtonWidth
         sub rax, qwLeftOffset
         .IF hDefer == NULL
             Invoke SetWindowPos, hSysButtonMin, NULL, rax, qwTopOffset, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING	
@@ -1307,6 +1709,18 @@ _MUI_CaptionBarReposition PROC FRAME hWin:QWORD
             Invoke DeferWindowPos, hDefer, hSysButtonMin, NULL, rax, qwTopOffset, 0, 0, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE or SWP_NOSIZE ;or SWP_NOSENDCHANGING
             mov hDefer, rax	
         .ENDIF
+        mov rax, qwSysButtonWidth
+        add rax, MUI_SYSBUTTONS_SPACING
+        add qwLeftOffset, rax ;32d           
+    .ENDIF
+
+    Invoke MUIGetIntProperty, hWin, @CaptionBarTotalButtons
+    .IF rax != 0
+        Invoke _MUI_CapButtonsReposition, hWin, hDefer, qwTopOffset, qwLeftOffset, qwClientWidth
+    .ELSE
+        ;PrintText '_MUI_CaptionBarReposition'
+        ;PrintDec qwLeftOffset
+        Invoke MUISetIntProperty, hWin, @CaptionBarButtonsLeftOffset, qwLeftOffset
     .ENDIF
 
     .IF hDefer != NULL
@@ -1331,10 +1745,10 @@ _MUI_CaptionBarReposition ENDP
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
-; _MUI_CaptionBarSetSysButtonProperty - Sets the system button properties from the message
+; _MUI_SysButtonSetPropertyEx - Sets the system button properties from the message
 ; MUIM_SETPROPERTY set to the parent CaptionBar control 
 ;------------------------------------------------------------------------------
-_MUI_CaptionBarSetSysButtonProperty PROC FRAME hWin:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
+_MUI_SysButtonSetPropertyEx PROC FRAME hWin:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
     LOCAL hSysButtonClose:QWORD
     LOCAL hSysButtonMax:QWORD
     LOCAL hSysButtonRes:QWORD
@@ -1390,6 +1804,7 @@ _MUI_CaptionBarSetSysButtonProperty PROC FRAME hWin:QWORD, qwProperty:QWORD, qwP
         .ELSEIF rax == @CaptionBarBtnBorderColor
             Invoke MUISetExtProperty, hSysButtonClose, @SysButtonBorderColor, qwPropertyValue            
         .ENDIF
+        Invoke InvalidateRect, hSysButtonClose, NULL, TRUE        
     .ENDIF
     
     Invoke MUIGetIntProperty, hWin, @CaptionBar_hSysButtonMax
@@ -1419,8 +1834,9 @@ _MUI_CaptionBarSetSysButtonProperty PROC FRAME hWin:QWORD, qwProperty:QWORD, qwP
         .ELSEIF rax == @CaptionBarBtnBorderColor
             Invoke MUISetExtProperty, hSysButtonMax, @SysButtonBorderColor, qwPropertyValue
         .ELSEIF rax == @CaptionBarBtnBorderRollColor
-            Invoke MUISetExtProperty, hSysButtonMax, @SysButtonBorderRollColor, qwPropertyValue               
+            Invoke MUISetExtProperty, hSysButtonMax, @SysButtonBorderRollColor, qwPropertyValue
         .ENDIF
+        Invoke InvalidateRect, hSysButtonMax, NULL, TRUE        
     .ENDIF
     
     Invoke MUIGetIntProperty, hWin, @CaptionBar_hSysButtonRes
@@ -1452,6 +1868,7 @@ _MUI_CaptionBarSetSysButtonProperty PROC FRAME hWin:QWORD, qwProperty:QWORD, qwP
         .ELSEIF rax == @CaptionBarBtnBorderRollColor
             Invoke MUISetExtProperty, hSysButtonRes, @SysButtonBorderRollColor, qwPropertyValue              
         .ENDIF
+        Invoke InvalidateRect, hSysButtonRes, NULL, TRUE
     .ENDIF
     
     Invoke MUIGetIntProperty, hWin, @CaptionBar_hSysButtonMin
@@ -1483,10 +1900,11 @@ _MUI_CaptionBarSetSysButtonProperty PROC FRAME hWin:QWORD, qwProperty:QWORD, qwP
         .ELSEIF rax == @CaptionBarBtnBorderRollColor
             Invoke MUISetExtProperty, hSysButtonMin, @SysButtonBorderRollColor, qwPropertyValue                
         .ENDIF
+        Invoke InvalidateRect, hSysButtonMin, NULL, TRUE
     .ENDIF
     
     ret
-_MUI_CaptionBarSetSysButtonProperty ENDP
+_MUI_SysButtonSetPropertyEx ENDP
 
 
 MUI_ALIGN
@@ -1496,17 +1914,13 @@ MUI_ALIGN
 _MUI_CreateSysButton PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QWORD, controlwidth:QWORD, controlheight:QWORD, qwResourceID:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
-    LOCAL dwControlStyle:DWORD
+    LOCAL hSysButton:QWORD
     
     Invoke RtlZeroMemory, Addr wc, SIZEOF WNDCLASSEX
-    
     Invoke GetModuleHandle, NULL
     mov hinstance, rax
-    xor rax, rax
-    mov eax, WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS
-    mov dwControlStyle, eax
     
-    invoke GetClassInfoEx,hinstance, Addr szMUISysButtonClass, Addr wc 
+    Invoke GetClassInfoEx,hinstance, Addr szMUISysButtonClass, Addr wc 
     .IF rax == 0 ; if class not already registered do so
         mov wc.cbSize,sizeof WNDCLASSEX
         lea rax, szMUISysButtonClass
@@ -1525,18 +1939,13 @@ _MUI_CreateSysButton PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, yp
         mov wc.cbClsExtra, 0
     	mov wc.cbWndExtra, 16d
     	Invoke RegisterClassEx, addr wc
-    	.IF rax == 0
-    	    ;PrintText 'Failed to register sys button'
-    	.endif
     .ENDIF
-
-   ; Invoke CreateWindowEx, NULL, Addr szMUICaptionBarClass, lpszCaptionText, qwControlStyle, 0, 0, rax, qwCaptionHeight, hWndParent, qwResourceID, hinstance, NULL
-    
-    
-    Invoke CreateWindowEx, NULL, Addr szMUISysButtonClass, lpszText, dwControlStyle, dword ptr xpos, dword ptr ypos, dword ptr controlwidth, dword ptr controlheight, hWndParent, qwResourceID, hinstance, NULL ;WS_EX_TRANSPARENT needed only for click through or WS_CLIPSIBLINGS
-    .IF rax == NULL
-        ;PrintText 'Failed to create sys button'
-    .endif
+    Invoke CreateWindowEx, NULL, Addr szMUISysButtonClass, lpszText, WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS, dword ptr xpos, dword ptr ypos, dword ptr controlwidth, dword ptr controlheight, hWndParent, qwResourceID, hinstance, NULL ;WS_EX_TRANSPARENT needed only for click through or WS_CLIPSIBLINGS
+    mov hSysButton, rax
+    .IF rax != NULL
+        Invoke MUISetExtProperty, hSysButton, @SysButtonResourceID, qwResourceID
+    .ENDIF
+    mov rax, hSysButton
     ret
 
 _MUI_CreateSysButton ENDP
@@ -1546,7 +1955,7 @@ MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; _MUI_SysButtonWndProc - Main processing window for system buttons: min/max/res/close 
 ;------------------------------------------------------------------------------
-_MUI_SysButtonWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
+_MUI_SysButtonWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL TE:TRACKMOUSEEVENT
     
     mov eax,uMsg
@@ -1561,7 +1970,9 @@ _MUI_SysButtonWndProc PROC FRAME USES rbx hWin:HWND, uMsg:UINT, wParam:WPARAM, l
     .ELSEIF eax == WM_NCDESTROY
         Invoke _MUI_SysButtonCleanup, hWin
         Invoke MUIFreeMemProperties, hWin, 0
-		Invoke MUIFreeMemProperties, hWin, 8   
+		Invoke MUIFreeMemProperties, hWin, 8
+		mov rax, 0
+		ret
         
     .ELSEIF eax == WM_ERASEBKGND
         mov rax, 1
@@ -1616,14 +2027,23 @@ MUI_ALIGN
 ; _MUI_SysButtonInit - default intial values for properties for SysButton
 ;------------------------------------------------------------------------------
 _MUI_SysButtonInit PROC FRAME hSysButton:QWORD
+    LOCAL hParent:QWORD
     
-    ;PrintText '_MUI_SysButtonInit'
-    ; Set default initial external property values     
-    Invoke MUISetExtProperty, hSysButton, @SysButtonTextColor, MUI_RGBCOLOR(228,228,228)
-    Invoke MUISetExtProperty, hSysButton, @SysButtonTextRollColor, MUI_RGBCOLOR(0,0,0)
-    Invoke MUISetExtProperty, hSysButton, @SysButtonBackColor, MUI_RGBCOLOR(21,133,181)
-    Invoke MUISetExtProperty, hSysButton, @SysButtonBackRollColor, MUI_RGBCOLOR(138,194,218)
-    
+    Invoke GetParent, hSysButton
+    mov hParent, rax
+
+    Invoke MUIGetExtProperty, hParent, @CaptionBarTextColor
+    Invoke MUISetExtProperty, hSysButton, @SysButtonTextColor, rax
+    Invoke MUIGetExtProperty, hParent, @CaptionBarBtnTxtRollColor
+    Invoke MUISetExtProperty, hSysButton, @SysButtonTextRollColor, rax
+    Invoke MUIGetExtProperty, hParent, @CaptionBarBackColor
+    Invoke MUISetExtProperty, hSysButton, @SysButtonBackColor, rax
+    Invoke MUIGetExtProperty, hParent, @CaptionBarBtnBckRollColor
+    Invoke MUISetExtProperty, hSysButton, @SysButtonBackRollColor, rax
+    Invoke MUIGetExtProperty, hParent, @CaptionBarBtnBorderColor
+    Invoke MUISetExtProperty, hSysButton, @SysButtonBorderColor, rax
+    Invoke MUIGetExtProperty, hParent, @CaptionBarBtnBorderRollColor
+    Invoke MUISetExtProperty, hSysButton, @SysButtonBorderRollColor, rax
 
     .IF hMUISysButtonFont == 0
         Invoke CreateFont, -10, 0, 0, 0, FW_THIN, FALSE, FALSE, FALSE, SYMBOL_CHARSET, 0, 0, 0, 0, Addr szMUISysButtonFont
@@ -1866,12 +2286,14 @@ MUI_ALIGN
 _MUI_ApplyMUIStyleToDialog PROC FRAME hWin:QWORD, qwDropShadow:QWORD
     LOCAL qwStyle:QWORD
     LOCAL qwNewStyle:QWORD
+    LOCAL qwBasicOldStyle:QWORD
     LOCAL qwClassStyle:QWORD
     
     mov qwNewStyle, WS_POPUP
     
     Invoke GetWindowLongPtr, hWin, GWL_STYLE
     mov qwStyle, rax
+    mov qwBasicOldStyle, rax
     
     and rax, DS_CENTER
     .IF rax == DS_CENTER
@@ -1908,9 +2330,21 @@ _MUI_ApplyMUIStyleToDialog PROC FRAME hWin:QWORD, qwDropShadow:QWORD
         or qwNewStyle, WS_CLIPSIBLINGS
     .ENDIF        
     
-    or qwNewStyle, WS_CLIPCHILDREN
+    mov rax, qwStyle
+    and rax, WS_CLIPCHILDREN
+    .IF rax == WS_CLIPCHILDREN
+        or qwNewStyle, WS_CLIPCHILDREN
+    .ENDIF
 
-	Invoke SetWindowLongPtr, hWin, GWL_STYLE, qwNewStyle
+	mov rax, qwNewStyle
+    .IF rax == qwBasicOldStyle ; no major changes, so dont set new style
+    .ELSE
+        ;PrintText 'Setting New Style'
+        Invoke SetWindowLongPtr, hWin, GWL_STYLE, qwNewStyle
+        ; Set WS_EX_COMPOSITED as well?
+        Invoke SetWindowPos, hWin, NULL, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_FRAMECHANGED or SWP_NOSENDCHANGING
+    .ENDIF	
+	
 	
 	; Set dropshadow on or off on our dialog
 	
@@ -1938,8 +2372,6 @@ _MUI_ApplyMUIStyleToDialog PROC FRAME hWin:QWORD, qwDropShadow:QWORD
 	.IF rax != NULL
 	    Invoke SetMenu, hWin, NULL
 	.ENDIF
-	
-	Invoke SetWindowPos, hWin, NULL, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_FRAMECHANGED
 	
     ret
 
@@ -2177,7 +2609,7 @@ MUICaptionBarLoadBackImage PROC FRAME hControl:QWORD, qwImageType:QWORD, qwResID
             Invoke _MUI_CaptionBarBackLoadIcon, hControl, @CaptionBarBackImage, qwResIDImage
         ;.ELSEIF eax == 3 ; png
         ;    IFDEF MUI_USEGDIPLUS
-        ;    Invoke _MUI_ButtonLoadPng, hControl, @ButtonImage, dwResIDImage
+        ;    Invoke _MUI_ButtonLoadPng, hControl, @ButtonImage, qwResIDImage
         ;    ENDIF
         .ENDIF
     .ENDIF
@@ -2188,6 +2620,705 @@ MUICaptionBarLoadBackImage PROC FRAME hControl:QWORD, qwImageType:QWORD, qwResID
 MUICaptionBarLoadBackImage ENDP
 
 
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; _MUI_CreateCapButton - create a custom capbutton
+;------------------------------------------------------------------------------
+_MUI_CreateCapButton PROC FRAME hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QWORD, controlwidth:QWORD, controlheight:QWORD, qwResourceID:QWORD
+    LOCAL wc:WNDCLASSEX
+    LOCAL hinstance:QWORD
+    LOCAL hCapButton:QWORD
+
+    Invoke GetModuleHandle, NULL
+    mov hinstance, rax
+
+    Invoke GetClassInfoEx, hinstance, Addr szMUICapButtonClass, Addr wc 
+    .IF eax == 0 ; if class not already registered do so
+        mov wc.cbSize,sizeof WNDCLASSEX
+        lea eax, szMUICapButtonClass
+        mov wc.lpszClassName, rax
+        mov rax, hinstance
+        mov wc.hInstance, rax
+        lea rax, _MUI_CapButtonWndProc
+        mov wc.lpfnWndProc, rax
+        Invoke LoadCursor, NULL, IDC_ARROW
+        mov wc.hCursor, rax
+        mov wc.hIcon, 0
+        mov wc.hIconSm, 0
+        mov wc.lpszMenuName, NULL
+        mov wc.hbrBackground, NULL
+        mov wc.style, NULL
+        mov wc.cbClsExtra, 0
+        mov wc.cbWndExtra, 16
+        Invoke RegisterClassEx, addr wc
+    .ENDIF   
+    Invoke CreateWindowEx, NULL, Addr szMUICapButtonClass, lpszText, WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS, dword ptr xpos, dword ptr ypos, dword ptr controlwidth, dword ptr controlheight, hWndParent, qwResourceID, hinstance, NULL
+    mov hCapButton, rax
+    .IF eax != 0
+        Invoke MUISetExtProperty, hCapButton, @CapButtonResourceID, qwResourceID
+        
+    .ENDIF
+    ;PrintDec hCapButton
+    mov rax, hCapButton
+    ret
+
+_MUI_CreateCapButton ENDP
+
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; _MUI_CapButtonWndProc - Main processing window for custom capbuttons 
+;------------------------------------------------------------------------------
+_MUI_CapButtonWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
+    LOCAL TE:TRACKMOUSEEVENT
+    
+    mov eax,uMsg
+    .IF eax == WM_CREATE
+        Invoke MUIAllocMemProperties, hWin, 0, SIZEOF _MUI_CAPBUTTON_PROPERTIES ; internal properties
+        Invoke MUIAllocMemProperties, hWin, 8, SIZEOF MUI_CAPBUTTON_PROPERTIES ; external properties
+        Invoke _MUI_CapButtonInit, hWin
+        mov rax, 0
+        ret    
+
+    .ELSEIF eax == WM_NCDESTROY
+        Invoke _MUI_CapButtonCleanup, hWin
+        Invoke MUIFreeMemProperties, hWin, 0
+        Invoke MUIFreeMemProperties, hWin, 8
+        mov rax, 0
+        ret          
+        
+    .ELSEIF eax == WM_ERASEBKGND
+        mov rax, 1
+        ret
+
+    .ELSEIF eax == WM_PAINT
+        Invoke _MUI_CapButtonPaint, hWin
+        mov rax, 0
+        ret
+   
+    .ELSEIF eax == WM_LBUTTONUP
+        Invoke GetDlgCtrlID, hWin
+        mov rbx,rax
+        Invoke GetParent, hWin
+        Invoke PostMessage, rax, WM_COMMAND, rbx, hWin
+   
+   .ELSEIF eax == WM_MOUSEMOVE
+        Invoke MUISetIntProperty, hWin, @CapButtonMouseOver, TRUE
+        .IF rax != TRUE
+            Invoke InvalidateRect, hWin, NULL, TRUE
+            mov TE.cbSize, SIZEOF TRACKMOUSEEVENT
+            mov TE.dwFlags, TME_LEAVE
+            mov rax, hWin
+            mov TE.hwndTrack, rax
+            mov TE.dwHoverTime, NULL
+            Invoke TrackMouseEvent, Addr TE
+        .ENDIF
+
+    .ELSEIF eax == WM_MOUSELEAVE
+        Invoke MUISetIntProperty, hWin, @CapButtonMouseOver, FALSE
+        Invoke InvalidateRect, hWin, NULL, TRUE
+        Invoke LoadCursor, NULL, IDC_ARROW
+        Invoke SetCursor, rax
+
+    .ELSEIF eax == WM_KILLFOCUS
+        Invoke MUISetIntProperty, hWin, @CapButtonMouseOver, FALSE
+        Invoke InvalidateRect, hWin, NULL, TRUE
+        Invoke LoadCursor, NULL, IDC_ARROW
+        Invoke SetCursor, rax
+        
+    .ENDIF
+    
+    Invoke DefWindowProc, hWin, uMsg, wParam, lParam
+    ret
+
+_MUI_CapButtonWndProc ENDP
+
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; _MUI_CapButtonInit - default intial values for properties for CapButton
+;------------------------------------------------------------------------------
+_MUI_CapButtonInit PROC FRAME hCapButton:QWORD
+    LOCAL hParent:QWORD
+    
+    Invoke GetParent, hCapButton
+    mov hParent, rax
+    
+    Invoke MUIGetExtProperty, hParent, @CaptionBarTextColor
+    Invoke MUISetExtProperty, hCapButton, @CapButtonTextColor, rax
+    Invoke MUIGetExtProperty, hParent, @CaptionBarBtnTxtRollColor
+    Invoke MUISetExtProperty, hCapButton, @CapButtonTextRollColor, rax
+    Invoke MUIGetExtProperty, hParent, @CaptionBarBackColor
+    Invoke MUISetExtProperty, hCapButton, @CapButtonBackColor, rax
+    Invoke MUIGetExtProperty, hParent, @CaptionBarBtnBckRollColor
+    Invoke MUISetExtProperty, hCapButton, @CapButtonBackRollColor, rax
+    Invoke MUIGetExtProperty, hParent, @CaptionBarBtnBorderColor
+    Invoke MUISetExtProperty, hCapButton, @CapButtonBorderColor, rax
+    Invoke MUIGetExtProperty, hParent, @CaptionBarBtnBorderRollColor
+    Invoke MUISetExtProperty, hCapButton, @CapButtonBorderRollColor, rax
+
+    .IF hMUICapButtonFont == 0
+        Invoke CreateFont, -10, 0, 0, 0, FW_THIN, FALSE, FALSE, FALSE, SYMBOL_CHARSET, 0, 0, 0, 0, Addr szMUISysButtonFont
+        mov hMUICapButtonFont, rax
+    .ENDIF
+    
+    ; Set internal property for font for system buttons 
+    Invoke MUISetIntProperty, hCapButton, @CapButtonFont, hMUICapButtonFont
+
+    ret
+
+_MUI_CapButtonInit ENDP
+
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; _MUI_CapButtonCleanup - cleanup some stuff on control being destroyed
+;------------------------------------------------------------------------------
+_MUI_CapButtonCleanup PROC FRAME hCapButton:QWORD
+    
+    Invoke GetParent, hCapButton
+    Invoke GetWindowLongPtr, rax, GWL_STYLE
+    and rax, MUICS_KEEPICONS
+    .IF rax == MUICS_KEEPICONS
+        ret
+    .ENDIF
+  
+    Invoke MUIGetExtProperty, hCapButton, @CapButtonIco
+    .IF rax != NULL
+        Invoke DestroyIcon, rax
+    .ENDIF
+     Invoke MUIGetExtProperty, hCapButton, @CapButtonIcoAlt
+    .IF rax != NULL
+        Invoke DestroyIcon, rax
+    .ENDIF
+
+    ret
+
+_MUI_CapButtonCleanup ENDP
+
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; _MUI_CapButtonPaint - Custom captionbutton painting
+;------------------------------------------------------------------------------
+_MUI_CapButtonPaint PROC FRAME USES RBX hCapButton:QWORD
+    LOCAL ps:PAINTSTRUCT 
+    LOCAL rect:RECT
+    LOCAL pt:POINT
+    LOCAL hdc:HDC
+    LOCAL hdcMem:HDC
+    LOCAL hbmMem:QWORD
+    LOCAL hOldBitmap:QWORD
+    LOCAL hBrush:QWORD
+    LOCAL hOldBrush:QWORD
+    LOCAL hFont:QWORD
+    LOCAL hOldFont:QWORD
+    LOCAL MouseOver:QWORD
+    LOCAL TextColor:QWORD
+    LOCAL BackColor:QWORD
+    LOCAL BorderColor:QWORD
+    LOCAL UseIcons:QWORD
+    LOCAL hIcon:QWORD
+    LOCAL nIcoWidth:QWORD
+    LOCAL nIcoHeight:QWORD
+    LOCAL nTextLength:QWORD
+    LOCAL szText[MUI_CAPBUTTON_TEXT_MAX]:BYTE
+
+    ; null some vars
+    mov hFont, 0
+    mov hOldFont, 0
+    mov hBrush, 0
+    mov hOldBrush, 0
+    mov hIcon, 0
+    mov nIcoWidth, 0
+    mov nIcoHeight, 0
+
+    Invoke BeginPaint, hCapButton, Addr ps
+    mov hdc, rax
+    ;----------------------------------------------------------
+    ; Setup Double Buffering
+    ;----------------------------------------------------------
+    Invoke GetClientRect, hCapButton, Addr rect
+    Invoke CreateCompatibleDC, hdc
+    mov hdcMem, rax
+    Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
+    mov hbmMem, rax
+    Invoke SelectObject, hdcMem, hbmMem
+    mov hOldBitmap, rax
+
+    ;----------------------------------------------------------
+    ; Get properties
+    ;----------------------------------------------------------
+    Invoke MUIGetIntProperty, hCapButton, @CapButtonMouseOver
+    mov MouseOver, rax
+    .IF MouseOver == 0
+        Invoke MUIGetExtProperty, hCapButton, @CapButtonTextColor        ; normal text color
+    .ELSE
+        Invoke MUIGetExtProperty, hCapButton, @CapButtonTextRollColor    ; mouseover text color
+    .ENDIF
+    mov TextColor, rax
+    .IF MouseOver == 0
+        Invoke MUIGetExtProperty, hCapButton, @CapButtonBackColor        ; normal back color
+    .ELSE
+        Invoke MUIGetExtProperty, hCapButton, @CapButtonBackRollColor    ; mouseover back color
+    .ENDIF
+    mov BackColor, rax
+    .IF MouseOver == 0
+        Invoke MUIGetExtProperty, hCapButton, @CapButtonBorderColor      ; normal border color
+    .ELSE
+        Invoke MUIGetExtProperty, hCapButton, @CapButtonBorderRollColor  ; mouseover border color
+    .ENDIF
+    mov BorderColor, rax
+    
+    Invoke MUIGetIntProperty, hCapButton, @CapButtonFont
+    mov hFont, rax
+
+    .IF MouseOver == 0
+        Invoke MUIGetExtProperty, hCapButton, @CapButtonIco
+    .ELSE
+        Invoke MUIGetExtProperty, hCapButton, @CapButtonIcoAlt
+        .IF rax == NULL ; try to get ordinary icon handle
+            Invoke MUIGetExtProperty, hCapButton, @CapButtonIco
+        .ENDIF
+    .ENDIF
+    mov hIcon, rax
+
+    ;----------------------------------------------------------
+    ; Fill background
+    ;----------------------------------------------------------    
+    Invoke SetBkMode, hdcMem, OPAQUE
+    Invoke SetBkColor, hdcMem, dword ptr BackColor
+    Invoke GetStockObject, DC_BRUSH
+    mov hBrush, rax
+    Invoke SelectObject, hdcMem, rax
+    mov hOldBrush, rax
+    Invoke SetDCBrushColor, hdcMem, dword ptr BackColor
+    Invoke FillRect, hdcMem, Addr rect, hBrush
+
+    ;----------------------------------------------------------
+    ; Draw border
+    ;----------------------------------------------------------   
+   .IF BorderColor != 0
+        .IF hOldBrush != 0
+            Invoke SelectObject, hdcMem, hOldBrush
+            Invoke DeleteObject, hOldBrush
+        .ENDIF        
+        Invoke GetStockObject, DC_BRUSH
+        mov hBrush, rax
+        Invoke SelectObject, hdcMem, rax
+        mov hOldBrush, rax
+        Invoke SetDCBrushColor, hdcMem, dword ptr BorderColor
+        Invoke FrameRect, hdcMem, Addr rect, hBrush
+    .ENDIF
+
+    Invoke GetWindowText, hCapButton, Addr szText, sizeof szText
+    mov nTextLength, rax
+    
+    ;PrintDec nTextLength
+    
+    ;----------------------------------------------------------
+    ; Draw Icon & Text
+    ;----------------------------------------------------------
+    .IF hIcon == NULL && nTextLength == 0 ; neither
+
+    .ELSEIF hIcon != NULL && nTextLength != 0 ; both
+
+        Invoke MUIGetImageSize, hIcon, MUIIT_ICO, Addr nIcoWidth, Addr nIcoHeight
+
+        mov rax, MUI_CAPBUTTON_TEXT_PADDING
+        mov pt.x, eax
+        mov eax, rect.bottom
+        shr rax, 1
+        mov rbx, nIcoHeight
+        shr rbx, 1
+        sub rax, rbx
+        mov pt.y, eax
+        Invoke DrawIconEx, hdcMem, pt.x, pt.y, hIcon, 0, 0, NULL, NULL, DI_NORMAL
+    
+        Invoke SelectObject, hdcMem, hFont
+        mov hOldFont, rax
+        Invoke SetTextColor, hdcMem, dword ptr TextColor
+
+        mov rax, nIcoWidth
+        add rect.left, eax
+        add rect.left, MUI_CAPBUTTON_TEXT_PADDING
+        add rect.left, MUI_CAPBUTTON_IMAGETEXT_PADDING
+        Invoke DrawText, hdcMem, Addr szText, -1, Addr rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER
+
+        mov rax, nIcoWidth
+        sub rect.left, eax
+        sub rect.left, MUI_CAPBUTTON_TEXT_PADDING
+        sub rect.left, MUI_CAPBUTTON_IMAGETEXT_PADDING
+
+    .ELSEIF hIcon == NULL && nTextLength != 0 ; only text
+
+        Invoke SelectObject, hdcMem, hFont
+        mov hOldFont, rax
+        Invoke SetTextColor, hdcMem, dword ptr TextColor
+        add rect.left, MUI_CAPBUTTON_TEXT_PADDING
+        Invoke DrawText, hdcMem, Addr szText, -1, Addr rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER
+        sub rect.left, MUI_CAPBUTTON_TEXT_PADDING
+
+    .ELSEIF hIcon != NULL && nTextLength == 0 ; only icon
+
+        Invoke MUIGetImageSize, hIcon, MUIIT_ICO, Addr nIcoWidth, Addr nIcoHeight
+        xor rax, rax
+        mov eax, rect.right
+        shr rax, 1
+        mov rbx, nIcoWidth
+        shr ebx, 1
+        sub rax, rbx
+        mov pt.x, eax
+        
+        xor rax, rax
+        mov eax, rect.bottom
+        shr rax, 1
+        mov rbx, nIcoHeight
+        shr rbx, 1
+        sub rax, rbx
+        mov pt.y, eax
+        Invoke DrawIconEx, hdcMem, pt.x, pt.y, hIcon, 0, 0, NULL, NULL, DI_NORMAL
+
+    .ENDIF
+
+    ;----------------------------------------------------------
+    ; BitBlt from hdcMem back to hdc
+    ;----------------------------------------------------------
+    Invoke BitBlt, hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY
+
+    ;----------------------------------------------------------
+    ; Cleanup
+    ;----------------------------------------------------------
+    .IF hOldBrush != 0
+        Invoke SelectObject, hdcMem, hOldBrush
+        Invoke DeleteObject, hOldBrush
+    .ENDIF     
+    .IF hBrush != 0
+        Invoke DeleteObject, hBrush
+    .ENDIF
+    .IF hOldFont != 0
+        Invoke SelectObject, hdcMem, hOldFont
+        Invoke DeleteObject, hOldFont
+    .ENDIF
+    .IF hOldBitmap != 0
+        Invoke SelectObject, hdcMem, hOldBitmap
+        Invoke DeleteObject, hOldBitmap
+    .ENDIF
+    Invoke SelectObject, hdcMem, hbmMem
+    Invoke DeleteObject, hbmMem
+    Invoke DeleteDC, hdcMem
+
+    Invoke EndPaint, hCapButton, Addr ps
+    ret
+_MUI_CapButtonPaint ENDP
+
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; Reposition the capbuttons if there is any
+;------------------------------------------------------------------------------
+_MUI_CapButtonsReposition PROC FRAME USES RBX hWin:QWORD, hDefer:QWORD, qwTopOffset:QWORD, qwLeftOffset:QWORD, qwClientWidth:QWORD
+    LOCAL TotalButtons:QWORD
+    LOCAL nCurrentButton:QWORD
+    LOCAL hCapButton:QWORD
+    LOCAL ptrButtonArray:QWORD
+    LOCAL ptrButtonEntry:QWORD
+    LOCAL qwTotalLeftOffset:QWORD
+    LOCAL qwButtonWidth:QWORD
+    LOCAL qwButtonHeight:QWORD
+    LOCAL xpos:QWORD
+
+    Invoke MUIGetIntProperty, hWin, @CaptionBarTotalButtons
+    .IF rax == 0
+        ret
+    .ENDIF
+    mov TotalButtons, rax
+    
+    Invoke MUIGetIntProperty, hWin, @CaptionBarButtonArray
+    .IF rax == 0
+        ret
+    .ENDIF
+    mov ptrButtonArray, rax
+    mov ptrButtonEntry, rax
+
+    Invoke MUIGetExtProperty, hWin, @CaptionBarBtnHeight
+    mov qwButtonHeight, rax    
+    
+    mov rax, qwLeftOffset
+    add rax, MUI_SYSCAPBUTTON_SPACING
+    mov xpos, rax
+
+    mov rax, 0
+    mov nCurrentButton, 0
+    .WHILE rax < TotalButtons
+        mov rbx, ptrButtonEntry
+        mov rax, [rbx]
+        mov hCapButton, rax
+
+        .IF hCapButton != NULL
+            
+            Invoke MUIGetIntProperty, hCapButton, @CapButtonWidth
+            .IF rax == 0 ; use default if 0, != 0 is for text and icon buttons
+                Invoke MUIGetExtProperty, hWin, @CaptionBarBtnWidth
+            .ENDIF
+            mov qwButtonWidth, rax
+        
+            mov rax, qwClientWidth
+            sub rax, xpos
+            sub rax, qwButtonWidth
+            
+            .IF hDefer == NULL
+                Invoke SetWindowPos, hCapButton, NULL, rax, qwTopOffset, qwButtonWidth, qwButtonHeight, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE ;or SWP_NOSIZE ;or SWP_NOSENDCHANGING ;or SWP_NOCOPYBITS
+            .ELSE
+                Invoke DeferWindowPos, hDefer, hCapButton, NULL, rax, qwTopOffset, qwButtonWidth, qwButtonHeight, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE ;or SWP_NOSIZE ;or SWP_NOSENDCHANGING
+                mov hDefer, rax    
+            .ENDIF
+            mov rax, qwButtonWidth
+            add rax, MUI_CAPBUTTONS_SPACING
+            add xpos, rax ;32d
+        .ENDIF            
+
+        add ptrButtonEntry, SIZEOF QWORD
+        inc nCurrentButton
+        mov rax, nCurrentButton
+    .ENDW
+
+    Invoke MUISetIntProperty, hWin, @CaptionBarButtonsLeftOffset, xpos
+    
+    ret
+
+_MUI_CapButtonsReposition ENDP
+
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; _MUI_CapButtonSetPropertyEx - set capbtn props when captionbar props set
+;------------------------------------------------------------------------------
+_MUI_CapButtonSetPropertyEx PROC FRAME USES RBX hWin:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
+    LOCAL TotalButtons:QWORD
+    LOCAL nCurrentButton:QWORD
+    LOCAL hCapButton:QWORD
+    LOCAL ptrButtonArray:QWORD
+    LOCAL ptrButtonEntry:QWORD
+
+    .IF qwProperty == @CaptionBarTextFont
+        ret
+    .ENDIF
+    
+    mov rax, qwProperty ; only interested in certain properties to forward on
+    .IF rax != @CaptionBarTextColor || rax != @CaptionBarBtnTxtRollColor || rax != @CaptionBarBackColor || rax != @CaptionBarBtnBckRollColor || rax != @CaptionBarBtnBorderColor || rax != @CaptionBarBtnBorderRollColor
+        ret
+    .ENDIF
+    
+    Invoke MUIGetIntProperty, hWin, @CaptionBarTotalButtons
+    .IF rax == 0
+        ret
+    .ENDIF
+    mov TotalButtons, rax    
+    
+    Invoke MUIGetIntProperty, hWin, @CaptionBarButtonArray
+    .IF rax == 0
+        ret
+    .ENDIF
+    mov ptrButtonArray, rax
+    mov ptrButtonEntry, rax
+    
+    mov rax, 0
+    mov nCurrentButton, 0
+    .WHILE rax < TotalButtons    
+        mov rbx, ptrButtonEntry
+        mov rax, [rbx]
+        mov hCapButton, rax
+
+        mov rax, qwProperty
+        .IF rax == @CaptionBarTextColor
+            Invoke MUISetExtProperty, hCapButton, @CapButtonTextColor, qwPropertyValue
+        .ELSEIF rax == @CaptionBarBtnTxtRollColor
+            Invoke MUISetExtProperty, hCapButton, @CapButtonTextRollColor, qwPropertyValue
+        .ELSEIF rax == @CaptionBarBackColor
+            Invoke MUISetExtProperty, hCapButton, @CapButtonBackColor, qwPropertyValue
+        .ELSEIF rax == @CaptionBarBtnBckRollColor
+            Invoke MUISetExtProperty, hCapButton, @CapButtonBackRollColor, qwPropertyValue
+        .ELSEIF rax == @CaptionBarBtnBorderColor
+            Invoke MUISetExtProperty, hCapButton, @CapButtonBorderColor, qwPropertyValue
+        .ELSEIF rax == @CaptionBarBtnBorderRollColor
+            Invoke MUISetExtProperty, hCapButton, @CapButtonBorderRollColor, qwPropertyValue
+        .ENDIF
+        
+        add ptrButtonEntry, SIZEOF QWORD
+        inc nCurrentButton
+        mov rax, nCurrentButton
+    .ENDW
+    ret
+_MUI_CapButtonSetPropertyEx ENDP
+
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; MUICaptionBarAddButton - add custom button to caption bar
+;------------------------------------------------------------------------------
+MUICaptionBarAddButton PROC FRAME USES RBX hControl:QWORD, lpszButtonText:QWORD, qwResourceID:QWORD, qwResIDImage:QWORD, qwResIDImageAlt:QWORD
+    LOCAL hinstance:QWORD
+    LOCAL hCustomButton:QWORD
+    LOCAL qwClientWidth:QWORD
+    LOCAL qwButtonWidth:QWORD
+    LOCAL qwButtonHeight:QWORD
+    LOCAL qwNoButtons:QWORD
+    LOCAL hParent:QWORD
+    LOCAL hImage:QWORD
+    LOCAL hImageAlt:QWORD
+    LOCAL qwTopOffset:QWORD
+    LOCAL qwLeftOffset:QWORD
+    LOCAL xpos:QWORD
+    LOCAL hdc:QWORD
+    LOCAL nLenButtonText:QWORD
+    LOCAL nIcoWidth:QWORD
+    LOCAL hOldFont:QWORD
+    LOCAL ptrButtonArray:QWORD
+    LOCAL sz:POINT
+    LOCAL rect:RECT
+
+    
+    .IF (qwResIDImage == 0 && qwResIDImageAlt == 0) || qwResourceID == NULL || hControl == NULL
+        mov rax, NULL
+        ret
+    .ENDIF
+    
+
+    Invoke MUIGetExtProperty, hControl, @CaptionBarDllInstance
+    .IF rax == 0
+        Invoke GetModuleHandle, NULL
+    .ENDIF
+    mov hinstance, rax
+    .IF qwResIDImage != NULL
+        Invoke LoadImage, hinstance, qwResIDImage, IMAGE_ICON, 0, 0, 0 ;LR_SHARED
+    .ELSE
+        mov rax, 0
+    .ENDIF
+    mov hImage, rax
+    .IF qwResIDImageAlt != NULL
+        Invoke LoadImage, hinstance, qwResIDImageAlt, IMAGE_ICON, 0, 0, 0 ;LR_SHARED
+    .ELSE
+        .IF hImage != NULL
+            mov rax, hImage
+        .ELSE
+            mov rax, 0
+        .ENDIF
+    .ENDIF
+    mov hImageAlt, rax
+
+    Invoke GetParent, hControl
+    mov hParent, rax
+
+    Invoke GetWindowRect, hParent, Addr rect
+    mov eax, rect.right
+    sub eax, rect.left
+    mov qwClientWidth, rax
+
+    ; calc left offset etc
+    mov qwTopOffset, 0
+    Invoke MUIGetIntProperty, hControl, @CaptionBarButtonsLeftOffset
+    add eax, MUI_SYSCAPBUTTON_SPACING
+    mov qwLeftOffset, rax
+
+    Invoke MUIGetExtProperty, hControl, @CaptionBarBtnWidth
+    mov qwButtonWidth, rax
+    Invoke MUIGetExtProperty, hControl, @CaptionBarBtnHeight
+    mov qwButtonHeight, rax
+    Invoke MUIGetExtProperty, hControl, @CaptionBarBtnOffsetY
+    .IF rax != 0
+        .IF sqword ptr rax < 0
+            neg eax
+        .ENDIF    
+        add qwTopOffset, rax
+    .ENDIF
+
+    
+    ; calc width based on text content if text available
+    .IF lpszButtonText != NULL 
+    
+        .IF hMUICapButtonFont == 0
+            Invoke CreateFont, -10, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, 0, 0, 0, 0, 0, Addr szMUICapButtonFont
+            mov hMUICapButtonFont, rax
+        .ENDIF    
+    
+        ;Invoke szLen, lpszButtonText
+        Invoke lstrlen, lpszButtonText
+        mov nLenButtonText, rax
+        Invoke GetDC, hControl
+        mov hdc, rax
+        Invoke SelectObject, hdc, hMUICapButtonFont
+        mov hOldFont, rax
+        Invoke GetTextExtentPoint32, hdc, lpszButtonText, dword ptr nLenButtonText, Addr sz
+        Invoke SelectObject, hdc, hOldFont
+        Invoke DeleteObject, hOldFont
+        Invoke ReleaseDC, hControl, hdc
+
+        .IF hImage == NULL && hImageAlt == NULL
+            xor rax, rax
+            mov eax, sz.x
+            add eax, MUI_CAPBUTTON_TEXT_PADDING
+            add eax, MUI_CAPBUTTON_TEXT_PADDING
+        .ELSE
+
+            Invoke MUIGetImageSize, hImage, MUIIT_ICO, Addr nIcoWidth, 0
+            xor rax, rax
+            mov eax, sz.x
+            add rax, MUI_CAPBUTTON_TEXT_PADDING
+            add rax, nIcoWidth
+            add rax, MUI_CAPBUTTON_IMAGETEXT_PADDING
+            add rax, MUI_CAPBUTTON_TEXT_PADDING
+        .ENDIF
+        mov qwButtonWidth, rax
+    
+    .ENDIF
+    mov rax, qwClientWidth
+    sub rax, qwLeftOffset
+    sub rax, qwButtonWidth
+    mov xpos, rax
+    
+    Invoke _MUI_CreateCapButton, hControl, lpszButtonText, xpos, qwTopOffset, qwButtonWidth, qwButtonHeight, qwResourceID
+    mov hCustomButton, rax
+    .IF rax != 0
+        Invoke MUISetExtProperty, hCustomButton, @SysButtonIco, hImage
+        Invoke MUISetExtProperty, hCustomButton, @SysButtonIcoAlt, hImageAlt
+        
+        .IF lpszButtonText == 0
+            Invoke MUISetIntProperty, hCustomButton, @CapButtonWidth, 0
+        .ELSE
+            Invoke MUISetIntProperty, hCustomButton, @CapButtonWidth, qwButtonWidth
+        .ENDIF
+        
+
+        ; update leftoffset with qwButtonWidth
+        mov rax, qwLeftOffset
+        add rax, qwButtonWidth
+        Invoke MUISetIntProperty, hControl, @CaptionBarButtonsLeftOffset, rax
+
+        Invoke MUIGetIntProperty, hControl, @CaptionBarButtonArray ; something gone wrong if 0
+        .IF rax == 0
+            mov rax, NULL
+            ret
+        .ENDIF
+        mov ptrButtonArray, rax
+        
+        Invoke MUIGetIntProperty, hControl, @CaptionBarTotalButtons
+        mov qwNoButtons, rax
+        inc rax
+        
+        Invoke MUISetIntProperty, hControl, @CaptionBarTotalButtons, rax
+        mov rax, qwNoButtons
+        mov rbx, SIZEOF DWORD
+        mul rbx
+        add rax, ptrButtonArray
+        mov rbx, rax
+        mov rax, hCustomButton
+        mov [rbx], rax
+
+    .ENDIF
+    mov rax, hCustomButton
+    ret
+MUICaptionBarAddButton ENDP
 
 
 
