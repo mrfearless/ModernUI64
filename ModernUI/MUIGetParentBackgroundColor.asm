@@ -75,7 +75,7 @@ MUIGetParentBackgroundColor PROC FRAME hControl:QWORD
 MUIGetParentBackgroundColor ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

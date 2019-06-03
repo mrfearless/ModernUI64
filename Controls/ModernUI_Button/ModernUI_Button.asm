@@ -1565,7 +1565,7 @@ _MUI_ButtonCalcPositions PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:
         mov hImage, rax    
     
         .IF hImage != 0
-            Invoke MUIGetImageSize, hImage, ImageType, Addr ImageWidth, Addr ImageHeight
+            Invoke MUIGetImageSize, hImage, qwImageType, Addr ImageWidth, Addr ImageHeight
             ;Invoke _MUI_ButtonGetImageSize, hWin, ImageType, hImage, Addr ImageWidth, Addr ImageHeight
             xor rax, rax
             xor rbx, rbx
@@ -3137,4 +3137,4 @@ ENDIF
 
 
 
-END
+MODERNUI_LIBEND

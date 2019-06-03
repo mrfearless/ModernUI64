@@ -133,7 +133,7 @@ MUISetIntProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwPropertyValue:Q
 MUISetIntProperty ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

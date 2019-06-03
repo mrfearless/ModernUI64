@@ -88,7 +88,7 @@ MUIGDIDoubleBufferFinish PROC FRAME hdcBuffer:QWORD, hBufferBitmap:QWORD, hPreBu
 MUIGDIDoubleBufferFinish ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

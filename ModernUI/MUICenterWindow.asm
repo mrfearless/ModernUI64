@@ -140,7 +140,7 @@ MUICenterWindow PROC FRAME hWndChild:QWORD, hWndParent:QWORD
 MUICenterWindow ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

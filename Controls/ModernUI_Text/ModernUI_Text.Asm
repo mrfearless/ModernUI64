@@ -2,11 +2,9 @@
 ;
 ; ModernUI x64 Control - ModernUI_Text x64
 ;
-; Copyright (c) 2018 by fearless
+; Copyright (c) 2019 by fearless
 ;
 ; All Rights Reserved
-;
-; http://www.LetTheLight.in
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;
@@ -50,6 +48,13 @@ option stackbase : rsp
 
 _WIN64 EQU 1
 WINVER equ 0501h
+
+;------------------------------------------
+; Remove comment to include DrawTextEXT
+;------------------------------------------
+;MUI_DRAWTEXTEXT EQU 1
+;------------------------------------------
+
 
 ;------------------------------------------
 ; Remove comment to include unicode support
@@ -104,8 +109,15 @@ _MUI_TextPaintText              PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD
 _MUI_TextCheckMultiline         PROTO :QWORD, :QWORD
 _MUI_TextSetFontFamilySize      PROTO :QWORD, :QWORD
 
+_MUI_TextCheckSetFont           PROTO :QWORD, :QWORD
+
 _MUI_TextGetFontTableHandle     PROTO :QWORD, :QWORD
 _MUI_TextSetFontTableHandle     PROTO :QWORD, :QWORD, :QWORD
+
+_MUI_TextUTF8Encode             PROTO :QWORD
+_MUI_TextUTF8Decode             PROTO :QWORD
+_MUI_TextUTF8Free               PROTO :QWORD
+
 
 ;------------------------------------------------------------------------------
 ; Structures for internal use
@@ -119,14 +131,53 @@ MUI_TEXT_PROPERTIES             STRUCT
     qwTextBackColor             DQ ?
     qwTextBackColorAlt          DQ ?
     qwTextBackColorDisabled     DQ ?
+    qwTextCodeTextColor         DQ ?
+    qwTextCodeBackColor         DQ ?
+    qwTextQuoteTextColor        DQ ?
+    qwTextQuoteBackColor        DQ ?
+    qwTextLinkTextColor         DQ ?
+    qwTextLinkUnderline         DQ ?
+    qwTextHelpTextColor         DQ ?
+    qwTextHelpUnderline         DQ ?
+    qwTextHorzRuleColor         DQ ?
 MUI_TEXT_PROPERTIES             ENDS
+
+; Extended External public properties
+MUI_TEXTEXT_PROPERTIES          STRUCT
+    qwTextFont                  DQ ?
+    qwTextCodeTextColor         DQ ?
+    qwTextCodeBackColor         DQ ?
+    qwTextQuoteTextColor        DQ ?
+    qwTextQuoteBackColor        DQ ?
+    qwTextLinkTextColor         DQ ?
+    qwTextLinkUnderline         DQ ?
+    qwTextHelpTextColor         DQ ?
+    qwTextHelpUnderline         DQ ?
+    qwTextHorzRuleColor         DQ ?
+MUI_TEXTEXT_PROPERTIES          ENDS
 
 ; Internal properties
 _MUI_TEXT_PROPERTIES            STRUCT
     qwEnabledState              DQ ?
     qwMouseOver                 DQ ?
     qwTextBuffer                DQ ?
+    qwPtrColorStack             DQ ? ; Stack of text colors for DTE
+    qwColorStackIndex           DQ ? ; Current index of color stack
+    qwPtrListStack              DQ ? ; Stack of list items for DTE
+    qwListStackIndex            DQ ? ; Current index of list stack
+    qwPtrFontSpecial            DQ ? ; Array of fonts for DTE
+    qwHyperLinkControl          DQ ? ; handle of DTE HyperLink control    
 _MUI_TEXT_PROPERTIES            ENDS
+
+; Extended Internal properties
+_MUI_TEXTEXT_PROPERTIES         STRUCT
+    qwPtrColorStack             DQ ? ; Stack of text colors for DTE
+    qwColorStackIndex           DQ ? ; Current index of color stack
+    qwPtrListStack              DQ ? ; Stack of list items for DTE
+    qwListStackIndex            DQ ? ; Current index of list stack
+    qwPtrFontSpecial            DQ ? ; Array of fonts for DTE
+    qwHyperLinkControl          DQ ? ; handle of DTE HyperLink control
+_MUI_TEXTEXT_PROPERTIES         ENDS
 
 MUI_TEXT_FONT_ENTRY             STRUCT
     hFont                       DQ 0
@@ -156,11 +207,18 @@ MUI_TEXT_FONTTYPE_MASK          EQU 0000000000000070h
 MUI_TEXT_ALIGN_MASK             EQU 0000000000000300h
 
 
+@@TextBufferSize                EQU 32d ; cbWndOffset+32
+
 ; Internal properties
 @TextEnabledState				EQU 0
 @TextMouseOver					EQU 8
 @TextBuffer                     EQU 16
-
+@TextPtrColorStack              EQU 24 ; Stack of text colors for DTE
+@TextColorStackIndex            EQU 32 ; Current index of color stack
+@TextPtrListStack               EQU 40 ; Stack of list items for DTE
+@TextListStackIndex             EQU 48 ; Current index of list stack
+@TextPtrFontSpecial             EQU 56 ; Array of fonts for DTE
+@TextHyperLinkControl           EQU 64 ; handle of DTE HyperLink control
 
 .DATA
 IFDEF MUI_UNICODE
@@ -366,7 +424,7 @@ MUITextRegister PROC FRAME
     	mov wc.hbrBackground, NULL
     	mov wc.style, NULL
         mov wc.cbClsExtra, 0
-    	mov wc.cbWndExtra, 16 ; cbWndExtra +0 = QWORD ptr to internal properties memory block, cbWndExtra +8 = QWORD ptr to external properties memory block
+    	mov wc.cbWndExtra, 40d ; cbWndExtra +0 = QWORD ptr to internal properties memory block, cbWndExtra +8 = QWORD ptr to external properties memory block
     	Invoke RegisterClassEx, addr wc
     .ENDIF  
     ret
@@ -412,6 +470,7 @@ MUI_ALIGN
 ;------------------------------------------------------------------------------
 _MUI_TextWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     LOCAL TE:TRACKMOUSEEVENT
+    LOCAL lpUTF8String:QWORD
 
     mov eax, uMsg
     .IF eax == WM_NCCREATE
@@ -421,15 +480,23 @@ _MUI_TextWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam
         ret
 
     .ELSEIF eax == WM_CREATE
-		Invoke MUIAllocMemProperties, hWin, 0, SIZEOF _MUI_TEXT_PROPERTIES ; internal properties
-		Invoke MUIAllocMemProperties, hWin, 8, SIZEOF MUI_TEXT_PROPERTIES ; external properties
+		Invoke MUIAllocMemProperties, hWin, MUI_INTERNAL_PROPERTIES, SIZEOF _MUI_TEXT_PROPERTIES ; internal properties
+		Invoke MUIAllocMemProperties, hWin, MUI_EXTERNAL_PROPERTIES, SIZEOF MUI_TEXT_PROPERTIES ; external properties
+		
+        Invoke MUIAllocMemProperties, hWin, MUI_INTERNAL_PROPERTIES_EXTRA, SIZEOF _MUI_TEXTEXT_PROPERTIES ; Extended internal properties
+        Invoke MUIAllocMemProperties, hWin, MUI_EXTERNAL_PROPERTIES_EXTRA, SIZEOF MUI_TEXTEXT_PROPERTIES ; Extended external properties
+        
 		Invoke _MUI_TextInit, hWin
 		mov rax, 0
 		ret    
 
     .ELSEIF eax == WM_NCDESTROY
-        Invoke MUIFreeMemProperties, hWin, 0
-		Invoke MUIFreeMemProperties, hWin, 8
+        Invoke MUIGetIntProperty, hWin, @TextBuffer ; release buffer used for text
+        .IF rax != 0
+            Invoke GlobalFree, rax
+        .ENDIF      
+        Invoke MUIFreeMemProperties, hWin, MUI_INTERNAL_PROPERTIES
+		Invoke MUIFreeMemProperties, hWin, MUI_EXTERNAL_PROPERTIES
 		mov rax, 0
 		ret           
         
@@ -494,10 +561,21 @@ _MUI_TextWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam
 
     .ELSEIF eax == WM_SETTEXT
         Invoke _MUI_TextCheckMultiline, hWin, lParam
-        Invoke DefWindowProc, hWin, uMsg, wParam, lParam
-        Invoke ShowWindow, hWin, SW_HIDE
+        IFDEF MUI_UNICODE
+            Invoke GetWindowLongPtr, hWin, GWL_STYLE
+            and rax, MUITS_UTF8
+            .IF rax == MUITS_UTF8
+                Invoke _MUI_TextUTF8Decode, lParam
+                mov lpUTF8String, rax
+                Invoke DefWindowProc, hWin, uMsg, wParam, rax
+                Invoke _MUI_TextUTF8Free, lpUTF8String
+            .ELSE
+                Invoke DefWindowProc, hWin, uMsg, wParam, lParam
+            .ENDIF
+        ELSE        
+            Invoke DefWindowProc, hWin, uMsg, wParam, lParam
+        ENDIF
         Invoke InvalidateRect, hWin, NULL, TRUE
-        Invoke ShowWindow, hWin, SW_SHOW
         ret
 
     .ELSEIF eax == WM_SETFONT
@@ -506,9 +584,12 @@ _MUI_TextWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam
         and rax, MUI_TEXT_FONTTYPE_MASK
         .IF rax == MUITS_FONT_DIALOG
             ;PrintDec wParam
-            Invoke MUISetExtProperty, hWin, @TextFont, wParam
-            .IF lParam == TRUE
-                Invoke InvalidateRect, hWin, NULL, TRUE
+            Invoke _MUI_TextCheckSetFont, hWin, wParam
+            .IF eax == TRUE ; actually a font being passed in wParam
+                Invoke MUISetExtProperty, hWin, @TextFont, wParam
+                .IF lParam == TRUE
+                    Invoke InvalidateRect, hWin, NULL, TRUE
+                .ENDIF
             .ENDIF            
         .ELSE
             ret
@@ -588,11 +669,75 @@ _MUI_TextInit PROC FRAME hWin:QWORD
     
     Invoke _MUI_TextSetFontFamilySize, hWin, qwStyle
 
+    ; Alloc Text Buffer
+    ;Invoke GetWindowLongPtr, hWin, @@TextBufferSize ; buffer size
+    ;.IF rax == 0
+        Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, MUI_TEXT_MAX_CHARS
+    ;.ELSE
+    ;    IFDEF MUI_UNICODE
+    ;    shl rax, 1 ; x2
+    ;    ENDIF
+    ;    and rax, 0FFFFFFFFFFFFFFF0h ; mask 
+    ;    add rax, 16d ; round up to 16bytes        
+    ;    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+    ;.ENDIF
+    .IF rax != NULL
+        Invoke MUISetIntProperty, hWin, @TextBuffer, eax
+    .ENDIF
+
     mov rax, qwStyle
     and rax, MUITS_LORUMIPSUM
     .IF rax == MUITS_LORUMIPSUM
         Invoke SetWindowText, hWin, Addr szLorumIpsumText
     .ENDIF
+    
+    IFDEF MUI_DRAWTEXTEXT
+    ; Allocate memory for stacks if using htmlcode or bbcode tags
+    mov rax, dwStyle
+    and rax, MUITS_HTMLCODE
+    .IF rax == MUITS_HTMLCODE
+        mov rax, LISTSTACK_SIZE
+        mov rbx, SIZEOF LISTINFO
+        mul rbx
+        Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+        Invoke MUISetIntProperty, hWin, @TextPtrListStack, rax
+        
+        mov rax, COLORSTACK_SIZE
+        mov rbx, SIZEOF COLORREF
+        mul rbx
+        Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+        Invoke MUISetIntProperty, hWin, @TextPtrColorStack, rax
+        
+        mov rax, FV_NUMBER
+        mov rbx, SIZEOF QWORD
+        mul rbx
+        Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+        Invoke MUISetIntProperty, hWin, @TextPtrFontSpecial, rax            
+    .ENDIF
+    
+    mov rax, dwStyle
+    and rax, MUITS_BBCODE
+    .IF rax == MUITS_BBCODE
+        mov rax, LISTSTACK_SIZE
+        mov rbx, SIZEOF LISTINFO
+        mul rbx
+        Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+        Invoke MUISetIntProperty, hWin, @TextPtrListStack, rax
+        
+        mov rax, COLORSTACK_SIZE
+        mov rbx, SIZEOF COLORREF
+        mul rbx
+        Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+        Invoke MUISetIntProperty, hWin, @TextPtrColorStack, rax
+        
+        mov rax, FV_NUMBER
+        mov rbx, SIZEOF QWORD
+        mul rbx
+        Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+        Invoke MUISetIntProperty, hWin, @TextPtrFontSpecial, rax        
+    .ENDIF
+    ENDIF
+    
     ret
 _MUI_TextInit ENDP
 
@@ -737,12 +882,19 @@ _MUI_TextPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState
     LOCAL qwTextStyle:QWORD
     LOCAL qwStyle:QWORD
     LOCAL rect:RECT
-    LOCAL szMUITextBuffer[MUI_TEXT_MAX_CHARS]:BYTE
+    LOCAL lpMUITextBuffer:QWORD
+    LOCAL lpMUITextUTF8Buffer:QWORD
     
     Invoke CopyRect, Addr rect, lpRect
 
     Invoke GetWindowLongPtr, hWin, GWL_STYLE
     mov qwStyle, rax
+
+    Invoke MUIGetIntProperty, hWin, @TextBuffer
+    .IF rax == FALSE
+        ret
+    .ENDIF
+    mov lpMUITextBuffer, rax
     
     Invoke MUIGetExtProperty, hWin, @TextFont        
     mov hFont, rax
@@ -775,9 +927,9 @@ _MUI_TextPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState
     .ENDIF  
     mov TextColor, rax
     
-    Invoke GetWindowText, hWin, Addr szMUITextBuffer, MUI_TEXT_MAX_CHARS;SIZEOF szText
-    
-    Invoke lstrlen, Addr szMUITextBuffer ;szText
+    .IF lpMUITextBuffer != 0
+        Invoke GetWindowText, hWin, lpMUITextBuffer, MUI_TEXT_MAX_CHARS ; length of string is returned in eax
+    .ENDIF
     mov LenText, rax
     
     Invoke SelectObject, hdc, hFont
@@ -810,7 +962,7 @@ _MUI_TextPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState
         or qwTextStyle, DT_LEFT
     .ENDIF
 
-    Invoke DrawText, hdc, Addr szMUITextBuffer, dword ptr LenText, Addr rect, dword ptr qwTextStyle
+    Invoke DrawText, hdc, lpMUITextBuffer, dword ptr LenText, Addr rect, dword ptr qwTextStyle
     
     .IF hOldFont != 0
         Invoke SelectObject, hdc, hOldFont
@@ -903,6 +1055,8 @@ _MUI_TextSetFontFamilySize PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
     LOCAL bFontBold:QWORD
     LOCAL bFontItalic:QWORD
     LOCAL bFontUnderline:QWORD
+    LOCAL ncm:NONCLIENTMETRICS
+    LOCAL lfnt:LOGFONT       
 
     Invoke MUIGetExtProperty, hWin, @TextFont
     mov hFont, rax
@@ -1020,6 +1174,27 @@ _MUI_TextSetFontFamilySize PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
             ;PrintText 'New Font'
             Invoke CreateFont, dword ptr qwFontHeight, 0,0,0, dword ptr qwFontWeight, dword ptr bFontItalic, dword ptr bFontUnderline,0,0,0,0, PROOF_QUALITY, FF_DONTCARE, MUITextFont
             mov hFont, rax
+            
+            ; Add error checking in case font doesnt exist
+            ; https://github.com/mrfearless/ModernUI/issues/8
+            ; If it doesnt exist we can try to use existing lfMessageFont and adjust that
+            .IF hFont == NULL
+                Invoke SystemParametersInfo, SPI_GETNONCLIENTMETRICS, SIZEOF NONCLIENTMETRICS, Addr ncm, 0
+                ; copy to lfMessageFont to lfnt and set values 
+                lea rbx, ncm.lfMessageFont
+                Invoke RtlMoveMemory, Addr lfnt, rbx, SIZEOF LOGFONT
+                mov rax, qwFontHeight
+                mov lfnt.lfHeight, eax
+                mov rax, qwFontWeight
+                mov lfnt.lfWeight, eax
+                mov rax, bFontItalic
+                mov lfnt.lfItalic, al
+                mov rax, bFontUnderline
+                mov lfnt.lfUnderline, al
+                Invoke CreateFontIndirect, Addr lfnt
+                mov hFont, rax
+            .ENDIF            
+            
             ; save handle to fonttable
             Invoke _MUI_TextSetFontTableHandle, hWin, qwStyle, hFont
         .ELSE ; use handle from fonttable instead
@@ -1249,9 +1424,149 @@ _MUI_TextSetFontTableHandle ENDP
 
 
 
+MUI_ALIGN
+;-------------------------------------------------------------------------------------
+; Convert wide Unicode String to an UTF8 string
+;-------------------------------------------------------------------------------------
+_MUI_TextUTF8Encode PROC FRAME lpString:QWORD
+    LOCAL qwUTF8StringSize:QWORD
+    LOCAL lpUTF8String:QWORD
+
+    .IF lpString == NULL
+        mov rax, NULL
+        ret
+    .ENDIF
+    Invoke WideCharToMultiByte, CP_UTF8, 0, lpString, -1, NULL, 0, NULL, NULL
+    .IF rax == 0
+        ret
+    .ENDIF
+    mov qwUTF8StringSize, rax
+    ;shl eax, 1 ; x2 to get non wide char count
+    add rax, 4 ; add 4 for good luck and nulls
+    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+    .IF rax == NULL
+        ret
+    .ENDIF
+    mov lpUTF8String, rax    
+    Invoke WideCharToMultiByte, CP_UTF8, 0, lpString, -1, lpUTF8String, dword ptr qwUTF8StringSize, NULL, NULL
+    .IF rax == 0
+        ret
+    .ENDIF
+    mov rax, lpUTF8String
+    ret
+_MUI_TextUTF8Encode ENDP
+
+
+MUI_ALIGN
+;-------------------------------------------------------------------------------------
+; Convert an UTF8 string to a wide Unicode String
+;-------------------------------------------------------------------------------------
+_MUI_TextUTF8Decode PROC FRAME lpString:QWORD
+    LOCAL qwWideStringSize:QWORD
+    LOCAL lpWideString:QWORD
+    
+    .IF lpString == NULL
+        mov rax, NULL
+        ret
+    .ENDIF
+    Invoke MultiByteToWideChar, CP_UTF8, 0, lpString, -1, NULL, 0
+    .IF rax == 0
+        ret
+    .ENDIF
+    mov qwWideStringSize, rax
+    shl rax, 1 ; x2 to get non wide char count
+    add rax, 4 ; add 4 for good luck and nulls
+    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+    .IF rax == NULL
+        ret
+    .ENDIF
+    mov lpWideString, rax
+    Invoke MultiByteToWideChar, CP_UTF8, 0, lpString, -1, lpWideString, dword ptr qwWideStringSize
+    .IF rax == 0
+        ret
+    .ENDIF
+    mov rax, lpWideString
+    ret
+_MUI_TextUTF8Decode ENDP
+
+
+MUI_ALIGN
+;-------------------------------------------------------------------------------------
+; Frees a converted string which was created by UTF8_Decode or UTF8_Encode
+;-------------------------------------------------------------------------------------
+_MUI_TextUTF8Free PROC FRAME lpString:QWORD
+    mov rax, lpString
+    .IF rax == NULL
+        mov rax, FALSE
+        ret
+    .ENDIF
+    Invoke GlobalFree, rax
+    mov rax, TRUE
+    ret
+_MUI_TextUTF8Free ENDP
+
+
+MUI_ALIGN
+;-------------------------------------------------------------------------------------
+; Sets internal buffer size for text - useful if you know ahead of time what size
+; buffer should be - as in you know the text length expected.
+;-------------------------------------------------------------------------------------
+MUITextSetBufferSize PROC FRAME hWin:QWORD, qwSize:QWORD
+    .IF hWin == 0 || qwSize == 0
+        mov rax, FALSE
+        ret
+    .ENDIF
+    Invoke MUIGetIntProperty, hWin, @TextBuffer
+    .IF rax != 0 ; free existing buffer
+        Invoke GlobalFree, rax
+    .ENDIF
+    mov rax, qwSize
+    IFDEF MUI_UNICODE
+    shl rax, 1 ; x2
+    ENDIF
+    and rax, 0FFFFFFFFFFFFFFF0h ; mask 
+    add rax, 16d ; round up to 16bytes
+    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
+    .IF rax != NULL
+        Invoke MUISetIntProperty, hWin, @TextBuffer, rax
+        mov rax, TRUE
+    .ELSE
+        Invoke MUISetIntProperty, hWin, @TextBuffer, 0
+        mov rax, FALSE
+    .ENDIF
+    ret
+MUITextSetBufferSize ENDP
+
+
+MUI_ALIGN
+;-------------------------------------------------------------------------------------
+; Check if font set via MUITextSetProperty is acutally a font, if it isnt return FALSE
+;-------------------------------------------------------------------------------------
+_MUI_TextCheckSetFont PROC FRAME hWin:QWORD, hFont:QWORD
+    LOCAL lfnt:LOGFONT 
+    
+    .IF hWin == 0 || hFont == 0
+        mov rax, FALSE
+        ret
+    .ENDIF
+    
+    Invoke GetObject, hFont, SIZEOF lfnt, Addr lfnt
+    .IF rax == NULL
+        mov rax, FALSE
+        ret
+    .ENDIF
+    
+    mov rax, TRUE
+    ret
+_MUI_TextCheckSetFont ENDP
+
+
+IFDEF MUI_DRAWTEXTEXT
+include ModernUI_DrawTextEXT.asm
+ENDIF
 
 
 
 
 
-END
+MODERNUI_LIBEND

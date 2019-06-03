@@ -85,7 +85,30 @@ MUITS_BBCODE            (MUITS_LORUMIPSUM or MUITS_ALIGN_JUSTIFY or MUITS_FONT_B
 #define TextBackColorAlt       40      // COLORREF
 #define TextBackColorDisabled  48      // COLORREF
 
+//------------------------------------------------------------------------------
+// ModernUI_DrawTextEXT Properties: Use MUITextSetPropertyEx / MUITextGetPropertyEx
+//------------------------------------------------------------------------------
+#define TextExtFont            0       // hFont
+#define TextExtCodeTextColor   56      // COLORREF
+#define TextExtCodeBackColor   64      // COLORREF
+#define TextExtQuoteTextColor  72      // COLORREF
+#define TextExtQuoteBackColor  80      // COLORREF
+#define TextExtLinkTextColor   88      // COLORREF
+#define TextExtLinkUnderline   96      // DWORD. Text Link Style
+#define TextExtHelpTextColor   104      // COLORREF
+#define TextExtHelpUnderline   112      // DWORD. Text Help Style
+#define TextExtHorzRuleColor   120      // COLORREF
 
+
+// TextExt Link Style:
+#define MUITLS_ALL             0       // Underline links
+#define MUITLS_HOVER           1       // Underline only when mouse hovers over
+#define MUITLS_NONE            2       // Dont underline links ever
+
+// TextExt Help Style:
+#define MUITHS_ALL             0       // Underline help
+#define MUITHS_HOVER           1       // Underline only when mouse hovers over
+#define MUITHS_NONE            2       // Dont underline help ever
 
 
 #ifdef __cplusplus

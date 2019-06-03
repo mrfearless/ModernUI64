@@ -221,7 +221,7 @@ MUICreateCursorFromMemory PROC FRAME USES RBX pCursorData:QWORD
     ret
 MUICreateCursorFromMemory ENDP
 
-END
+MODERNUI_LIBEND
 
 
 

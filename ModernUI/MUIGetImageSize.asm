@@ -126,7 +126,7 @@ MUIGetImageSize PROC FRAME USES RBX hImage:QWORD, qwImageType:QWORD, lpqwImageWi
 MUIGetImageSize ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

@@ -1031,20 +1031,20 @@ MUI_ALIGN
 ; _MUI_CaptionBarCleanup - cleanup a few things before control is destroyed
 ;------------------------------------------------------------------------------
 _MUI_CaptionBarCleanup PROC FRAME hWin:QWORD
-    LOCAL ImageType:QWORD
+    LOCAL qwImageType:QWORD
     LOCAL hImage:QWORD
 
     Invoke MUIGetExtProperty, hWin, @CaptionBarBackImageType
-    mov ImageType, rax
+    mov qwImageType, rax
 
-    .IF ImageType == 0
+    .IF qwImageType == 0
         ret
     .ENDIF
 
     Invoke MUIGetExtProperty, hWin, @CaptionBarBackImage
     mov hImage, rax
     .IF rax != 0
-        .IF ImageType != 3
+        .IF qwImageType != 3
             Invoke DeleteObject, rax
         ;.ELSE
         ;    IFDEF MUI_USEGDIPLUS
@@ -1261,7 +1261,7 @@ MUI_ALIGN
 ; _MUI_CaptionBarPaintImage - Returns in rax ImageWidth if image painted, or 0
 ;------------------------------------------------------------------------------
 _MUI_CaptionBarPaintImage PROC FRAME hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, lpRect:QWORD
-    LOCAL ImageType:QWORD
+    LOCAL qwImageType:QWORD
     LOCAL hImage:QWORD
     LOCAL hdcMem:HDC
     LOCAL hbmOld:QWORD    
@@ -1276,9 +1276,9 @@ _MUI_CaptionBarPaintImage PROC FRAME hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, l
     LOCAL qwOffsetY:QWORD    
     
     Invoke MUIGetExtProperty, hWin, @CaptionBarBackImageType        
-    mov ImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
+    mov qwImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
     
-    .IF ImageType == 0
+    .IF qwImageType == 0
         mov rax, 0
         ret
     .ENDIF
@@ -1292,7 +1292,7 @@ _MUI_CaptionBarPaintImage PROC FRAME hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, l
         Invoke MUIGetExtProperty, hWin, @CaptionBarBackImageOffsetY
         mov qwOffsetY, rax
         Invoke CopyRect, Addr rect, lpRect
-        Invoke MUIGetImageSize, hImage, ImageType, Addr ImageWidth, Addr ImageHeight
+        Invoke MUIGetImageSize, hImage, qwImageType, Addr ImageWidth, Addr ImageHeight
 
         mov pt.x, 1
         mov pt.y, 1
@@ -1324,7 +1324,7 @@ _MUI_CaptionBarPaintImage PROC FRAME hWin:QWORD, hdcMain:QWORD, hdcDest:QWORD, l
             mov pt.y, eax
         .ENDIF
         
-        mov rax, ImageType
+        mov rax, qwImageType
         .IF rax == MUICBIT_BMP ; bitmap
             
             Invoke CreateCompatibleDC, hdcMain
@@ -3322,4 +3322,4 @@ MUICaptionBarAddButton ENDP
 
 
 
-END
+MODERNUI_LIBEND

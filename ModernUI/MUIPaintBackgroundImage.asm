@@ -285,7 +285,7 @@ MUIPaintBackgroundImage ENDP
 
 
 
-END
+MODERNUI_LIBEND
 
 
 

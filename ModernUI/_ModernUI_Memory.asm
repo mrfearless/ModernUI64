@@ -73,7 +73,7 @@ MUIFreeMemProperties ENDP
 
 
 
-END
+MODERNUI_LIBEND
 
 
 

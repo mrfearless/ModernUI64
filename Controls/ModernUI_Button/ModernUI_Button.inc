@@ -164,8 +164,6 @@ MUIBS_DROPDOWN                  EQU 80h     ; Show dropdown arrow right side of 
 ; ModernUI_Button Properties: Use with MUIButtonSetProperty / 
 ; MUIButtonGetProperty or MUI_SETPROPERTY / MUI_GETPROPERTY msgs
 ;------------------------------------------------------------------------------
-
-
 @ButtonTextFont                 EQU 0       ; hFont
 @ButtonTextColor                EQU 8       ; Colorref
 @ButtonTextColorAlt             EQU 16      ; Colorref

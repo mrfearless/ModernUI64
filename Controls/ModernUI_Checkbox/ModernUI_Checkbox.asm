@@ -988,7 +988,7 @@ _MUI_CheckboxPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, 
     LOCAL hBrush:QWORD
     LOCAL hOldBrush:QWORD
     LOCAL hImage:QWORD
-    LOCAL ImageType:QWORD
+    LOCAL qwImageType:QWORD
     LOCAL ImageWidth:QWORD
     LOCAL ImageHeight:QWORD
     LOCAL rect:RECT
@@ -1035,7 +1035,7 @@ _MUI_CheckboxPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, 
     ;PrintDec TextColor
     
     Invoke MUIGetExtProperty, hWin, @CheckboxImageType        
-    mov ImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
+    mov qwImageType, rax ; 0 = none, 1 = bitmap, 2 = icon, 3 = png
 
     .IF bEnabledState == TRUE
         .IF bSelectedState == FALSE
@@ -1070,7 +1070,7 @@ _MUI_CheckboxPaintText PROC FRAME USES RBX hWin:QWORD, hdc:QWORD, lpRect:QWORD, 
     
     .IF hImage != 0
         
-        Invoke MUIGetImageSize, hImage, ImageType, Addr ImageWidth, Addr ImageHeight
+        Invoke MUIGetImageSize, hImage, qwImageType, Addr ImageWidth, Addr ImageHeight
 
         mov rax, ImageWidth
         add rect.left, eax
@@ -1218,7 +1218,7 @@ _MUI_CheckboxPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:
                 Invoke GdipCreateBitmapFromGraphics, ImageWidth, ImageHeight, pGraphics, Addr pBitmap
                 Invoke GdipGetImageGraphicsContext, pBitmap, Addr pGraphicsBuffer            
                 Invoke GdipDrawImageI, pGraphicsBuffer, hImage, 0, 0
-                Invoke GdipDrawImageRectI, pGraphics, pBitmap, pt.x, pt.y, ImageWidth, ImageHeight
+                Invoke GdipDrawImageRectI, pGraphics, pBitmap, pt.x, pt.y, dword ptr ImageWidth, dword ptr ImageHeight
                 .IF pBitmap != NULL
                     Invoke GdipDisposeImage, pBitmap
                 .ENDIF
@@ -1767,4 +1767,4 @@ _MUI_CheckboxPngReleaseIStream ENDP
 ENDIF
 
 
-END
+MODERNUI_LIBEND

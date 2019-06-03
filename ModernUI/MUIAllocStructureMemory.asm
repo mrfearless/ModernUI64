@@ -155,7 +155,7 @@ MUIAllocStructureMemory PROC FRAME USES RBX qwPtrStructMem:QWORD, TotalItems:QWO
 MUIAllocStructureMemory endp
 
 
-END
+MODERNUI_LIBEND
 
 
 

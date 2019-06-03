@@ -144,7 +144,7 @@ MUIPaintBackground PROC FRAME hWin:QWORD, qwBackcolor:QWORD, qwBorderColor:QWORD
 MUIPaintBackground ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

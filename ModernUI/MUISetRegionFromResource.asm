@@ -94,7 +94,7 @@ MUISetRegionFromResource PROC FRAME USES RBX hWin:QWORD, idRgnRes:QWORD, lpqwCop
 
 MUISetRegionFromResource ENDP
 
-END
+MODERNUI_LIBEND
 
 
 

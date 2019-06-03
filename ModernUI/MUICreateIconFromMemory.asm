@@ -123,7 +123,7 @@ MUICreateIconFromMemory PROC FRAME USES RDX pIconData:QWORD, iIcon:QWORD
 MUICreateIconFromMemory ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

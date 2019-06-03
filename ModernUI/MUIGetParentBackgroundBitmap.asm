@@ -101,7 +101,7 @@ MUIGetParentBackgroundBitmap PROC FRAME hControl:QWORD
 MUIGetParentBackgroundBitmap ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

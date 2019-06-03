@@ -85,7 +85,7 @@ MUILoadRegionFromResource PROC FRAME USES RBX hInst:QWORD, idRgnRes:QWORD, lpReg
 MUILoadRegionFromResource ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

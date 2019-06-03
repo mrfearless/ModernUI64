@@ -98,7 +98,7 @@ MUICreateBitmapFromMemory PROC FRAME USES RCX RDX pBitmapData:QWORD
 MUICreateBitmapFromMemory ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

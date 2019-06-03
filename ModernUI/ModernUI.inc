@@ -98,6 +98,11 @@ MUIDPISetDPIAware               PROTO
 
 
 .CONST
+IFDEF MODERNUI_DLL
+    MODERNUI_LIBEND TEXTEQU <>
+ELSE
+    MODERNUI_LIBEND TEXTEQU <END>
+ENDIF
 
 ;------------------------------------------
 ; Define MUI_USEGDIPLUS to compile
@@ -116,6 +121,10 @@ ENDIF
 ;------------------------------------------
 MUI_INTERNAL_PROPERTIES         EQU 0
 MUI_EXTERNAL_PROPERTIES         EQU 8
+MUI_INTERNAL_PROPERTIES_EXTRA   EQU 16              ; cbWndExtra offset for extra internal properties pointer
+MUI_EXTERNAL_PROPERTIES_EXTRA   EQU 24              ; cbWndExtra offset for extra external properties pointer
+MUI_PROPERTY_ADDRESS            EQU 80000000h       ; OR with dwProperty in MUIGetIntProperty/MUIGetExtProperty to return address of property
+
 MUI_ALIGN                       TEXTEQU <ALIGN 16>
 
 ;------------------------------------------

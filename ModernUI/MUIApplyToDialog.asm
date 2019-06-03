@@ -132,7 +132,7 @@ MUIApplyToDialog ENDP
 
 
 
-END
+MODERNUI_LIBEND
 
 
 

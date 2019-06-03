@@ -63,7 +63,7 @@ MUIPointSizeToLogicalUnit PROC FRAME USES RBX RCX RDX hWin:QWORD, qwPointSize:QW
 MUIPointSizeToLogicalUnit ENDP
 
 
-END
+MODERNUI_LIBEND
 
 
 

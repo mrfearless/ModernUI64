@@ -1,7 +1,7 @@
 [Project]
 Assembler=UASM64
 Type=LIB64 Project
-Description=ModernUI_Text
+Description=ModernUI_TextWide
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
@@ -32,15 +32,15 @@ Debug=0
 [MakeDef]
 Menu=0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
-2=3,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",2
-3=7,O,$B\LIB.EXE,3
+2=3,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /DMUI_UNICODE /D_WIN64 /Cp /nologo /W2 /I"$I",2
+3=7,O,$B\LIB.EXE /OUT:"ModernUI_TextWide.lib",3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
-12=3,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
-13=7,O,$B\LINK -lib *.obj /out:"$9"
+12=3,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /DMUI_UNICODE /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
+13=7,O,$B\LIB.EXE /OUT:"ModernUI_TextWide.lib",3
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 16=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
@@ -54,7 +54,7 @@ Group=Assembly,Misc
 1=1
 2=1
 3=2
-4=1
+4=2
 5=2
 [AutoLoad]
 AutoLoad=1,2,4
@@ -106,15 +106,15 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=7043445
+PTimer=8233109
 [Collapse]
-1=1073750340,268468736,402653328,3
+1=8512,,536870912,12
 2=
 4=
 [Size]
-1=0,0,0,0,61986
-2=0,0,0,0,147
-4=0,0,0,0,4429
+1=0,0,0,0,30975
+2=0,0,0,0,2465
+4=0,0,0,0,3999
 [GroupExpand]
 GroupExpand=1,1,0
 [BookMark]
