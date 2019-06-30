@@ -9,8 +9,11 @@ Debug=0
 [Files]
 1=ModernUI_ProgressDots.Asm
 2=ModernUI_ProgressDots.Inc
-3=Notes.txt
+3=Uasm64ApiCall.api.txt
 4=ModernUI_ProgressDots.h
+5=Uasm64ApiConst.api.txt
+6=Uasm64ApiStruct.api.txt
+7=Uasm64Message.api.txt
 [MakeFiles]
 0=ModernUI_ProgressDots.rap
 1=ModernUI_ProgressDots.rc
@@ -56,15 +59,17 @@ Group=Assembly,Misc
 3=2
 4=2
 5=2
+6=2
+7=2
 [AutoLoad]
-AutoLoad=2,1,4
+AutoLoad=2
 [RADebugBP]
 2=
 1=
 [Find]
-1="; "
-2="EQU "
-3="dw"
+1="dw"
+2="; "
+3="EQU "
 4="DWORD"
 5=";-------------------------------------------------------------------------------------"
 6=";--------------------------------------------------------------------------------------------------------------------------------------"
@@ -79,7 +84,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2018
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=5
@@ -103,15 +108,23 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=4451599
+PTimer=4978102
 [Collapse]
-1=1149511697,486738
+1=75767824,478546
 2=
 4=
+7=
+6=
+3=
+5=
 [Size]
-1=0,0,0,0,33724
+1=0,0,0,0,17610
 2=0,0,0,0,3532
 4=0,0,0,0,1431
+3=0,0,0,0,527
+7=0,0,0,0,209
+6=0,0,0,0,209
+5=0,0,0,0,209
 [GroupExpand]
 GroupExpand=1,1,0
 [BookMark]

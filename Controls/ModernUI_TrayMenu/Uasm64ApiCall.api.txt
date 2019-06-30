@@ -1,0 +1,29 @@
+;------------------------------------------------------------------------------
+; ModernUI_TrayMenu Control
+;
+; http://github.com/mrfearless/ModernUI
+;
+; Paste this text at the end of \Radasm\Uasm64\Uasm64ApiCall.api to add to Radasm
+;
+;------------------------------------------------------------------------------
+MUITrayMenuRegister
+MUITrayMenuCreate,hWndParent,hTrayMenuIcon,lpszTooltip,qwMenuType,qwMenu,qwOptions,hWndExtra
+MUITrayMenuSetProperty,hModernUI_TrayMenu,qwProperty,qwPropertyValue
+MUITrayMenuGetProperty,hModernUI_TrayMenu,qwProperty
+MUITrayMenuAssignMenu,hModernUI_TrayMenu,qwMenuType,qwMenu
+MUITrayMenuSetTrayIcon,hModernUI_TrayMenu,hTrayIcon
+MUITrayMenuSetTooltipText,hModernUI_TrayMenu,lpszTooltip
+MUITrayMenuEnableMenuItem,hModernUI_TrayMenu,MenuItemID
+MUITrayMenuDisableMenuItem,hModernUI_TrayMenu,MenuItemID
+MUITrayMenuChangeMenuItemState,hModernUI_TrayMenu,MenuItemID,MenuItemState
+MUITrayMenuSetMenuItemText,hModernUI_TrayMenu,MenuItemID,lpszMenuItemText
+MUITrayMenuHideTrayIcon,hModernUI_TrayMenu
+MUITrayMenuShowTrayIcon,hModernUI_TrayMenu
+MUITrayMenuShowNotification,hModernUI_TrayMenu,lpszNotificationMessage,lpszNotificationTitle,qwTimeout,qwStyle
+MUITrayMenuSetTrayIconText,hModernUI_TrayMenu,lpszText,lpszFont,qwTextColorRGB
+MUITrayIconCreate,hWndParent,qwTrayIconResID,hTrayIcon,lpszTooltip
+MUITrayIconDestroy,hModernUI_TrayIcon
+MUITrayIconSetTrayIcon,hModernUI_TrayIcon,hTrayIcon
+MUITrayIconSetTooltipText,hModernUI_TrayIcon,lpszTooltip
+MUITrayIconShowNotification,hModernUI_TrayIcon,lpszNotificationMessage,lpszNotificationTitle,qwTimeout,qwStyle
+MUITrayIconSetTrayIconText,hModernUI_TrayIcon,lpszText,lpszFont,qwTextColorRGB

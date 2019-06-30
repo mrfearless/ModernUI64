@@ -1,0 +1,14 @@
+;------------------------------------------------------------------------------
+; ModernUI_ProgressDots Control
+;
+; http://github.com/mrfearless/ModernUI
+;
+; Paste this text at the end of \Radasm\Uasm64\Uasm64ApiCall.api to add to Radasm
+;
+;------------------------------------------------------------------------------
+MUIProgressDotsRegister
+MUIProgressDotsCreate,hWndParent,ypos,qwHeight,qwResourceID,qwStyle
+MUIProgressDotsSetProperty,hMUIProgressDots,qwProperty,qwPropertyValue
+MUIProgressDotsGetProperty,hMUIProgressDots,qwProperty
+MUIProgressDotsAnimateStart,hMUIProgressDots
+MUIProgressDotsAnimateStop,hMUIProgressDots

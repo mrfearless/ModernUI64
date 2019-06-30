@@ -1,0 +1,9 @@
+;------------------------------------------------------------------------------
+; ModernUI_Button Control
+;
+; http://github.com/mrfearless/ModernUI
+;
+; Paste this text at the end of \Radasm\Uasm64\Uasm64ApiStruct.api to add to Radasm
+;
+;------------------------------------------------------------------------------
+MUI_BUTTON_PROPERTIES,qwTextFont,qwTextColor,qwTextColorAlt,qwTextColorSel,qwTextColorSelAlt,qwTextColorDisabled,qwBackColor,qwBackColorAlt,qwBackColorSel,qwBackColorSelAlt,qwBackColorDisabled,qwBorderColor,qwBorderColorAlt,qwBorderColorSel,qwBorderColorSelAlt,qwBorderColorDisabled,qwBorderStyle,qwAccentColor,qwAccentColorAlt,qwAccentColorSel,qwAccentColorSelAlt,qwAccentStyle,qwAccentStyleAlt,qwAccentStyleSel,qwAccentStyleSelAlt,qwImageType,qwImage,qwImageAlt,qwImageSel,qwImageSelAlt,qwImageDisabled,qwRightImage,qwRightImageAlt,qwRightImageSel,qwRightImageSelAlt,qwRightImageDisabled,qwNotifyTextFont,qwNotifyTextColor,qwNotifyBackColor,qwNotifyRound,qwNotifyImageType,qwNotifyImage,qwButtonNoteTextFont,qwButtonNoteTextColor,qwButtonNoteTextColorDisabled,qwButtonPaddingLeftIndent,qwButtonPaddingGeneral,qwButtonPaddingStyle,qwButtonPaddingTextImage,qwButtonDllInstance

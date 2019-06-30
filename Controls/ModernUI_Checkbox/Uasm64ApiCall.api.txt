@@ -1,0 +1,16 @@
+;------------------------------------------------------------------------------
+; ModernUI_Checkbox Control
+;
+; http://github.com/mrfearless/ModernUI
+;
+; Paste this text at the end of \Radasm\Uasm64\Uasm64ApiCall.api to add to Radasm
+;
+;------------------------------------------------------------------------------
+MUICheckboxRegister
+MUICheckboxCreate,hWndParent,lpszText,xpos,ypos,qwWidth,qwHeight,qwResourceID,qwStyle
+MUICheckboxSetProperty,hModernUI_Checkbox,qwProperty,qwPropertyValue
+MUICheckboxGetProperty,hModernUI_Checkbox,qwProperty
+MUICheckboxGetState,hModernUI_Checkbox
+MUICheckboxSetState,hModernUI_Checkbox,bState
+MUICheckboxLoadImages,hModernUI_Checkbox,qwImageType,qwResIDImage,qwResIDImageAlt,qwResIDImageSel,qwResIDImageSelAlt,qwResIDImageDisabled,qwResIDImageDisabledSel
+MUICheckboxSetImages,hModernUI_Checkbox,qwImageType,hImage,hImageAlt,hImageSel,hImageSelAlt,hImageDisabled,hImageDisabledSel

@@ -1,0 +1,24 @@
+;------------------------------------------------------------------------------
+; ModernUI_Button Control 
+;
+; http://github.com/mrfearless/ModernUI
+;
+; Paste this text at the end of \Radasm\Uasm64\Uasm64ApiCall.api to add to Radasm
+;
+;------------------------------------------------------------------------------
+MUIButtonRegister
+MUIButtonCreate,hWndParent,lpszText,xpos,ypos,qwWidth,qwHeight,qwResourceID,qwStyle
+MUIButtonSetProperty,hModernUI_Button,qwProperty,qwPropertyValue
+MUIButtonGetProperty,hModernUI_Button,qwProperty
+MUIButtonSetAllProperties,hModernUI_Button,lpMUI_BUTTON_PROPERTIES,qwSize
+MUIButtonGetState,hModernUI_Button
+MUIButtonSetState,hModernUI_Button,bState
+MUIButtonLoadImages,hModernUI_Button,qwImageType,qwResIDImage,qwResIDImageAlt,qwResIDImageSel,qwResIDImageSelAlt,qwResIDImageDisabled
+MUIButtonSetImages,hModernUI_Button,qwImageType,hImage,hImageAlt,hImageSel,hImageSelAlt,hImageDisabled
+MUIButtonNotifySetText,hModernUI_Button,lpszNotifyText,bRedraw
+MUIButtonNotifyLoadImage,hModernUI_Button,qwImageType,qwResIDNotifyImage
+MUIButtonNotifySetImage,hModernUI_Button,qwImageType,hNotifyImage
+MUIButtonNotifySetFont,hModernUI_Button,hFont,bRedraw
+MUIButtonNotify,hModernUI_Button,bNotify
+MUIButtonNoteSetText,hModernUI_Button,lpszNoteText,bRedraw
+MUIButtonNoteSetFont,hModernUI_Button,hFont,bRedraw

@@ -1,0 +1,13 @@
+;------------------------------------------------------------------------------
+; ModernUI_Text Control
+;
+; http://github.com/mrfearless/ModernUI
+;
+; Paste this text at the end of \Radasm\Uasm64\Uasm64ApiCall.api to add to Radasm
+;
+;------------------------------------------------------------------------------
+MUITextRegister
+MUITextCreate,hWndParent,lpszText,xpos,ypos,qwWidth,qwHeight,qwResourceID,qwStyle
+MUITextSetProperty,hModernUI_Text,qwProperty,qwPropertyValue
+MUITextGetProperty,hModernUI_Text,qwProperty
+MUITextSetBufferSize,hModernUI_Text,qwBufferSize

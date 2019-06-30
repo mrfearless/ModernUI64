@@ -1,0 +1,8 @@
+;------------------------------------------------------------------------------
+; ModernUI_Spinner Control
+;
+; http://github.com/mrfearless/ModernUI
+;
+; Paste this text at the end of \Radasm\Uasm64\Uasm64ApiStruct.api to add to Radasm
+;
+;------------------------------------------------------------------------------

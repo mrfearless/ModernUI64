@@ -85,7 +85,7 @@ _MUI_SpinnerNextFrameIndex          PROTO :QWORD
 IFDEF MUI_USEGDIPLUS
 _MUI_SpinnerLoadPng                 PROTO :QWORD, :QWORD
 ENDIF
-_MUI_SpinnerRotateCenterImage       PROTO :QWORD,:QWORD,:REAL4 ; hImage, fAngle
+_MUI_SpinnerRotateCenterImage       PROTO :QWORD,:REAL4 ; hImage, fAngle
 IFDEF SPINNER_USE_MMTIMER
 _MUI_SpinnerMMTimerProc             PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD
 ELSE
@@ -1252,7 +1252,6 @@ MUISpinnerAddImage PROC FRAME hControl:QWORD, hImage:QWORD, qwNoFramesToCreate:Q
     LOCAL nFrame:QWORD
     LOCAL hFrame:QWORD
     LOCAL fAngle:REAL4
-    LOCAL qwAngle:QWORD
     LOCAL slice:REAL4
     
     IFDEF DEBUG32
@@ -1277,14 +1276,12 @@ MUISpinnerAddImage PROC FRAME hControl:QWORD, hImage:QWORD, qwNoFramesToCreate:Q
     .ELSE
         fld FP4(0.0)
     .ENDIF
-    
-    ;fstp fAngle
-    ;fistp qwAngle
+    fstp fAngle
     
     mov nFrame, 0
     mov rax, 0
     .WHILE rax < qwNoFramesToCreate
-        Invoke _MUI_SpinnerRotateCenterImage, hControl, hImage, fAngle
+        Invoke _MUI_SpinnerRotateCenterImage, hImage, fAngle
         mov hFrame, rax
         
         Invoke MUISpinnerAddFrame, hControl, MUISPIT_PNG, hFrame
@@ -1293,9 +1290,7 @@ MUISpinnerAddImage PROC FRAME hControl:QWORD, hImage:QWORD, qwNoFramesToCreate:Q
             ret
         .ENDIF
         
-        ;fild qwAngle
-        ;fadd slice
-        ;fistp qwAngle
+        finit
         fld fAngle
         .IF bReverse == TRUE
             fsub slice
@@ -1688,7 +1683,7 @@ ENDIF
 ;-------------------------------------------------------------------------------------
 ; _MUI_SpinnerRotateCenterImage
 ;-------------------------------------------------------------------------------------
-_MUI_SpinnerRotateCenterImage PROC FRAME USES RBX hControl:QWORD, hImage:QWORD, fAngle:REAL4
+_MUI_SpinnerRotateCenterImage PROC FRAME hImage:QWORD, fAngle:REAL4
     LOCAL pGraphics:QWORD
     LOCAL pGraphicsBuffer:QWORD
     LOCAL matrix:QWORD
@@ -1705,54 +1700,44 @@ _MUI_SpinnerRotateCenterImage PROC FRAME USES RBX hControl:QWORD, hImage:QWORD, 
     LOCAL xneg:REAL4
     LOCAL yneg:REAL4
     LOCAL angle:REAL4
-    ;LOCAL scale:REAL4
-    ;LOCAL qwScale:QWORD
-    LOCAL hdc:QWORD
-    LOCAL qwImageWidthScaled:QWORD
-    LOCAL qwImageHeightScaled:QWORD
-    
-    ;Invoke GetDC, hControl
-    ;mov hdc, eax
-
-    finit           ; init fpu
 
     ;---------------------------------------------------------------------------------
     ; Check if angle is 0, if it is just clone image
     ;---------------------------------------------------------------------------------
-    fld fAngle
-    ftst            ; compare the value of ST(0) to +0.0
-    fstsw ax        ; copy the Status Word containing the result to AX
-    fwait           ; insure the previous instruction is completed
-    sahf            ; transfer the condition codes to the CPU's flag register
-    jz angle_is_0
-    jmp angle_is_not_0
-
-angle_is_0:
-    ;Invoke ReleaseDC, 0, hdc
-    Invoke GdipCloneImage, hImage, Addr pBitmap
-    mov rax, pBitmap
-    ret
-    
-angle_is_not_0:
+;    finit           ; init fpu
+;    fld fAngle
+;    ftst            ; compare the value of ST(0) to +0.0
+;    fstsw ax        ; copy the Status Word containing the result to AX
+;    fwait           ; insure the previous instruction is completed
+;    sahf            ; transfer the condition codes to the CPU's flag register
+;    jz angle_is_0
+;    jmp angle_is_not_0
+;
+;angle_is_0:
+;    Invoke GdipCloneImage, hImage, Addr pBitmap
+;    mov rax, pBitmap
+;    ret
+;    
+;angle_is_not_0:
 
     ;---------------------------------------------------------------------------------
     ; Check if angle is 360, if it is just clone image
     ;---------------------------------------------------------------------------------
-    fld fAngle
-    fcom FP4(360.0) ; compare ST(0) with the value of the real4_var variable: 360.0
-    fstsw ax        ; copy the Status Word containing the result to AX
-    fwait           ; insure the previous instruction is completed
-    sahf            ; transfer the condition codes to the CPU's flag register
-    jz angle_is_360
-    jmp angle_is_not_360
-
-angle_is_360:
-    ;Invoke ReleaseDC, 0, hdc
-    Invoke GdipCloneImage, hImage, Addr pBitmap
-    mov rax, pBitmap
-    ret
-
-angle_is_not_360:
+;    finit           ; init fpu
+;    fld fAngle
+;    fcom FP4(360.0) ; compare ST(0) with the value of the real4_var variable: 360.0
+;    fstsw ax        ; copy the Status Word containing the result to AX
+;    fwait           ; insure the previous instruction is completed
+;    sahf            ; transfer the condition codes to the CPU's flag register
+;    jz angle_is_360
+;    jmp angle_is_not_360
+;
+;angle_is_360:
+;    Invoke GdipCloneImage, hImage, Addr pBitmap
+;    mov rax, pBitmap
+;    ret
+;
+;angle_is_not_360:
     
     ;---------------------------------------------------------------------------------
     ; Create new image based on hImage and rotate this new image 
@@ -1764,47 +1749,26 @@ angle_is_not_360:
     mov pBrush, 0
     
     Invoke MUIGetImageSize, hImage, MUIIT_PNG, Addr qwImageWidth, Addr qwImageHeight
-    
-    Invoke MUIDPIScaleX, qwImageWidth
-    mov qwImageWidthScaled, rax
-    
-    Invoke MUIDPIScaleY, qwImageHeight
-    mov qwImageHeightScaled, rax
-
-    ;Invoke GdipCreateFromHDC, hdc, Addr pGraphics
     Invoke GdipGetImageGraphicsContext, hImage, Addr pGraphics
     Invoke GdipCreateBitmapFromGraphics, qwImageWidth, qwImageHeight, pGraphics, Addr pBitmap 
     Invoke GdipGetImageGraphicsContext, pBitmap, Addr pGraphicsBuffer
     
     Invoke GdipSetPixelOffsetMode, pGraphicsBuffer, PixelOffsetModeHighQuality
     Invoke GdipSetPageUnit, pGraphicsBuffer, UnitPixel
-    ;Invoke GdipSetPageScale, pGraphicsBuffer, 
     Invoke GdipSetSmoothingMode, pGraphicsBuffer, SmoothingModeAntiAlias
     Invoke GdipSetInterpolationMode, pGraphicsBuffer, InterpolationModeHighQualityBicubic
-    
-    IFDEF DEBUG32
-    ;PrintDec qwImageWidthScaled
-    ;PrintDec qwImageHeightScaled
-    ;Invoke GdipGetPageScale, pGraphics, Addr scale
-    ;fld scale
-    ;fistp qwScale
-    ;PrintDec qwScale
-    ENDIF    
-    
-    fild qwImageWidth
-    fstp ImageWidth
-    fild qwImageHeight
-    fstp ImageHeight
-    
+
     ;---------------------------------------------------------------------------------
     ; Check if angle is 180, if it is then do a flip instead of rotating
     ; (fixes the speed wobble issue when 180.0 is the angle)
     ;---------------------------------------------------------------------------------
+    finit           ; init fpu
     fld fAngle
     fcom FP4(180.0) ; compare ST(0) with the value of the real4_var variable: 180.0
     fstsw ax        ; copy the Status Word containing the result to AX
     fwait           ; insure the previous instruction is completed
     sahf            ; transfer the condition codes to the CPU's flag register
+    fstp st(0)
     jz angle_is_180
     jmp other_angle
     
@@ -1821,6 +1785,8 @@ other_angle:
     ; rotate at image center. Calc the negative of x, y to restore
     ; the origin for drawing with GdipDrawImage
     ;---------------------------------------------------------------------------------
+    finit           ; init fpu
+    
     fild qwImageWidth;qwImageWidthScaled;qwImageWidth
     fld FP4(2.0)
     fdiv
@@ -1847,14 +1813,16 @@ other_angle:
     fld yneg
     fistp qwY
     
-    Invoke GdipTranslateWorldTransform, pGraphicsBuffer, x, y, MatrixOrderPrepend ;%MatrixOrderAppend)
-    Invoke GdipRotateWorldTransform, pGraphicsBuffer, fAngle, MatrixOrderPrepend;MatrixOrderAppend;%MatrixOrderPrepend)
+    finit
     
-    ;Invoke GdipResetWorldTransform, pGraphicsBuffer
-    ;Invoke GdipCreateMatrix, Addr matrix
-    ;Invoke GdipTranslateMatrix, matrix, x, y, MatrixOrderPrepend
-    ;Invoke GdipRotateMatrix, matrix, fAngle, MatrixOrderPrepend
-    ;Invoke GdipSetWorldTransform, pGraphicsBuffer, matrix
+    ;Invoke GdipTranslateWorldTransform, pGraphicsBuffer, x, y, MatrixOrderPrepend ;%MatrixOrderAppend)
+    ;Invoke GdipRotateWorldTransform, pGraphicsBuffer, fAngle, MatrixOrderPrepend;MatrixOrderAppend;%MatrixOrderPrepend)
+    
+    Invoke GdipResetWorldTransform, pGraphicsBuffer
+    Invoke GdipCreateMatrix, Addr matrix
+    Invoke GdipTranslateMatrix, matrix, x, y, MatrixOrderPrepend
+    Invoke GdipRotateMatrix, matrix, fAngle, MatrixOrderPrepend
+    Invoke GdipSetWorldTransform, pGraphicsBuffer, matrix
     
     ;Invoke GdipDrawImageRectRectI, pGraphicsBuffer, hImage, qwX, qwY, qwImageWidth, qwImageHeight, 0, 0, qwImageWidth, qwImageHeight, UnitPixel, NULL, NULL, NULL    
     
@@ -1877,8 +1845,7 @@ tidyup:
     .IF pGraphics != NULL
         Invoke GdipDeleteGraphics, pGraphics
     .ENDIF
-    
-    ;Invoke ReleaseDC, hControl, hdc
+
     mov rax, pBitmap
     ret
 _MUI_SpinnerRotateCenterImage endp

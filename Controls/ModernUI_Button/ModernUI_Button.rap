@@ -9,8 +9,11 @@ Debug=0
 [Files]
 1=ModernUI_Button.asm
 2=ModernUI_Button.inc
-3=Notes.txt
+3=Uasm64ApiCall.api.txt
 4=ModernUI_Button.h
+5=Uasm64ApiConst.api.txt
+6=Uasm64ApiStruct.api.txt
+7=Uasm64Message.api.txt
 [MakeFiles]
 0=ModernUI_Button.rap
 1=ModernUI_Button.rc
@@ -56,8 +59,10 @@ Group=Assembly,Misc
 3=2
 4=2
 5=2
+6=2
+7=2
 [AutoLoad]
-AutoLoad=2,1,3,4
+AutoLoad=2,1,3,4,3,5,6,7
 [VersionControl]
 Settings=1278
 Milestones=129
@@ -68,7 +73,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=27
@@ -92,7 +97,7 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=29108961
+PTimer=29360825
 [GroupExpand]
 GroupExpand=1,1,0
 [BookMark]
@@ -113,14 +118,20 @@ GroupExpand=1,1,0
 2=
 4=
 3=
+7=
+6=
+5=
 [Size]
-1=0,0,0,0,22209
+1=0,0,0,0,73270
 2=0,0,0,0,9998
 4=0,0,0,0,366
 3=0,0,0,0,0
+7=0,0,0,0,203
+6=0,0,0,0,1193
+5=0,0,0,0,203
 [Find]
-1="ImageType"
-2="dw"
+1="dw"
+2="ImageType"
 3="DWORD"
 4="; "
 5="EQU "

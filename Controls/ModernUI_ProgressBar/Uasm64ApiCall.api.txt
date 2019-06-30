@@ -1,0 +1,16 @@
+;------------------------------------------------------------------------------
+; ModernUI_ProgressBar Control
+;
+; http://github.com/mrfearless/ModernUI
+;
+; Paste this text at the end of \Radasm\Uasm64\Uasm64ApiCall.api to add to Radasm
+;
+;------------------------------------------------------------------------------
+MUIProgressBarRegister
+MUIProgressBarCreate,hWndParent,xpos,ypos,qwWidth,qwHeight,qwResourceID,qwStyle
+MUIProgressBarSetProperty,hModernUI_ProgressBar,qwProperty,qwPropertyValue
+MUIProgressBarGetProperty,hModernUI_ProgressBar,qwProperty
+MUIProgressBarSetMinMax,hModernUI_ProgressBar,qwMin,qwMax
+MUIProgressBarSetPercent,hModernUI_ProgressBar,qwPercent
+MUIProgressBarGetPercent,hModernUI_ProgressBar
+MUIProgressBarStep,hModernUI_ProgressBar

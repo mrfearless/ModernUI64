@@ -9,8 +9,11 @@ Debug=0
 [Files]
 1=ModernUI_ProgressBar.asm
 2=ModernUI_ProgressBar.inc
-3=Notes.txt
+3=Uasm64ApiCall.api.txt
 4=ModernUI_ProgressBar.h
+5=Uasm64ApiConst.api.txt
+6=Uasm64ApiStruct.api.txt
+7=Uasm64Message.api.txt
 [MakeFiles]
 0=ModernUI_ProgressBar.rap
 1=ModernUI_ProgressBar.rc
@@ -56,8 +59,10 @@ Group=Assembly,Misc
 3=2
 4=2
 5=2
+6=2
+7=2
 [AutoLoad]
-AutoLoad=1,2,4
+AutoLoad=2
 [RADebugBP]
 1=
 2=
@@ -71,7 +76,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2016
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=12
@@ -95,15 +100,23 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=3455751
+PTimer=3541177
 [Collapse]
 1=354682116,
 2=
 4=
+7=
+6=
+5=
+3=
 [Size]
 1=0,0,0,0,20732
 2=0,0,0,0,3425
 4=0,0,0,0,1991
+3=0,0,0,0,661
+7=0,0,0,0,208
+6=0,0,0,0,208
+5=0,0,0,0,208
 [GroupExpand]
 GroupExpand=1,1,0
 [BookMark]
@@ -120,10 +133,10 @@ GroupExpand=1,1,0
 [BreakPoint]
 0=
 [Find]
-1="; "
-2="EQU "
-3="@"
-4="dw"
+1="dw"
+2="; "
+3="EQU "
+4="@"
 5="DWORD"
 6=";-------------------------------------------------------------------------------------"
 7=";--------------------------------------------------------------------------------------------------------------------------------------"
