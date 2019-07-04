@@ -2,11 +2,9 @@
 ;
 ; ModernUI x64 Control - ModernUI_SmartPanel x64
 ;
-; Copyright (c) 2018 by fearless
+; Copyright (c) 2019 by fearless
 ;
 ; All Rights Reserved
-;
-; http://www.LetTheLight.in
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;
@@ -78,86 +76,90 @@ include ModernUI_SmartPanel.inc
 ;------------------------------------------------------------------------------
 ; Prototypes for internal use
 ;------------------------------------------------------------------------------
-_MUI_SmartPanelWndProc			        PROTO :HWND, :UINT, :WPARAM, :LPARAM
-_MUI_SmartPanelInit					    PROTO :QWORD
-_MUI_SmartPanelCleanup                  PROTO :QWORD
-_MUI_SmartPanelGetPanelHandle           PROTO :QWORD, :QWORD
-_MUI_SmartPanelNavNotify                PROTO :QWORD, :QWORD, :QWORD
-_MUI_SmartPanelSlidePanels              PROTO :QWORD, :QWORD, :QWORD, :QWORD
-_MUI_SmartPanelSlidePanelsLeft          PROTO :QWORD, :QWORD, :QWORD, :QWORD
-_MUI_SmartPanelSlidePanelsRight         PROTO :QWORD, :QWORD, :QWORD, :QWORD
-_MUI_SP_ResizePanels                    PROTO :QWORD
-_MUI_SP_DialogSubClassProc              PROTO :HWND, :UINT, :WPARAM, :LPARAM, :UINT, :QWORD
-_MUI_SP_DialogPaintBackground           PROTO :QWORD, :QWORD
+_MUI_SmartPanelWndProc          PROTO :HWND, :UINT, :WPARAM, :LPARAM
+_MUI_SmartPanelInit             PROTO :QWORD
+_MUI_SmartPanelCleanup          PROTO :QWORD
+_MUI_SmartPanelGetPanelHandle   PROTO :QWORD, :QWORD
+_MUI_SmartPanelNavNotify        PROTO :QWORD, :QWORD, :QWORD
+_MUI_SmartPanelSlidePanels      PROTO :QWORD, :QWORD, :QWORD, :QWORD
+_MUI_SmartPanelSlidePanelsLeft  PROTO :QWORD, :QWORD, :QWORD, :QWORD
+_MUI_SmartPanelSlidePanelsRight PROTO :QWORD, :QWORD, :QWORD, :QWORD
+_MUI_SP_ResizePanels            PROTO :QWORD
+_MUI_SP_DialogSubClassProc      PROTO :HWND, :UINT, :WPARAM, :LPARAM, :UINT, :QWORD
+_MUI_SP_DialogPaintBackground   PROTO :QWORD, :QWORD
 
 
 ;------------------------------------------------------------------------------
 ; Structures for internal use
 ;------------------------------------------------------------------------------
 ; External public properties
-MUI_SMARTPANEL_PROPERTIES				STRUCT
-    qwPanelsColor                       DQ ?
-    qwBorderColor                       DQ ?    
-    qwDllInstance                       DQ ?
-    qwParam                             DQ ?
-MUI_SMARTPANEL_PROPERTIES				ENDS
+MUI_SMARTPANEL_PROPERTIES       STRUCT
+    qwPanelsColor               DQ ?
+    qwBorderColor               DQ ?    
+    qwNotifications             DQ ?    ; BOOL. Allow notifications via WM_NOTIFY. Default is TRUE
+    qwNotifyCallback            DQ ?    ; QWORD. Address of custom notifications callback function (MUISmartPanelNotifyCallback)
+    qwDllInstance               DQ ?
+    qwParam                     DQ ?
+MUI_SMARTPANEL_PROPERTIES       ENDS
 
 ; Internal properties
-_MUI_SMARTPANEL_PROPERTIES				STRUCT
-	qwEnabledState						DQ ?
-	qwMouseOver							DQ ?
-	qwCurrentPanel                      DQ ?
-    qwTotalPanels                       DQ ?
-    qwPanelsArray                       DQ ?
-    lpqwIsDlgMsgVar                     DQ ?
-    hBitmap                             DQ ?
-    uIdSubclassCounter                  DQ ?
-_MUI_SMARTPANEL_PROPERTIES				ENDS
+_MUI_SMARTPANEL_PROPERTIES      STRUCT
+    qwEnabledState              DQ ?
+    qwMouseOver                 DQ ?
+    qwCurrentPanel              DQ ?
+    qwTotalPanels               DQ ?
+    qwPanelsArray               DQ ?    ; array of MUISP_ITEM
+    lpqwIsDlgMsgVar             DQ ?
+    hBitmap                     DQ ?
+    uIdSubclassCounter          DQ ?
+    qwNotifyData                DQ ?    ; QWORD. Pointer to NM_MUISMARTPANEL notification structure data
+_MUI_SMARTPANEL_PROPERTIES      ENDS
 
 IFNDEF MUISP_ITEM ; SmartPanel Notification Item
-MUISP_ITEM                 	            STRUCT
-    iItem               	            DQ 0
-    lParam              	            DQ 0
-    hPanel                              DQ 0
-MUISP_ITEM                 	            ENDS
+MUISP_ITEM                      STRUCT
+    iItem                       DQ 0 ; index of dialog in array
+    lParam                      DQ 0
+    hPanel                      DQ 0; handle to dialog panel
+    clrRGB                      DQ -1 ; RGBCOLOR of panel background, -1 = not using 
+MUISP_ITEM                      ENDS
 ENDIF
 
-IFNDEF NM_MUISMARTPANEL ; Notification Message Structure for SmartPanel
-NM_MUISMARTPANEL      	                STRUCT
-    hdr                 	            NMHDR <>
-    itemOld             	            MUISP_ITEM <>
-    itemNew             	            MUISP_ITEM <>
-NM_MUISMARTPANEL      	                ENDS
+IFNDEF NM_MUISMARTPANEL         ; Notification Message Structure for SmartPanel
+NM_MUISMARTPANEL                STRUCT
+    hdr                         NMHDR <>
+    itemOld                     MUISP_ITEM <>
+    itemNew                     MUISP_ITEM <>
+NM_MUISMARTPANEL                ENDS
 ENDIF
 
 
 .CONST
 IFNDEF MUISPN_SELCHANGED
-MUISPN_SELCHANGED                       EQU 0 ; Used with WM_NOTIFY. wParam is a NM_MUISMARTPANEL struct
+MUISPN_SELCHANGED               EQU 0 ; Used with WM_NOTIFY. wParam is a NM_MUISMARTPANEL struct
 ENDIF
 
-SlideSlow                               EQU 0
-SlideNormal                             EQU 1
-SlideFast                               EQU 2
-SlideVFast                              EQU 3
+SlideSlow                       EQU 0
+SlideNormal                     EQU 1
+SlideFast                       EQU 2
+SlideVFast                      EQU 3
 
 
 ; Internal properties
-@SmartPanelEnabledState				    EQU 0
-@SmartPanelMouseOver					EQU 8
-@SmartPanelCurrentPanel                 EQU 16
-@SmartPanelTotalPanels                  EQU 24
-@SmartPanelPanelsArray                  EQU 32
-@SmartPanellpqwIsDlgMsgVar              EQU 40
-@SmartPanelBitmap                       EQU 48
-@SPSubclassCounter                      EQU 56
+@SmartPanelEnabledState         EQU 0
+@SmartPanelMouseOver            EQU 8
+@SmartPanelCurrentPanel         EQU 16
+@SmartPanelTotalPanels          EQU 24
+@SmartPanelPanelsArray          EQU 32
+@SmartPanellpqwIsDlgMsgVar      EQU 40
+@SmartPanelBitmap               EQU 48
+@SPSubclassCounter              EQU 56
+@SmartPanelNotifyData           EQU 64
 
-; External public properties
 
 
 .DATA
-szMUISmartPanelClass					DB 'ModernUI_SmartPanel',0 	; Class name for creating our ModernUI_SmartPanel control
-SPNM                    	            NM_MUISMARTPANEL <> ; Notification data passed via WM_NOTIFY
+szMUISmartPanelClass            DB 'ModernUI_SmartPanel',0  ; Class name for creating our ModernUI_SmartPanel control
+
 
 
 .CODE
@@ -172,7 +174,6 @@ MUISmartPanelSetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD, qwProperty
     ret
 MUISmartPanelSetProperty ENDP
 
-
 MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; Get property for ModernUI_SmartPanel control
@@ -181,7 +182,6 @@ MUISmartPanelGetProperty PROC FRAME hControl:QWORD, qwProperty:QWORD
     Invoke SendMessage, hControl, MUI_GETPROPERTY, qwProperty, NULL
     ret
 MUISmartPanelGetProperty ENDP
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -192,7 +192,7 @@ MUI_ALIGN
 MUISmartPanelRegister PROC FRAME
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
-	
+    
     Invoke GetModuleHandle, NULL
     mov hinstance, rax
 
@@ -200,26 +200,25 @@ MUISmartPanelRegister PROC FRAME
     .IF rax == 0 ; if class not already registered do so
         mov wc.cbSize,sizeof WNDCLASSEX
         lea rax, szMUISmartPanelClass
-    	mov wc.lpszClassName, rax
-    	mov rax, hinstance
+        mov wc.lpszClassName, rax
+        mov rax, hinstance
         mov wc.hInstance, rax
-		lea rax, _MUI_SmartPanelWndProc
-    	mov wc.lpfnWndProc, rax
-    	Invoke LoadCursor, NULL, IDC_ARROW
-    	mov wc.hCursor, rax
-    	mov wc.hIcon, 0
-    	mov wc.hIconSm, 0
-    	mov wc.lpszMenuName, NULL
-    	mov wc.hbrBackground, NULL
-    	mov wc.style, NULL
+        lea rax, _MUI_SmartPanelWndProc
+        mov wc.lpfnWndProc, rax
+        Invoke LoadCursor, NULL, IDC_ARROW
+        mov wc.hCursor, rax
+        mov wc.hIcon, 0
+        mov wc.hIconSm, 0
+        mov wc.lpszMenuName, NULL
+        mov wc.hbrBackground, NULL
+        mov wc.style, NULL
         mov wc.cbClsExtra, 0
-    	mov wc.cbWndExtra, 16 ; cbWndExtra +0 = QWORD ptr to internal properties memory block, cbWndExtra +8 = QWORD ptr to external properties memory block
-    	Invoke RegisterClassEx, addr wc
+        mov wc.cbWndExtra, 16 ; cbWndExtra +0 = QWORD ptr to internal properties memory block, cbWndExtra +8 = QWORD ptr to external properties memory block
+        Invoke RegisterClassEx, addr wc
     .ENDIF  
     ret
 
 MUISmartPanelRegister ENDP
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -228,39 +227,38 @@ MUI_ALIGN
 MUISmartPanelCreate PROC FRAME hWndParent:QWORD, xpos:QWORD, ypos:QWORD, controlwidth:QWORD, controlheight:QWORD, qwResourceID:QWORD, qwStyle:QWORD
     LOCAL wc:WNDCLASSEX
     LOCAL hinstance:QWORD
-	LOCAL hControl:QWORD
-	LOCAL qwNewStyle:QWORD
-	
+    LOCAL hControl:QWORD
+    LOCAL qwNewStyle:QWORD
+    
     Invoke GetModuleHandle, NULL
     mov hinstance, rax
 
-	Invoke MUISmartPanelRegister
-	
+    Invoke MUISmartPanelRegister
+    
     ; Modify styles appropriately - for visual controls no CS_HREDRAW CS_VREDRAW (causes flickering)
-	; probably need WS_CHILD, WS_VISIBLE. Needs WS_CLIPCHILDREN. Non visual prob dont need any of these.
-	
+    ; probably need WS_CHILD, WS_VISIBLE. Needs WS_CLIPCHILDREN. Non visual prob dont need any of these.
+    
     mov rax, qwStyle
     mov qwNewStyle, rax
     and rax, DS_CONTROL or WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
     .IF rax != DS_CONTROL or WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
         or qwNewStyle, DS_CONTROL or WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
-    .ENDIF	
-	
+    .ENDIF  
+    
     Invoke CreateWindowEx, WS_EX_CONTROLPARENT, Addr szMUISmartPanelClass, NULL, dword ptr qwNewStyle, dword ptr xpos, dword ptr ypos, dword ptr controlwidth, dword ptr controlheight, hWndParent, qwResourceID, hinstance, NULL
-	mov hControl, rax
-	.IF rax != NULL
-		
-	.ENDIF
-	mov rax, hControl
+    mov hControl, rax
+    .IF rax != NULL
+        
+    .ENDIF
+    mov rax, hControl
     ret
 MUISmartPanelCreate ENDP
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; _MUI_SmartPanelWndProc - Main processing window for our control
 ;------------------------------------------------------------------------------
-_MUI_SmartPanelWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
+_MUI_SmartPanelWndProc PROC FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     
     mov eax,uMsg
     .IF eax == WM_NCCREATE
@@ -268,18 +266,18 @@ _MUI_SmartPanelWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, 
         ret
 
     .ELSEIF eax == WM_CREATE
-		Invoke MUIAllocMemProperties, hWin, 0, SIZEOF _MUI_SMARTPANEL_PROPERTIES ; internal properties
-		Invoke MUIAllocMemProperties, hWin, 8, SIZEOF MUI_SMARTPANEL_PROPERTIES ; external properties
-		Invoke _MUI_SmartPanelInit, hWin
-		mov rax, 0
-		ret    
+        Invoke MUIAllocMemProperties, hWin, 0, SIZEOF _MUI_SMARTPANEL_PROPERTIES ; internal properties
+        Invoke MUIAllocMemProperties, hWin, 8, SIZEOF MUI_SMARTPANEL_PROPERTIES ; external properties
+        Invoke _MUI_SmartPanelInit, hWin
+        mov rax, 0
+        ret    
 
     .ELSEIF eax == WM_NCDESTROY
         Invoke _MUI_SmartPanelCleanup, hWin
         Invoke MUIFreeMemProperties, hWin, 0
-		Invoke MUIFreeMemProperties, hWin, 8
-		mov eax, 0
-		ret		
+        Invoke MUIFreeMemProperties, hWin, 8
+        mov eax, 0
+        ret     
 
     .ELSEIF eax == WM_SIZE
         ; Check if _MUI_SMARTPANEL_PROPERTIES ; internal properties available
@@ -290,50 +288,56 @@ _MUI_SmartPanelWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, 
         mov eax, 0
         ret
 
-	; custom messages start here
-	
-	.ELSEIF eax == MUI_GETPROPERTY
-		Invoke MUIGetExtProperty, hWin, wParam
-		ret
-		
-	.ELSEIF eax == MUI_SETPROPERTY	
-		Invoke MUISetExtProperty, hWin, wParam, lParam
-		ret
+    ; custom messages start here
+    
+    .ELSEIF eax == MUI_GETPROPERTY
+        Invoke MUIGetExtProperty, hWin, wParam
+        ret
+        
+    .ELSEIF eax == MUI_SETPROPERTY  
+        Invoke MUISetExtProperty, hWin, wParam, lParam
+        ret
 
     .ELSEIF eax == MUISPM_REGISTERPANEL
         Invoke MUISmartPanelRegisterPanel, hWin, wParam, lParam
         ret
-		
+        
     .ELSEIF eax == MUISPM_SETCURRENTPANEL
         Invoke MUISmartPanelSetCurrentPanel, hWin, wParam, lParam
         ret
     
     .ELSEIF eax == MUISPM_GETCURRENTPANEL
         Invoke MUIGetIntProperty, hWin, @SmartPanelCurrentPanel
-		ret
-		
-	.ELSEIF eax == MUISPM_SETISDLGMSGVAR ; wParam is addr of variable to use to specify current selected panel
-	    Invoke MUISetIntProperty, hWin, @SmartPanellpqwIsDlgMsgVar, wParam
-	    ret	
-	    
-	.ELSEIF eax == MUISPM_GETTOTALPANELS
-	    Invoke MUIGetIntProperty, hWin, @SmartPanelTotalPanels
-	    ret
-	
-	.ELSEIF eax == MUISPM_NEXTPANEL
-	    Invoke MUISmartPanelNextPanel, hWin, wParam
-	    ret
-	    
-	.ELSEIF eax == MUISPM_PREVPANEL
-	    Invoke MUISmartPanelPrevPanel, hWin, wParam
-		ret
-		
+        ret
+        
+    .ELSEIF eax == MUISPM_SETISDLGMSGVAR ; wParam is addr of variable to use to specify current selected panel
+        Invoke MUISetIntProperty, hWin, @SmartPanellpqwIsDlgMsgVar, wParam
+        ret 
+        
+    .ELSEIF eax == MUISPM_GETTOTALPANELS
+        Invoke MUIGetIntProperty, hWin, @SmartPanelTotalPanels
+        ret
+    
+    .ELSEIF eax == MUISPM_NEXTPANEL
+        Invoke MUISmartPanelNextPanel, hWin, wParam
+        ret
+        
+    .ELSEIF eax == MUISPM_PREVPANEL
+        Invoke MUISmartPanelPrevPanel, hWin, wParam
+        ret
+        
+    .ELSEIF eax == MUISPM_GETPANELPARAM
+        Invoke MUISmartPanelGetPanelParam, hWin, wParam
+        ret
+    
+    .ELSEIF eax == MUISPM_SETPANELPARAM
+        Invoke MUISmartPanelSetPanelParam, hWin, wParam, lParam
+        ret
     .ENDIF
     
     Invoke DefWindowProc, hWin, uMsg, wParam, lParam
     ret
 _MUI_SmartPanelWndProc ENDP
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -376,9 +380,14 @@ _MUI_SmartPanelInit PROC FRAME hWin:QWORD
     Invoke MUISetExtProperty, hWin, @SmartPanelBorderColor, -1
     Invoke MUISetExtProperty, hWin, @SmartPanelDllInstance, 0
 
+    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, SIZEOF NM_MUISMARTPANEL
+    .IF rax != NULL
+        Invoke MUISetIntProperty, hWin, @SmartPanelNotifyData, rax
+        Invoke MUISetExtProperty, hWin, @SmartPanelNotifications, TRUE
+    .ENDIF
+
     ret
 _MUI_SmartPanelInit ENDP
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -398,11 +407,15 @@ _MUI_SmartPanelCleanup PROC FRAME hWin:QWORD
         .ENDIF
     .ENDIF
     
+    Invoke MUIGetIntProperty, hWin, @SmartPanelNotifyData
+    .IF rax != NULL
+        Invoke GlobalFree, rax
+    .ENDIF
+    
     mov rax, 0
     ret
 
 _MUI_SmartPanelCleanup ENDP
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -429,13 +442,13 @@ MUISmartPanelRegisterPanel PROC FRAME USES RBX hControl:QWORD, idPanelDlg:QWORD,
     Invoke MUIGetIntProperty, hControl, @SmartPanelPanelsArray
     mov pItemData, rax
     
-	Invoke CreateDialogParam, hinstance, idPanelDlg, hControl, lpqwPanelProc, 0
-	.IF rax == NULL
-	    mov rax, NULL
-	    ret
-	.ENDIF
-	mov hPanelDlg, rax
-	
+    Invoke CreateDialogParam, hinstance, idPanelDlg, hControl, lpqwPanelProc, 0
+    .IF rax == NULL
+        mov rax, NULL
+        ret
+    .ENDIF
+    mov hPanelDlg, rax
+    
     Invoke MUIAllocStructureMemory, Addr pItemData, TotalItems, SIZEOF MUISP_ITEM
     .IF rax == -1
         mov rax, NULL
@@ -449,13 +462,13 @@ MUISmartPanelRegisterPanel PROC FRAME USES RBX hControl:QWORD, idPanelDlg:QWORD,
     mov rax, TotalItems
     mov [rbx].MUISP_ITEM.iItem, rax
     ;mov eax, lParam
-    ;mov [ebx].MUISP_ITEM.lParam, eax	
-	
+    ;mov [ebx].MUISP_ITEM.lParam, eax   
+    
     inc TotalItems
     Invoke MUISetIntProperty, hControl, @SmartPanelTotalPanels, TotalItems
     Invoke MUISetIntProperty, hControl, @SmartPanelPanelsArray, pItemData
-	    
-    Invoke SetWindowLongPtr, hPanelDlg, GWL_EXSTYLE, WS_EX_CONTROLPARENT	
+        
+    Invoke SetWindowLongPtr, hPanelDlg, GWL_EXSTYLE, WS_EX_CONTROLPARENT    
     Invoke SetWindowLongPtr, hPanelDlg, GWL_STYLE, WS_CHILD + DS_CONTROL + WS_CLIPCHILDREN;+ WS_TABSTOP ; 40000000d ; WS_CHILD
     Invoke SetWindowPos, hPanelDlg, NULL, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE + SWP_NOZORDER + SWP_FRAMECHANGED ; 
     Invoke GetClientRect, hControl, Addr rect
@@ -473,7 +486,6 @@ MUISmartPanelRegisterPanel PROC FRAME USES RBX hControl:QWORD, idPanelDlg:QWORD,
     ret
 
 MUISmartPanelRegisterPanel endp
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -516,7 +528,6 @@ _MUI_SP_DialogSubClassProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPAR
     ret    
 
 _MUI_SP_DialogSubClassProc ENDP
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -587,7 +598,6 @@ _MUI_SP_DialogPaintBackground PROC FRAME hWin:QWORD, qwBackColor:QWORD
     ret
 _MUI_SP_DialogPaintBackground ENDP
 
-
 MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; MUISmartPanelGetCurrentPanel - Returns in eax the handle of the current panel or NULL
@@ -597,7 +607,6 @@ MUISmartPanelGetCurrentPanel PROC FRAME hControl:QWORD
     Invoke _MUI_SmartPanelGetPanelHandle, hControl, eax
     ret
 MUISmartPanelGetCurrentPanel ENDP
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -634,7 +643,7 @@ MUISmartPanelSetCurrentPanel PROC FRAME USES RBX hControl:QWORD, NewSelection:QW
         Invoke GetClientRect, hControl, Addr rect
         ;sub rect.right, 2d
         ;sub rect.bottom, 2d
-        Invoke SetWindowPos, hNewSelection, HWND_TOP, 0, 0, rect.right, rect.bottom, SWP_NOZORDER ;+ SWP_NOMOVE		                    
+        Invoke SetWindowPos, hNewSelection, HWND_TOP, 0, 0, rect.right, rect.bottom, SWP_NOZORDER ;+ SWP_NOMOVE                         
         Invoke ShowWindow, hNewSelection, SW_SHOWDEFAULT
         
         Invoke MUISetIntProperty, hControl, @SmartPanelCurrentPanel, NewSelection
@@ -684,7 +693,7 @@ MUISmartPanelSetCurrentPanel PROC FRAME USES RBX hControl:QWORD, NewSelection:QW
                 Invoke GetClientRect, hControl, Addr rect
                 ;sub rect.right, 2d
                 ;sub rect.bottom, 2d
-                Invoke SetWindowPos, hNewSelection, HWND_TOP, 0, 0, rect.right, rect.bottom, SWP_NOZORDER ;+ SWP_NOMOVE		                    
+                Invoke SetWindowPos, hNewSelection, HWND_TOP, 0, 0, rect.right, rect.bottom, SWP_NOZORDER ;+ SWP_NOMOVE                         
                 
                 Invoke ShowWindow, hNewSelection, SW_SHOWDEFAULT
                 Invoke SetFocus, hNewSelection
@@ -712,12 +721,92 @@ MUISmartPanelSetCurrentPanel PROC FRAME USES RBX hControl:QWORD, NewSelection:QW
     ret
 MUISmartPanelSetCurrentPanel ENDP
 
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; MUISmartPanelSetPanelParam - sets lParam of panel
+; Returns: NULL or lParam as set
+;------------------------------------------------------------------------------
+MUISmartPanelSetPanelParam PROC FRAME USES RBX hControl:QWORD, PanelIndex:QWORD, lParam:QWORD
+    LOCAL TotalPanels:QWORD
+    LOCAL pItemData:QWORD
+    LOCAL pItemDataEntry:QWORD
+    
+    Invoke MUIGetIntProperty, hControl, @SmartPanelTotalPanels
+    .IF rax == 0
+        xor eax, eax
+        ret
+    .ENDIF
+    .IF PanelIndex >= rax
+        xor eax, eax
+        ret
+    .ENDIF 
+    mov TotalPanels, rax
+    
+    Invoke MUIGetIntProperty, hControl, @SmartPanelPanelsArray
+    .IF rax == NULL
+        xor eax, eax
+        ret
+    .ENDIF
+    mov pItemData, rax
+    
+    mov rax, PanelIndex
+    mov rbx, SIZEOF MUISP_ITEM
+    mul rbx
+    add rax, pItemData
+    mov pItemDataEntry, rax
+    
+    mov rbx, pItemDataEntry
+    mov rax, lParam
+    mov [rbx].MUISP_ITEM.lParam, rax
+ 
+    ret
+MUISmartPanelSetPanelParam ENDP
+
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; MUISmartPanelGetPanelParam - Get lParam of panel
+; Returns: lParam of panel or NULL
+;------------------------------------------------------------------------------
+MUISmartPanelGetPanelParam PROC FRAME USES RBX hControl:QWORD, PanelIndex:QWORD
+    LOCAL TotalPanels:QWORD
+    LOCAL pItemData:QWORD
+    LOCAL pItemDataEntry:QWORD
+    
+    Invoke MUIGetIntProperty, hControl, @SmartPanelTotalPanels
+    .IF rax == 0
+        xor eax, eax
+        ret
+    .ENDIF
+    .IF PanelIndex >= rax
+        xor eax, eax
+        ret
+    .ENDIF 
+    mov TotalPanels, rax
+    
+    Invoke MUIGetIntProperty, hControl, @SmartPanelPanelsArray
+    .IF rax == NULL
+        xor eax, eax
+        ret
+    .ENDIF
+    mov pItemData, rax
+    
+    mov rax, PanelIndex
+    mov rbx, SIZEOF MUISP_ITEM
+    mul rbx
+    add rax, pItemData
+    mov pItemDataEntry, rax
+    
+    mov rbx, pItemDataEntry
+    mov rax, [rbx].MUISP_ITEM.lParam
+    
+    ret
+MUISmartPanelGetPanelParam ENDP
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; _MUI_SmartPanelNavNotify
 ;------------------------------------------------------------------------------
-_MUI_SmartPanelNavNotify PROC FRAME USES RBX hWin:QWORD, OldSelection:QWORD, NewSelection:QWORD
+_MUI_SmartPanelNavNotify PROC FRAME USES RBX RDX hWin:QWORD, OldSelection:QWORD, NewSelection:QWORD
     LOCAL pItemData:QWORD
     LOCAL pOldItemDataEntry:QWORD
     LOCAL pNewItemDataEntry:QWORD
@@ -726,18 +815,37 @@ _MUI_SmartPanelNavNotify PROC FRAME USES RBX hWin:QWORD, OldSelection:QWORD, New
     LOCAL ItemIndex:QWORD
     LOCAL hParent:QWORD
     LOCAL idControl:QWORD
+    LOCAL NotifyData:QWORD
+    LOCAL NotifyCallback:QWORD
     
-    Invoke GetParent, hWin
-    mov hParent, rax
-
-    mov rax, hWin
-    mov SPNM.hdr.hwndFrom, rax
-    mov rax, MUISPN_SELCHANGED
-    mov SPNM.hdr.code, eax
+    Invoke MUIGetExtProperty, hWin, @SmartPanelNotifications
+    .IF rax == FALSE
+        mov rax, TRUE
+        ret
+    .ENDIF
+    
+    Invoke MUIGetIntProperty, hWin, @SmartPanelNotifyData
+    .IF rax == NULL
+        xor eax, eax
+        ret
+    .ENDIF
+    mov NotifyData, rax
     
     Invoke MUIGetIntProperty, hWin, @SmartPanelPanelsArray
+    .IF rax == NULL
+        xor eax, eax
+        ret
+    .ENDIF
     mov pItemData, rax
     
+    ; fill notify NMHDR
+    mov rbx, NotifyData
+    mov rax, hWin
+    mov [rbx].NM_MUISMARTPANEL.hdr.hwndFrom, rax
+    mov rax, MUISPN_SELCHANGED
+    mov [rbx].NM_MUISMARTPANEL.hdr.code, eax
+
+    ; get new and old item data
     mov rax, OldSelection
     mov rbx, SIZEOF MUISP_ITEM
     mul rbx
@@ -752,36 +860,48 @@ _MUI_SmartPanelNavNotify PROC FRAME USES RBX hWin:QWORD, OldSelection:QWORD, New
     add rax, rbx
     mov pNewItemDataEntry, rax    
         
+    ; Fill notify data structure with info
+    mov rdx, NotifyData
     mov rbx, pOldItemDataEntry
     mov rax, [rbx].MUISP_ITEM.iItem
-    mov SPNM.itemOld.iItem, rax
+    mov [rdx].NM_MUISMARTPANEL.itemOld.iItem, rax
     mov rax, [rbx].MUISP_ITEM.lParam
-    mov SPNM.itemOld.lParam, rax
+    mov [rdx].NM_MUISMARTPANEL.itemOld.lParam, rax
     mov rax, [rbx].MUISP_ITEM.hPanel
-    mov SPNM.itemNew.hPanel, rax    
+    mov [rdx].NM_MUISMARTPANEL.itemNew.hPanel, rax    
     
     mov rbx, pNewItemDataEntry
     mov rax, [rbx].MUISP_ITEM.iItem
-    mov SPNM.itemNew.iItem, rax
+    mov [rdx].NM_MUISMARTPANEL.itemNew.iItem, rax
     mov rax, [rbx].MUISP_ITEM.lParam
-    mov SPNM.itemNew.lParam, rax
+    mov [rdx].NM_MUISMARTPANEL.itemNew.lParam, rax
     mov rax, [rbx].MUISP_ITEM.hPanel
-    mov SPNM.itemNew.hPanel, rax
-    
-    Invoke GetDlgCtrlID, hWin
-    mov idControl, rax
-    
-    Invoke GetParent, hParent
-    .IF rax != NULL
-        Invoke PostMessage, hParent, WM_NOTIFY, idControl, Addr SPNM
-        mov rax, TRUE
+    mov [rdx].NM_MUISMARTPANEL.itemNew.hPanel, rax
+
+    Invoke MUIGetExtProperty, hWin, @SmartPanelNotifyCallback
+    .IF eax == NULL
+        Invoke GetParent, hWin
+        mov hParent, rax
+        Invoke GetDlgCtrlID, hWin
+        mov idControl, rax
+        
+        ;Invoke GetParent, hParent
+        .IF hParent != NULL
+            Invoke PostMessage, hParent, WM_NOTIFY, idControl, NotifyData;Addr SPNM
+            mov rax, TRUE
+        .ELSE
+            mov rax, FALSE
+        .ENDIF
     .ELSE
-        mov rax, FALSE
+        ; Custom user callback for notifications instead of WM_NOTIFY
+        mov NotifyCallback, rax
+        mov rcx, NotifyData
+        mov rdx, hWin
+        call rax ;NotifyCallback
     .ENDIF
+
     ret
-
 _MUI_SmartPanelNavNotify endp
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -857,7 +977,6 @@ _MUI_SmartPanelSlidePanels PROC FRAME USES RBX hWin:QWORD, OldSelection:QWORD, N
 
 _MUI_SmartPanelSlidePanels endp
 
-
 MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; _MUI_SmartPanelSlidePanelsLeft - Slides current and next panel left till we show next panel only
@@ -931,7 +1050,6 @@ _MUI_SmartPanelSlidePanelsLeft PROC FRAME hWin:QWORD, hCurrentPanel:QWORD, hNext
 
 _MUI_SmartPanelSlidePanelsLeft endp
 
-
 MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; _MUI_SmartPanelSlidePanelsRight - Slides current and next panel right till we show next panel only
@@ -1002,7 +1120,6 @@ _MUI_SmartPanelSlidePanelsRight PROC FRAME hWin:QWORD, hCurrentPanel:QWORD, hNex
 
 _MUI_SmartPanelSlidePanelsRight endp
 
-
 MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; MUISmartPanelNextPanel - returns previous panel selected in eax or -1 if nothing happening
@@ -1065,7 +1182,7 @@ MUISmartPanelNextPanel PROC FRAME USES RBX hControl:QWORD, qwNotify:QWORD
         .IF hNewSelection != NULL
             ; resize panel if container size has changed since last selection
             Invoke GetClientRect, hControl, Addr rect
-            Invoke SetWindowPos, hNewSelection, HWND_TOP, 0, 0, rect.right, rect.bottom, SWP_NOZORDER ;+ SWP_NOMOVE		                    
+            Invoke SetWindowPos, hNewSelection, HWND_TOP, 0, 0, rect.right, rect.bottom, SWP_NOZORDER ;+ SWP_NOMOVE                         
             Invoke ShowWindow, hNewSelection, SW_SHOWDEFAULT
         .ENDIF
     .ELSE
@@ -1105,7 +1222,6 @@ MUISmartPanelNextPanel PROC FRAME USES RBX hControl:QWORD, qwNotify:QWORD
     mov rax, OldSelection
     ret
 MUISmartPanelNextPanel ENDP
-
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -1170,7 +1286,7 @@ MUISmartPanelPrevPanel PROC FRAME USES RBX hControl:QWORD, qwNotify:QWORD
         .IF hNewSelection != NULL
             ; resize panel if container size has changed since last selection
             Invoke GetClientRect, hControl, Addr rect
-            Invoke SetWindowPos, hNewSelection, HWND_TOP, 0, 0, rect.right, rect.bottom, SWP_NOZORDER ;+ SWP_NOMOVE		                    
+            Invoke SetWindowPos, hNewSelection, HWND_TOP, 0, 0, rect.right, rect.bottom, SWP_NOZORDER ;+ SWP_NOMOVE                         
             Invoke ShowWindow, hNewSelection, SW_SHOWDEFAULT
         .ENDIF
     .ELSE
@@ -1212,7 +1328,6 @@ MUISmartPanelPrevPanel PROC FRAME USES RBX hControl:QWORD, qwNotify:QWORD
 
 MUISmartPanelPrevPanel ENDP
 
-
 MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; MUISmartPanelSetIsDlgMsgVar
@@ -1221,7 +1336,6 @@ MUISmartPanelSetIsDlgMsgVar PROC FRAME hControl:QWORD, lpqwIsDlgMsgVar:QWORD
     Invoke MUISetIntProperty, hControl, @SmartPanellpqwIsDlgMsgVar, lpqwIsDlgMsgVar
     ret
 MUISmartPanelSetIsDlgMsgVar ENDP
-
 
 MUI_ALIGN
 ;-------------------------------------------------------------------------------------------------------------
@@ -1254,7 +1368,6 @@ _MUI_SmartPanelGetPanelHandle PROC FRAME USES RBX hWin:QWORD, nItem:QWORD
 
 _MUI_SmartPanelGetPanelHandle endp
 
-
 MUI_ALIGN
 ;-------------------------------------------------------------------------------------------------------------
 ; MUISmartPanelCurrentPanelIndex - returns current selected panel as a numerical index in eax, or -1 if error.
@@ -1263,7 +1376,6 @@ MUISmartPanelCurrentPanelIndex PROC FRAME hControl:QWORD
     Invoke MUIGetIntProperty, hControl, @SmartPanelCurrentPanel
     ret
 MUISmartPanelCurrentPanelIndex ENDP
-
 
 MUI_ALIGN
 ;-------------------------------------------------------------------------------------------------------------
