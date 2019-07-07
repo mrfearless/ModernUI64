@@ -7,8 +7,8 @@ Group=1
 GroupExpand=1
 Debug=0
 [Files]
-1=ModernUI_Text.Asm
-2=ModernUI_Text.Inc
+1=ModernUI_Text.asm
+2=ModernUI_Text.inc
 3=Uasm64ApiCall.api.txt
 4=ModernUI_Text.h
 5=Uasm64ApiConst.api.txt

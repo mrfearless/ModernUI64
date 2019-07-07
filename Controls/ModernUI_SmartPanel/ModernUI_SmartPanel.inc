@@ -117,7 +117,7 @@ MUISPS_DESIGN_INFO              EQU 1000h ; only used at design time to show tex
 @SmartPanelPanelsColor          EQU 0   ; RGBCOLOR for panel's background. -1 = ignore, use system default. Default value is -1
 @SmartPanelBorderColor          EQU 8   ; RGBCOLOR for border color of MUISmartPanel. -1 = none. Default value is -1
 @SmartPanelNotifications        EQU 16  ; BOOL. Allow notifications via WM_NOTIFY. Default is TRUE
-@SmartPanelNotifyCallback       EQU 24  ; DWORD. Address of custom notifications callback function (MUISmartPanelNotifyCallback)
+@SmartPanelNotifyCallback       EQU 24  ; QWORD. Address of custom notifications callback function (MUISmartPanelNotifyCallback)
 @SmartPanelDllInstance          EQU 32  ; reserved for future use
 @SmartPanelParam                EQU 40  ; user custom data
 

@@ -1,3 +1,15 @@
+//==============================================================================
+//
+// ModernUI x64 Control - ModernUI_SmartPanel x64
+//
+// Copyright (c) 2019 by fearless
+//
+// All Rights Reserved
+//
+// http://github.com/mrfearless/ModernUI64
+//
+//==============================================================================
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,7 +39,10 @@ bool MUI_EXPORT MUISmartPanelPrevPanel(HWND hModernUI_SmartPanel, BOOL bNotify);
 bool MUI_EXPORT MUISmartPanelSetIsDlgMsgVar(HWND hModernUI_SmartPanel, QWORD *lpqwVar);
 bool MUI_EXPORT MUISmartPanelRegisterPanel(HWND hModernUI_SmartPanel, QWORD qwResIdPanelDlg, QWORD  *lpqwPanelProc);
 
+unsigned int MUI_EXPORT MUISmartPanelSetPanelParam(HWND hModernUI_SmartPanel, QWORD PanelIndex, QWORD lParam);
+unsigned int MUI_EXPORT MUISmartPanelGetPanelParam(HWND hModernUI_SmartPanel, QWORD PanelIndex);
 
+void MUI_EXPORT MUISmartPanelNotifyCallback(HWND hModernUI_SmartPanel, NM_MUISMARTPANEL *lpNMSmartPanelStruct);
 
 //------------------------------------------
 // ModernUI_SmartPanel Structures
@@ -52,7 +67,7 @@ typedef struct NM_MUISMARTPANEL
 ENDIF
 
 // SmartPanel Notifications
-#define MUISPN_SELCHANGED              0x0            // Used with WM_NOTIFY. wParam is a NM_MUISMARTPANEL struct
+#define MUISPN_SELCHANGED              0x0  // Used with WM_NOTIFY. wParam is a NM_MUISMARTPANEL struct
 
 
 //------------------------------------------
@@ -75,10 +90,12 @@ ENDIF
 // ModernUI_SmartPanel Properties: Use with MUIModernUI_SmartPanelSetProperty / 
 // MUIModernUI_SmartPanelGetProperty or MUI_SETPROPERTY / MUI_GETPROPERTY msgs
 //------------------------------------------------------------------------------
-#define SmartPanelPanelsColor          0      // RGBCOLOR for panel's background. -1 = ignore, use system default. Default value is -1
-#define SmartPanelBorderColor          8      // RGBCOLOR for border color of MUISmartPanel. -1 = none. Default value is -1
-#define SmartPanelDllInstance          16     // reserved for future use
-#define SmartPanelParam                24     // user custom data
+#define SmartPanelPanelsColor          0   // RGBCOLOR for panel's background. -1 = ignore, use system default. Default value is -1
+#define SmartPanelBorderColor          8   // RGBCOLOR for border color of MUISmartPanel. -1 = none. Default value is -1
+#define @SmartPanelNotifications       16  // BOOL. Allow notifications via WM_NOTIFY. Default is TRUE
+#define @SmartPanelNotifyCallback      24  // QWORD. Address of custom notifications callback function (MUISmartPanelNotifyCallback)
+#define @SmartPanelDllInstance         32  // reserved for future use
+#define @SmartPanelParam               40  // user custom data
 
 
 
