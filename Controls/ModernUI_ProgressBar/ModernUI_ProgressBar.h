@@ -1,3 +1,15 @@
+//==============================================================================
+//
+// ModernUI x64 Control - ModernUI_ProgressBar x64
+//
+// Copyright (c) 2019 by fearless
+//
+// All Rights Reserved
+//
+// http://github.com/mrfearless/ModernUI64
+//
+//==============================================================================
+
 #ifdef __cplusplus
 extern "C" {
 #endif
