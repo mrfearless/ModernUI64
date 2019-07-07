@@ -53,8 +53,8 @@ MUIFreeMemProperties            PROTO :QWORD,:QWORD                             
 MUIAllocStructureMemory         PROTO :QWORD,:QWORD,:QWORD                      ; qwPtrStructMem, TotalItems, ItemSize
 
 ; ModernUI GDI DoubleBuffer Functions:
-MUIGDIDoubleBufferStart         PROTO :QWORD,:QWORD,:QWORD,:QWORD,:QWORD,:QWORD ; hWin, hdcSource, lpHDCBuffer, lpClientRect, lpBufferBitmap, lpPreBufferBitamp
-MUIGDIDoubleBufferFinish        PROTO :QWORD,:QWORD,:QWORD                      ; hdcBuffer, hBufferBitmap, hPreBufferBitamp
+MUIGDIDoubleBufferStart         PROTO :QWORD,:QWORD,:QWORD,:QWORD,:QWORD        ; hWin, hdcSource, lpHDCBuffer, lpClientRect, lphBufferBitmap
+MUIGDIDoubleBufferFinish        PROTO :QWORD,:QWORD,:QWORD,:QWORD,:QWORD,:QWORD ; hdcBuffer, hBufferBitmap, hBitmapUsed, hFontUsed, hBrushUsed, hPenUsed
 MUIGDIPaintFill                 PROTO :QWORD,:QWORD,:QWORD                      ; hdc, lpFillRect, qwFillColor
 MUIGDIPaintFrame                PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; hdc, lpFrameRect, qwFrameColor, qwFrameStyle
 
