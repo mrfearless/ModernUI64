@@ -1,12 +1,10 @@
 ;==============================================================================
 ;
-; ModernUI Library x64 v0.0.0.5
+; ModernUI Library x64 v0.0.0.6
 ;
-; Copyright (c) 2018 by fearless
+; Copyright (c) 2019 by fearless
 ;
 ; All Rights Reserved
-;
-; http://www.LetTheLight.in
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;
@@ -57,10 +55,34 @@ MUIAllocStructureMemory         PROTO :QWORD,:QWORD,:QWORD                      
 ; ModernUI GDI DoubleBuffer Functions:
 MUIGDIDoubleBufferStart         PROTO :QWORD,:QWORD,:QWORD,:QWORD,:QWORD,:QWORD ; hWin, hdcSource, lpHDCBuffer, lpClientRect, lpBufferBitmap, lpPreBufferBitamp
 MUIGDIDoubleBufferFinish        PROTO :QWORD,:QWORD,:QWORD                      ; hdcBuffer, hBufferBitmap, hPreBufferBitamp
+MUIGDIPaintFill                 PROTO :QWORD,:QWORD,:QWORD                      ; hdc, lpFillRect, qwFillColor
+MUIGDIPaintFrame                PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; hdc, lpFrameRect, qwFrameColor, qwFrameStyle
 
 ; ModernUI GDIPlus Functions:
 MUIGDIPlusStart                 PROTO                                           ; Wrapper for GDIPlus startup
 MUIGDIPlusFinish                PROTO                                           ; Wrapper for GDIPlus shutdown
+MUIGDIPlusDoubleBufferStart     PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; hWin, pGraphics, lpBitmapHandle, lpGraphicsBuffer
+MUIGDIPlusDoubleBufferFinish    PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; hWin, pGraphics, hBitmap, pGraphicsBuffer
+MUIGDIPlusRotateCenterImage     PROTO :QWORD,:REAL4                             ; hImage, fAngle
+MUIGDIPlusPaintFill             PROTO :QWORD,:QWORD,:QWORD                      ; pGraphics, lpFillGdipRect, dwFillColor
+MUIGDIPlusPaintFillI            PROTO :QWORD,:QWORD,:QWORD                      ; pGraphics, lpFillRectI, dwFillColor
+MUIGDIPlusPaintFrame            PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; pGraphics, lpFrameGdipRect, dwFrameColor, dwFrameStyle
+MUIGDIPlusPaintFrameI           PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; pGraphics, lpFrameRectI, dwFrameColor, dwFrameStyle
+MUILoadPngFromResource          PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; hWin, dwInstanceProperty, dwProperty, idPngRes
+MUIGDIPlusRectToGdipRect        PROTO :QWORD,:QWORD                             ; lpRect, lpGdipRect
+
+; GDIPlus aliases:
+MUIGDIPStart                    TEXTEQU <MUIGDIPlusStart>                       ; Wrapper for GDIPlus startup
+MUIGDIPFinish                   TEXTEQU <MUIGDIPlusFinish>                      ; Wrapper for GDIPlus shutdown
+MUIGDIPDoubleBufferStart        TEXTEQU <MUIGDIPlusDoubleBufferStart>           ; hWin, pGraphics, lpBitmapHandle, lpGraphicsBuffer
+MUIGDIPDoubleBufferFinish       TEXTEQU <MUIGDIPlusDoubleBufferFinish>          ; hWin, pGraphics, hBitmap, pGraphicsBuffer
+MUIGDIPRotateCenterImage        TEXTEQU <MUIGDIPlusRotateCenterImage>           ; hImage, fAngle, dwBackColor
+MUIGDIPPaintFill                TEXTEQU <MUIGDIPlusPaintFill>                   ; pGraphics, lpFillGdipRect, dwFillColor
+MUIGDIPPaintFillI               TEXTEQU <MUIGDIPlusPaintFillI>                  ; pGraphics, lpFillRectI, dwFillColor
+MUIGDIPPaintFrame               TEXTEQU <MUIGDIPlusPaintFrame>                  ; pGraphics, lpFrameGdipRect, dwFrameColor, dwFrameStyle
+MUIGDIPPaintFrameI              TEXTEQU <MUIGDIPlusPaintFrameI>                 ; pGraphics, lpFrameRectI, dwFrameColor, dwFrameStyle
+MUILoadJpgFromResource          TEXTEQU <MUILoadPngFromResource>                ; hWin, dwInstanceProperty, dwProperty, idJpgRes
+MUIGDIPRectToGdipRect           TEXTEQU <MUIGDIPlusRectToGdipRect>              ; lpRect, lpGdipRect
 
 ; ModernUI Painting & Color Functions:
 MUIPaintBackground              PROTO :QWORD,:QWORD,:QWORD                      ; hDialogWindow, qwBackColor, qwBorderColor
@@ -84,6 +106,9 @@ MUIGetImageSize                 PROTO :QWORD,:QWORD,:QWORD,:QWORD               
 MUICreateIconFromMemory         PROTO :QWORD,:QWORD                             ; pIconData, iIcon
 MUICreateCursorFromMemory       PROTO :QWORD                                    ; pCursorData
 MUICreateBitmapFromMemory       PROTO :QWORD                                    ; pBitmapData
+MUILoadBitmapFromResource       PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; hWin, dwInstanceProperty, dwProperty, idBmpRes
+MUILoadIconFromResource         PROTO :QWORD,:QWORD,:QWORD,:QWORD               ; hWin, dwInstanceProperty, dwProperty, idIcoRes
+MUILoadImageFromResource        PROTO :QWORD,:QWORD,:QWORD,:QWORD,:QWORD        ; hWin, dwInstanceProperty, dwProperty, dwImageType, dwImageResId
 
 ; ModernUI DPI & Scaling Functions:
 MUIDPI                          PROTO :QWORD,:QWORD                             ; lpqwDPIX, lpqwDPIY
@@ -155,6 +180,15 @@ MUIIL_TOPRIGHT                  EQU 4
 MUIIL_TOPCENTER                 EQU 5
 MUIIL_BOTTOMCENTER              EQU 6
 
+;------------------------------------------
+; MUIGDIPaintFrame Frame Style
+;------------------------------------------
+MUIPFS_NONE                     EQU 0
+MUIPFS_LEFT                     EQU 1
+MUIPFS_TOP                      EQU 2
+MUIPFS_BOTTOM                   EQU 4
+MUIPFS_RIGHT                    EQU 8
+MUIPFS_ALL                      EQU MUIPFS_LEFT + MUIPFS_TOP + MUIPFS_BOTTOM + MUIPFS_RIGHT
 
 ;------------------------------------------
 ; ModernUI Macros
@@ -174,6 +208,19 @@ ENDM
 RGB MACRO red:REQ, green:REQ, blue:REQ
     EXITM < red or green shl 8 or blue shl 16 >
 ENDM
+
+;------------------------------------------
+; ModernUI Structures
+;------------------------------------------
+IFNDEF GDIPRECT
+GDIPRECT     STRUCT
+    left     REAL4 ?
+    top	     REAL4 ?
+    right	 REAL4 ?
+    bottom	 REAL4 ?
+GDIPRECT     ENDS
+ENDIF
+
 
 ;------------------------------------------
 ; Notes

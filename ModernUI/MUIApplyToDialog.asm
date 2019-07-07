@@ -1,17 +1,14 @@
 ;==============================================================================
 ;
-; ModernUI Library x64 v0.0.0.5
+; ModernUI Library x64
 ;
-; Copyright (c) 2018 by fearless
+; Copyright (c) 2019 by fearless
 ;
 ; All Rights Reserved
-;
-; http://www.LetTheLight.in
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;
 ;==============================================================================
-
 .686
 .MMX
 .XMM
