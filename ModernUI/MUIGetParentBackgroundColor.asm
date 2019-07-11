@@ -40,12 +40,12 @@ MUI_ALIGN
 ; Useful for certain controls to retrieve the parents background color and then
 ; to set their own background color based on the same value.
 ;------------------------------------------------------------------------------
-MUIGetParentBackgroundColor PROC FRAME hControl:QWORD
+MUIGetParentBackgroundColor PROC FRAME hWin:MUIWND
     LOCAL hParent:QWORD
     LOCAL hBrush:QWORD
     LOCAL logbrush:LOGBRUSH
     
-    Invoke GetParent, hControl
+    Invoke GetParent, hWin
     mov hParent, rax
     
     Invoke GetClassLongPtr, hParent, GCL_HBRBACKGROUND

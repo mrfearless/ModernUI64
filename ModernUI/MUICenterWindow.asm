@@ -37,7 +37,7 @@ MUI_ALIGN
 ; NULL. Parent doesnt need to be the owner.
 ; No returned value
 ;------------------------------------------------------------------------------
-MUICenterWindow PROC FRAME hWndChild:QWORD, hWndParent:QWORD
+MUICenterWindow PROC FRAME hWndChild:MUIWND, hWndParent:MUIWND
     LOCAL rectChild:RECT         ; Child window coordonate
     LOCAL rectParent:RECT        ; Parent window coordonate
     LOCAL rectDesktop:RECT       ; Desktop coordonate (WORKAREA)

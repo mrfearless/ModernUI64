@@ -1,7 +1,7 @@
 ;------------------------------------------------------------------------------
 ; ModernUI base library
 ;
-; http://github.com/mrfearless/ModernUI
+; http://github.com/mrfearless/ModernUI64
 ;
 ; Paste this text at the end of \Radasm\Uasm64\Uasm64ApiConst.api to add to Radasm
 ;

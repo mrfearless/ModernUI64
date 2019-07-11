@@ -36,7 +36,7 @@ MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; MUILoadRegionFromResource - Loads region from a resource
 ;------------------------------------------------------------------------------
-MUILoadRegionFromResource PROC FRAME USES RBX hInst:QWORD, idRgnRes:QWORD, lpRegion:QWORD, lpqwSizeRegion:QWORD
+MUILoadRegionFromResource PROC FRAME USES RBX hInst:HINSTANCE, idRgnRes:RESID, lpRegionData:POINTER, lpSizeRegionData:LPMUIVALUE
     LOCAL hRes:QWORD
     ; Load region
     Invoke FindResource, hInst, idRgnRes, RT_RCDATA ; load rng image as raw data
@@ -44,8 +44,8 @@ MUILoadRegionFromResource PROC FRAME USES RBX hInst:QWORD, idRgnRes:QWORD, lpReg
         mov hRes, rax
         Invoke SizeofResource, hInst, hRes
         .IF rax != 0
-            .IF lpqwSizeRegion != NULL
-                mov rbx, lpqwSizeRegion
+            .IF lpSizeRegionData != NULL
+                mov rbx, lpSizeRegionData
                 mov [rbx], rax
             .ELSE
                 mov rax, FALSE
@@ -55,8 +55,8 @@ MUILoadRegionFromResource PROC FRAME USES RBX hInst:QWORD, idRgnRes:QWORD, lpReg
             .IF rax != NULL
                 Invoke LockResource, rax
                 .IF rax != NULL
-                    .IF lpRegion != NULL
-                        mov rbx, lpRegion
+                    .IF lpRegionData != NULL
+                        mov rbx, lpRegionData
                         mov [rbx], rax
                         mov rax, TRUE
                     .ELSE

@@ -46,25 +46,23 @@ MUI_ALIGN
 ; dwImageLocation: 0=center center, 1=bottom left, 2=bottom right, 3=top left, 
 ; 4=top right, 5=center top, 6=center bottom
 ;------------------------------------------------------------------------------
-MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBorderColor:QWORD, hImage:QWORD, qwImageType:QWORD, qwImageLocation:QWORD
+MUIPaintBackgroundImage PROC FRAME USES RBX hWin:MUIWND, BackColor:MUICOLORRGB, BorderColor:MUICOLORRGB, hImage:MUIIMAGE, ImageHandleType:MUIIT, ImageLocation:MUIIL
     LOCAL ps:PAINTSTRUCT
-    LOCAL hdc:HDC
     LOCAL rect:RECT
     LOCAL pt:POINT
-    LOCAL hdcMem:QWORD
-    LOCAL hdcMemBmp:QWORD
-    LOCAL hbmMem:QWORD
-    LOCAL hbmMemBmp:QWORD
-    LOCAL hOldBitmap:QWORD
-    LOCAL hBrush:QWORD
-    LOCAL hOldBrush:QWORD      
+    LOCAL hdc:HDC
+    LOCAL hdcMem:HDC
+    LOCAL hBufferBitmap:HBITMAP
+    LOCAL hdcMemBmp:HDC
+    LOCAL hbmMem:HBITMAP
+    LOCAL hbmMemBmp:HBITMAP
     LOCAL ImageWidth:QWORD
     LOCAL ImageHeight:QWORD
     LOCAL pGraphics:QWORD
     LOCAL pGraphicsBuffer:QWORD
     LOCAL pBitmap:QWORD
     
-    .IF qwImageType == MUIIT_PNG
+    .IF ImageHandleType == MUIIT_PNG
         mov pGraphics, 0
         mov pGraphicsBuffer, 0
         mov pBitmap, 0
@@ -72,42 +70,22 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
     
     Invoke BeginPaint, hWin, addr ps
     mov hdc, rax
-    Invoke GetClientRect, hWin, Addr rect
-    
+
     ;----------------------------------------------------------
     ; Setup Double Buffering
-    ;----------------------------------------------------------       
-    Invoke CreateCompatibleDC, hdc
-    mov hdcMem, rax
-    Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
-    mov hbmMem, rax
-    Invoke SelectObject, hdcMem, hbmMem
-    mov hOldBitmap, rax 
+    ;----------------------------------------------------------
+    Invoke MUIGDIDoubleBufferStart, hWin, hdc, Addr hdcMem, Addr rect, Addr hBufferBitmap
 
     ;----------------------------------------------------------
-    ; Fill background
+    ; Paint background
     ;----------------------------------------------------------
-    Invoke GetStockObject, DC_BRUSH
-    mov hBrush, rax
-    Invoke SelectObject, hdcMem, rax
-    mov hOldBrush, rax
-    Invoke SetDCBrushColor, hdcMem, dword ptr qwBackcolor
-    Invoke FillRect, hdcMem, Addr rect, hBrush
+    Invoke MUIGDIPaintFill, hdcMem, Addr rect, BackColor
 
     ;----------------------------------------------------------
-    ; Draw border if !0
+    ; Paint Border
     ;----------------------------------------------------------
-    .IF qwBorderColor != 0
-        .IF hOldBrush != 0
-            Invoke SelectObject, hdcMem, hOldBrush
-            Invoke DeleteObject, hOldBrush
-        .ENDIF
-        Invoke GetStockObject, DC_BRUSH
-        mov hBrush, rax
-        Invoke SelectObject, hdcMem, rax
-        mov hOldBrush, rax
-        Invoke SetDCBrushColor, hdcMem, dword ptr qwBorderColor
-        Invoke FrameRect, hdcMem, Addr rect, hBrush
+    .IF BorderColor != 0
+        Invoke MUIGDIPaintFrame, hdcMem, Addr rect, BorderColor, MUIPFS_ALL
     .ENDIF
     
     .IF hImage != NULL
@@ -115,12 +93,10 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
         ; Calc left and top of image based on 
         ; client rect and image width and height
         ;----------------------------------------
-        Invoke MUIGetImageSize, hImage, qwImageType, Addr ImageWidth, Addr ImageHeight
+        Invoke MUIGetImageSize, hImage, ImageHandleType, Addr ImageWidth, Addr ImageHeight
 
-        mov rax, qwImageLocation
+        mov rax, ImageLocation
         .IF rax == MUIIL_CENTER
-            xor rax, rax
-            xor rbx, rbx
             mov eax, rect.right
             shr eax, 1
             mov rbx, ImageWidth
@@ -135,10 +111,9 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
             sub eax, ebx
             mov pt.y, eax
         
-        .ELSEIF rax == MUIIL_BOTTOMLEFT
+        .ELSEIF eax == MUIIL_BOTTOMLEFT
             mov pt.x, 1
-            xor rax, rax
-            xor rbx, rbx
+            
             mov eax, rect.bottom
             mov rbx, ImageHeight
             sub eax, ebx
@@ -146,8 +121,6 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
             mov pt.y, eax
         
         .ELSEIF eax == MUIIL_BOTTOMRIGHT
-            xor rax, rax
-            xor rbx, rbx        
             mov eax, rect.right
             mov rbx, ImageWidth
             sub eax, ebx
@@ -160,23 +133,20 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
             dec eax
             mov pt.y, eax        
         
-        .ELSEIF rax == MUIIL_TOPLEFT
+        .ELSEIF eax == MUIIL_TOPLEFT
             mov pt.x, 1
             mov pt.y, 1
         
-        .ELSEIF rax == MUIIL_TOPRIGHT
-            xor rax, rax
-            xor rbx, rbx        
+        .ELSEIF eax == MUIIL_TOPRIGHT
             mov eax, rect.right
             mov rbx, ImageWidth
             sub eax, ebx
             dec eax
             mov pt.x, eax        
         
-        .ELSEIF rax == MUIIL_TOPCENTER
+        .ELSEIF eax == MUIIL_TOPCENTER
             mov pt.x, 1
-            xor rax, rax
-            xor rbx, rbx
+
             mov eax, rect.bottom
             shr eax, 1
             mov rbx, ImageHeight
@@ -184,9 +154,7 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
             sub eax, ebx
             mov pt.y, eax            
         
-        .ELSEIF rax == MUIIL_BOTTOMCENTER
-            xor rax, rax
-            xor rbx, rbx        
+        .ELSEIF eax == MUIIL_BOTTOMCENTER
             mov eax, rect.right
             shr eax, 1
             mov rbx, ImageWidth
@@ -205,7 +173,7 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
         ;----------------------------------------
         ; Draw image depending on what type it is
         ;----------------------------------------
-        mov rax, qwImageType
+        mov rax, ImageHandleType
         .IF rax == MUIIT_NONE
             
         .ELSEIF rax == MUIIT_BMP
@@ -253,27 +221,17 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:QWORD, qwBackcolor:QWORD, qwBor
         .ENDIF
         
     .ENDIF
-    
+
     ;----------------------------------------------------------
     ; BitBlt from hdcMem back to hdc
     ;----------------------------------------------------------
     Invoke BitBlt, hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY
 
     ;----------------------------------------------------------
-    ; Cleanup
-    ;----------------------------------------------------------
-    .IF hOldBrush != 0
-        Invoke SelectObject, hdcMem, hOldBrush
-        Invoke DeleteObject, hOldBrush
-    .ENDIF     
-    .IF hBrush != 0
-        Invoke DeleteObject, hBrush
-    .ENDIF    
-    Invoke SelectObject, hdcMem, hbmMem
-    Invoke DeleteObject, hbmMem
-    Invoke DeleteDC, hdcMem
-    Invoke DeleteObject, hOldBitmap
-    
+    ; Finish Double Buffering & Cleanup
+    ;----------------------------------------------------------    
+    Invoke MUIGDIDoubleBufferFinish, hdcMem, hBufferBitmap, 0, 0, 0, 0    
+
     Invoke EndPaint, hWin, addr ps
     mov rax, 0
     ret

@@ -24,8 +24,6 @@ WINVER equ 0501h
 
 include windows.inc
 includelib user32.lib
-includelib kernel32.lib
-includelib gdi32.lib
 
 include ModernUI.inc
 
@@ -35,32 +33,24 @@ include ModernUI.inc
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
-; Convert font point size eg '12' to logical unit size for use with CreateFont,
-; CreateFontIndirect
+; Get rectangle of a window/control relative to it's parent
 ;------------------------------------------------------------------------------
-MUIPointSizeToLogicalUnit PROC FRAME USES RBX RCX RDX hWin:MUIWND, PointSize:MUIVALUE
-    LOCAL hdc:HDC
-    LOCAL dwLogicalUnit:DWORD
+MUIGetParentRelativeWindowRect PROC FRAME hWin:MUIWND, lpRectControl:LPRECT
+    LOCAL hParent:QWORD
     
-    Invoke GetDC, hWin
-    mov hdc, rax
-    Invoke GetDeviceCaps, hdc, LOGPIXELSY
-    xor rdx, rdx
-    xor rcx, rcx
-    mov rbx, PointSize
-    mul ebx
-    mov ecx, 72d
-    div ecx
-    neg eax
-    ;Invoke MulDiv, dqPointSize, rax, 72d
-    mov dwLogicalUnit, eax
-    Invoke ReleaseDC, hWin, hdc
-    mov eax, dwLogicalUnit
-    ret
-MUIPointSizeToLogicalUnit ENDP
+    Invoke GetWindowRect, hWin, lpRectControl
+    .IF rax == 0
+        mov rax, FALSE
+        ret
+    .ENDIF
+    Invoke GetAncestor, hWin, GA_PARENT
+    mov hParent, rax
+    Invoke MapWindowPoints, HWND_DESKTOP, hParent, lpRectControl, 2
+
+    mov rax, TRUE
+    ret 
+MUIGetParentRelativeWindowRect ENDP
 
 
 MODERNUI_LIBEND
-
-
 

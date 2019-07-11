@@ -55,7 +55,7 @@ MUI_ALIGN
 ;
 ;http://www.masmforum.com/board/index.php?topic=16267.msg134434#msg134434
 ;------------------------------------------------------------------------------
-MUICreateIconFromMemory PROC FRAME USES RDX pIconData:QWORD, iIcon:QWORD
+MUICreateIconFromMemory PROC FRAME USES RDX pIconData:POINTER, iIcon:MUIVALUE
     LOCAL sz[2]:DWORD
     LOCAL pbIconBits:QWORD
     LOCAL cbIconBits:DWORD

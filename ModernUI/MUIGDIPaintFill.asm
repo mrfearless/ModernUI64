@@ -38,9 +38,9 @@ MUI_ALIGN
 ; MUIGDIPaintFill - Fills a rectangle with a specific color
 ;
 ; lpFillRect is a pointer to a RECT containing the bounding box to fill
-; qwFillColor is an RGBCOLOR to paint fill the rectangle with
+; FillColor is an RGBCOLOR to paint fill the rectangle with
 ;------------------------------------------------------------------------------
-MUIGDIPaintFill PROC FRAME hdc:QWORD, lpFillRect:QWORD, qwFillColor:QWORD
+MUIGDIPaintFill PROC FRAME hdc:HDC, lpFillRect:LPRECT, FillColor:MUICOLORRGB
     LOCAL hBrush:QWORD
     LOCAL hBrushOld:QWORD
     LOCAL rect:RECT
@@ -53,7 +53,7 @@ MUIGDIPaintFill PROC FRAME hdc:QWORD, lpFillRect:QWORD, qwFillColor:QWORD
     mov hBrush, rax
     Invoke SelectObject, hdc, rax
     mov hBrushOld, rax
-    Invoke SetDCBrushColor, hdc, dword ptr qwFillColor
+    Invoke SetDCBrushColor, hdc, dword ptr FillColor
     Invoke FillRect, hdc, Addr rect, hBrush
     .IF hBrushOld != 0
         Invoke SelectObject, hdc, hBrushOld
@@ -67,5 +67,4 @@ MUIGDIPaintFill ENDP
 
 
 MODERNUI_LIBEND
-
 

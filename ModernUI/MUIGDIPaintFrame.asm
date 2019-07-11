@@ -50,7 +50,7 @@ MUI_ALIGN
 ; - MUIPFS_RIGHT
 ; - MUIPFS_ALL
 ;------------------------------------------------------------------------------
-MUIGDIPaintFrame PROC FRAME hdc:QWORD, lpFrameRect:QWORD, qwFrameColor:QWORD, qwFrameStyle:QWORD
+MUIGDIPaintFrame PROC FRAME hdc:HDC, lpFrameRect:LPRECT, FrameColor:MUICOLORRGB, FrameStyle:MUIPFS
     LOCAL hBrush:QWORD
     LOCAL hBrushOld:QWORD
     LOCAL hPen:QWORD
@@ -58,9 +58,9 @@ MUIGDIPaintFrame PROC FRAME hdc:QWORD, lpFrameRect:QWORD, qwFrameColor:QWORD, qw
     LOCAL rect:RECT
     LOCAL pt:POINT
 
-    .IF dword ptr qwFrameColor != -1
-        .IF qwFrameStyle != MUIPFS_NONE
-            mov rax, qwFrameStyle
+    .IF FrameColor != -1
+        .IF FrameStyle != MUIPFS_NONE
+            mov rax, FrameStyle
             and rax, MUIPFS_ALL
             .IF rax == MUIPFS_ALL 
                 ;--------------------------------------------------------------
@@ -70,7 +70,7 @@ MUIGDIPaintFrame PROC FRAME hdc:QWORD, lpFrameRect:QWORD, qwFrameColor:QWORD, qw
                 mov hBrush, rax
                 Invoke SelectObject, hdc, rax
                 mov hBrushOld, rax
-                Invoke SetDCBrushColor, hdc, dword ptr qwFrameColor
+                Invoke SetDCBrushColor, hdc, dword ptr FrameColor
                 Invoke FrameRect, hdc, lpFrameRect, hBrush
                 .IF hBrushOld != 0
                     Invoke SelectObject, hdc, hBrushOld
@@ -83,18 +83,18 @@ MUIGDIPaintFrame PROC FRAME hdc:QWORD, lpFrameRect:QWORD, qwFrameColor:QWORD, qw
                 ;--------------------------------------------------------------
                 ; Paint only certain parts of the frame
                 ;--------------------------------------------------------------
-                Invoke CreatePen, PS_SOLID, 1, dword ptr qwFrameColor
+                Invoke CreatePen, PS_SOLID, 1, dword ptr FrameColor
                 mov hPen, rax
                 Invoke SelectObject, hdc, hPen
                 mov hPenOld, rax 
                 Invoke CopyRect, Addr rect, lpFrameRect
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_TOP
                 .IF rax == MUIPFS_TOP
                     Invoke MoveToEx, hdc, rect.left, rect.top, Addr pt
                     Invoke LineTo, hdc, rect.right, rect.top
                 .ENDIF
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_RIGHT
                 .IF rax == MUIPFS_RIGHT
                     dec rect.right                
@@ -102,7 +102,7 @@ MUIGDIPaintFrame PROC FRAME hdc:QWORD, lpFrameRect:QWORD, qwFrameColor:QWORD, qw
                     Invoke LineTo, hdc, rect.right, rect.bottom
                     inc rect.right
                 .ENDIF
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_BOTTOM
                 .IF rax == MUIPFS_BOTTOM
                     dec rect.bottom
@@ -110,7 +110,7 @@ MUIGDIPaintFrame PROC FRAME hdc:QWORD, lpFrameRect:QWORD, qwFrameColor:QWORD, qw
                     Invoke LineTo, hdc, rect.right, rect.bottom
                     inc rect.bottom
                 .ENDIF
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_LEFT
                 .IF rax == MUIPFS_LEFT
                     Invoke MoveToEx, hdc, rect.left, rect.top, Addr pt

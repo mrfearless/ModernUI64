@@ -67,7 +67,7 @@ MUI_ALIGN
 ;
 ; http://www.masmforum.com/board/index.php?topic=16267.msg134453#msg134453
 ;------------------------------------------------------------------------------
-MUICreateBitmapFromMemory PROC FRAME USES RCX RDX pBitmapData:QWORD
+MUICreateBitmapFromMemory PROC FRAME USES RCX RDX pBitmapData:POINTER
     LOCAL hDC:QWORD
     LOCAL hBmp:QWORD
     LOCAL lpInfoHeader:QWORD

@@ -65,7 +65,7 @@ MUI_ALIGN
 ;   pCursorData = Pointer to the cursor file data
 ;
 ;------------------------------------------------------------------------------
-MUICreateCursorFromMemory PROC FRAME USES RBX pCursorData:QWORD
+MUICreateCursorFromMemory PROC FRAME USES RBX pCursorData:POINTER
     LOCAL hinstance:QWORD
     LOCAL pCursorDirEntry:QWORD
     LOCAL pInfoHeader:QWORD

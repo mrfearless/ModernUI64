@@ -43,7 +43,7 @@ MUI_ALIGN
 ; MUIGetImageSizeEx - Similar to MUIGetImageSize, but also returns centering
 ; x and y co-ord information based on rectangle of hWin
 ;------------------------------------------------------------------------------
-MUIGetImageSizeEx PROC FRAME USES RBX hWin:QWORD, hImage:QWORD, qwImageType:QWORD, lpqwImageWidth:QWORD, lpqwImageHeight:QWORD, lpqwImageXPos:QWORD, lpqwImageYPos:QWORD
+MUIGetImageSizeEx PROC FRAME USES RBX hWin:MUIWND, hImage:MUIIMAGE, ImageHandleType:MUIIT, lpImageWidth:LPMUIVALUE, lpImageHeight:LPMUIVALUE, lpImageX:LPMUIVALUE, lpImageY:LPMUIVALUE
     LOCAL rect:RECT
     LOCAL qwImageWidth:QWORD
     LOCAL qwImageHeight:QWORD
@@ -51,7 +51,7 @@ MUIGetImageSizeEx PROC FRAME USES RBX hWin:QWORD, hImage:QWORD, qwImageType:QWOR
     LOCAL qwYPos:QWORD
     LOCAL RetVal:QWORD
 
-    Invoke MUIGetImageSize, hImage, qwImageType, Addr qwImageWidth, Addr qwImageHeight
+    Invoke MUIGetImageSize, hImage, ImageHandleType, Addr qwImageWidth, Addr qwImageHeight
     .IF rax == FALSE
         mov qwImageWidth, 0
         mov qwImageHeight, 0
@@ -81,23 +81,23 @@ MUIGetImageSizeEx PROC FRAME USES RBX hWin:QWORD, hImage:QWORD, qwImageType:QWOR
         mov RetVal, TRUE
     .ENDIF
 
-    .IF lpqwImageWidth != 0
-        mov rbx, lpqwImageWidth
+    .IF lpImageWidth != 0
+        mov rbx, lpImageWidth
         mov rax, qwImageWidth
         mov [rbx], rax
     .ENDIF
-    .IF lpqwImageHeight != 0
-        mov rbx, lpqwImageHeight
+    .IF lpImageHeight != 0
+        mov rbx, lpImageHeight
         mov rax, qwImageHeight
         mov [rbx], rax
     .ENDIF
-    .IF lpqwImageXPos != 0
-        mov rbx, lpqwImageXPos
+    .IF lpImageX != 0
+        mov rbx, lpImageX
         mov rax, qwXPos
         mov [rbx], rax
     .ENDIF
-    .IF lpqwImageYPos != 0
-        mov rbx, lpqwImageYPos
+    .IF lpImageY != 0
+        mov rbx, lpImageY
         mov rax, qwYPos
         mov [rbx], rax
     .ENDIF    

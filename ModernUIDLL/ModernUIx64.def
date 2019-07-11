@@ -1,6 +1,6 @@
 ;==============================================================================
 ;
-; ModernUI Library x64 v0.0.0.5
+; ModernUI Library x64 v0.0.0.6
 ;
 ; Copyright (c) 2019 by fearless
 ;
@@ -39,22 +39,22 @@
 LIBRARY ModernUIx64
 EXPORTS
 
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	; ModernUI Library
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	; ModernUI Base Functions:
 	MUIGetExtProperty
 	MUISetExtProperty
 	MUIGetIntProperty
 	MUISetIntProperty
-;	MUIGetExtPropertyEx
-;	MUISetExtPropertyEx
-;	MUIGetIntPropertyEx
-;	MUISetIntPropertyEx
-;	MUIGetExtPropertyExtra
-;	MUISetExtPropertyExtra
-;	MUIGetIntPropertyExtra
-;	MUISetIntPropertyExtra
+	;MUIGetExtPropertyEx
+	;MUISetExtPropertyEx
+	;MUIGetIntPropertyEx
+	;MUISetIntPropertyEx
+	;MUIGetExtPropertyExtra
+	;MUISetExtPropertyExtra
+	;MUIGetIntPropertyExtra
+	;MUISetIntPropertyExtra
 	; ModernUI Memory Functions:
 	MUIAllocMemProperties
 	MUIFreeMemProperties
@@ -62,17 +62,25 @@ EXPORTS
 	; ModernUI GDI Functions:
 	MUIGDIDoubleBufferStart
 	MUIGDIDoubleBufferFinish
-;	MUIGDIBlend
-;	MUIGDIBlendBitmaps
-;	MUIGDIStretchBitmap
-;	MUIGDIStretchImage
-;	MUILoadImageFromResource
-;	MUILoadBitmapFromResource
-;	MUILoadIconFromResource
+	MUIGDIBlend
+	MUIGDIBlendBitmaps
+	;MUIGDIStretchBitmap
+	;MUIGDIStretchImage
+	;MUIGDIRotateCenterBitmap
+    MUIGDIPaintFill
+    MUIGDIPaintFrame
 	; ModernUI GDIPlus Functions:
 	MUIGDIPlusStart
 	MUIGDIPlusFinish
-;	MUILoadPngFromResource
+    MUIGDIPlusDoubleBufferStart
+    MUIGDIPlusDoubleBufferFinish
+    MUIGDIPlusRotateCenterImage
+    MUIGDIPlusPaintFill
+    MUIGDIPlusPaintFillI
+    MUIGDIPlusPaintFrame
+    MUIGDIPlusPaintFrameI
+    ;MUILoadPngFromResource
+    MUIGDIPlusRectToGdipRect
 	; ModernUI Painting & Color Functions:
 	MUIPaintBackground
 	MUIPaintBackgroundImage
@@ -81,7 +89,7 @@ EXPORTS
 	; ModernUI Window/Dialog Functions:
 	MUIApplyToDialog
 	MUICenterWindow
-;	MUIGetParentRelativeWindowRect
+	MUIGetParentRelativeWindowRect
 	; ModernUI Region Functions:
 	MUILoadRegionFromResource
 	MUISetRegionFromResource
@@ -89,23 +97,26 @@ EXPORTS
 	MUIPointSizeToLogicalUnit
 	; ModernUI Image Functions:
 	MUIGetImageSize
-;	MUIGetImageSizeEx
+	MUIGetImageSizeEx
 	MUICreateIconFromMemory
 	MUICreateCursorFromMemory
 	MUICreateBitmapFromMemory
+	;MUILoadImageFromResource
+	;MUILoadBitmapFromResource
+	;MUILoadIconFromResource
 	; ModernUI DPI & Scaling Functions:
-;	MUIDPI
-;	MUIDPIScaleX
-;	MUIDPIScaleY
-;	MUIDPIScaleRect
-;	MUIDPIScaleControl
-;	MUIDPIScaleFontSize
-;	MUIDPIScaleFont
-;	MUIDPIScaledScreen
-;	MUIDPISetDPIAware
-	;--------------------------------------------------------------------------
+	;MUIDPI
+	;MUIDPIScaleX
+	;MUIDPIScaleY
+	;MUIDPIScaleRect
+	;MUIDPIScaleControl
+	;MUIDPIScaleFontSize
+	;MUIDPIScaleFont
+	;MUIDPIScaledScreen
+	;MUIDPISetDPIAware
+	;--------------------------------------
 	; ModernUI_Button Control
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	MUIButtonRegister
 	MUIButtonCreate
 	MUIButtonSetProperty
@@ -122,9 +133,9 @@ EXPORTS
 	MUIButtonNoteSetText
 	MUIButtonNoteSetFont
 	MUIButtonSetAllProperties
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	; ModernUI_CaptionBar Control
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	MUICaptionBarRegister
 	MUICaptionBarCreate
 	MUICaptionBarSetProperty
@@ -133,9 +144,9 @@ EXPORTS
 	MUICaptionBarLoadIconsDll
 	MUICaptionBarLoadBackImage
 	MUICaptionBarAddButton
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	; ModernUI_Checkbox Control
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	MUICheckboxRegister
 	MUICheckboxCreate
 	MUICheckboxSetProperty
@@ -144,9 +155,9 @@ EXPORTS
 	MUICheckboxSetState
 	MUICheckboxLoadImages
 	MUICheckboxSetImages
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	; ModernUI_ProgressBar Control
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	MUIProgressBarRegister
 	MUIProgressBarCreate
 	MUIProgressBarSetProperty
@@ -155,18 +166,18 @@ EXPORTS
 	MUIProgressBarSetPercent
 	MUIProgressBarGetPercent
 	MUIProgressBarStep
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	; ModernUI_ProgressDots Control
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	MUIProgressDotsRegister
 	MUIProgressDotsCreate
 	MUIProgressDotsSetProperty
 	MUIProgressDotsGetProperty
 	MUIProgressDotsAnimateStart
 	MUIProgressDotsAnimateStop
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	; ModernUI_SmartPanel Control
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	MUISmartPanelRegister
 	MUISmartPanelCreate
 	MUISmartPanelSetProperty
@@ -178,24 +189,47 @@ EXPORTS
 	MUISmartPanelPrevPanel
 	MUISmartPanelSetIsDlgMsgVar
 	MUISmartPanelRegisterPanel
-	;--------------------------------------------------------------------------
+    MUISmartPanelSetPanelParam
+    MUISmartPanelGetPanelParam
+	;--------------------------------------
+	; ModernUI_Spinner Control
+	;--------------------------------------
+    MUISpinnerRegister
+    MUISpinnerCreate
+    MUISpinnerSetProperty
+    MUISpinnerGetProperty
+    MUISpinnerAddFrame
+    MUISpinnerAddFrames
+    MUISpinnerLoadFrame
+    MUISpinnerLoadFrames
+    MUISpinnerAddImage
+    MUISpinnerLoadImage
+    MUISpinnerAddSpriteSheet
+    MUISpinnerLoadSpriteSheet
+    MUISpinnerEnable
+    MUISpinnerDisable
+    MUISpinnerReset
+    MUISpinnerPause
+    MUISpinnerResume
+    MUISpinnerSpeed
+	;--------------------------------------
 	; ModernUI_Text Control
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	MUITextRegister
 	MUITextCreate
 	MUITextSetProperty
 	MUITextGetProperty
 	MUITextSetBufferSize
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	; ModernUI_Tooltip Control
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	MUITooltipRegister
 	MUITooltipCreate
 	MUITooltipSetProperty
 	MUITooltipGetProperty
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	; ModernUI_TrayMenu Control
-	;--------------------------------------------------------------------------
+	;--------------------------------------
 	MUITrayMenuRegister
 	MUITrayMenuCreate
 	MUITrayMenuSetProperty
@@ -217,4 +251,4 @@ EXPORTS
 	MUITrayIconSetTrayIcon
 	MUITrayIconSetTooltipText
 	MUITrayIconShowNotification
-;	MUITrayIconSetTrayIconText
+	;MUITrayIconSetTrayIconText

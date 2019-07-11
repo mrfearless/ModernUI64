@@ -38,7 +38,7 @@ MUI_ALIGN
 ; following style flags: WS_POPUP or WS_VISIBLE and optionally with DS_CENTER,
 ; DS_CENTERMOUSE, WS_CLIPCHILDREN, WS_CLIPSIBLINGS, WS_MINIMIZE, WS_MAXIMIZE
 ;------------------------------------------------------------------------------
-MUIApplyToDialog PROC FRAME hWin:QWORD, qwDropShadow:QWORD, qwClipping:QWORD
+MUIApplyToDialog PROC FRAME hWin:MUIWND, bDropShadow:BOOL, bClipping:BOOL
     LOCAL qwStyle:QWORD
     LOCAL qwNewStyle:QWORD
     LOCAL qwClassStyle:QWORD
@@ -83,7 +83,7 @@ MUIApplyToDialog PROC FRAME hWin:QWORD, qwDropShadow:QWORD, qwClipping:QWORD
         or qwNewStyle, WS_CLIPSIBLINGS
     .ENDIF        
     
-    .IF qwClipping == TRUE
+    .IF bClipping == TRUE
         mov rax, qwStyle
         and rax, WS_CLIPSIBLINGS
         .IF rax == WS_CLIPSIBLINGS
@@ -99,7 +99,7 @@ MUIApplyToDialog PROC FRAME hWin:QWORD, qwDropShadow:QWORD, qwClipping:QWORD
     Invoke GetClassLongPtr, hWin, GCL_STYLE
     mov qwClassStyle, rax
     
-    .IF qwDropShadow == TRUE
+    .IF bDropShadow == TRUE
         mov rax, qwClassStyle
         and rax, CS_DROPSHADOW
         .IF rax != CS_DROPSHADOW

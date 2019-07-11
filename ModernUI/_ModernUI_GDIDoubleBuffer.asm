@@ -54,7 +54,7 @@ MUI_ALIGN
 ;    Invoke MUIGDIDoubleBufferStart, hWin, hdc, Addr hdcMem, Addr rect, Addr hBufferBitmap 
 ;
 ;------------------------------------------------------------------------------
-MUIGDIDoubleBufferStart PROC FRAME USES RBX hWin:QWORD, hdcSource:QWORD, lpHDCBuffer:QWORD, lpClientRect:QWORD, lphBufferBitmap:QWORD
+MUIGDIDoubleBufferStart PROC FRAME USES RBX hWin:MUIWND, hdcSource:HDC, lpHDCBuffer:LPHDC, lpClientRect:LPRECT, lphBufferBitmap:LPHBITMAP
     LOCAL hdcBuffer:QWORD
     LOCAL hBufferBitmap:QWORD
 
@@ -105,7 +105,7 @@ MUI_ALIGN
 ;    Invoke EndPaint, hWin, Addr ps
 ;
 ;------------------------------------------------------------------------------
-MUIGDIDoubleBufferFinish PROC FRAME hdcBuffer:QWORD, hBufferBitmap:QWORD, hBitmapUsed:QWORD, hFontUsed:QWORD, hBrushUsed:QWORD, hPenUsed:QWORD
+MUIGDIDoubleBufferFinish PROC FRAME hdcBuffer:HDC, hBufferBitmap:HBITMAP, hBitmapUsed:HBITMAP, hFontUsed:HFONT, hBrushUsed:HBRUSH, hPenUsed:HPEN
     .IF hdcBuffer != 0
         Invoke RestoreDC, hdcBuffer, -1         ; restore last saved state, which is just after hdcBuffer was created
         .IF hBitmapUsed != 0

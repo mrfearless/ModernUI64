@@ -54,9 +54,9 @@ MUI_ALIGN
 ; lpFillRect is a pointer to a GDIPRECT containing the bounding box to fill
 ; dwFillColor is an ARGBCOLOR to paint fill the rectangle with
 ;------------------------------------------------------------------------------
-MUIGDIPlusPaintFill PROC FRAME pGraphics:QWORD, lpFillGdipRect:QWORD, qwFillColor:QWORD
+MUIGDIPlusPaintFill PROC FRAME pGraphics:GPGRAPHICS, lpFillGdipRect:LPGPRECT, FillColor:MUICOLORARGB
     LOCAL pBrush:QWORD
-    Invoke GdipCreateSolidFill, dword ptr qwFillColor, Addr pBrush
+    Invoke GdipCreateSolidFill, dword ptr FillColor, Addr pBrush
     Invoke GdipFillRectangle, pGraphics, pBrush, [lpFillGdipRect].GDIPRECT.left, [lpFillGdipRect].GDIPRECT.top, [lpFillGdipRect].GDIPRECT.right, [lpFillGdipRect].GDIPRECT.bottom
     Invoke GdipDeleteBrush, pBrush
     ret
@@ -69,9 +69,9 @@ MUI_ALIGN
 ; lpFillRectI is a pointer to a RECT containing the bounding box to fill
 ; dwFillColor is an ARGBCOLOR to paint fill the rectangle with
 ;------------------------------------------------------------------------------
-MUIGDIPlusPaintFillI PROC FRAME pGraphics:QWORD, lpFillRectI:QWORD, qwFillColor:QWORD
+MUIGDIPlusPaintFillI PROC FRAME pGraphics:GPGRAPHICS, lpFillRectI:LPRECT, FillColor:MUICOLORARGB
     LOCAL pBrush:QWORD
-    Invoke GdipCreateSolidFill, dword ptr qwFillColor, Addr pBrush
+    Invoke GdipCreateSolidFill, dword ptr FillColor, Addr pBrush
     Invoke GdipFillRectangleI, pGraphics, pBrush, [lpFillRectI].RECT.left, [lpFillRectI].RECT.top, [lpFillRectI].RECT.right, [lpFillRectI].RECT.bottom
     Invoke GdipDeleteBrush, pBrush
     ret

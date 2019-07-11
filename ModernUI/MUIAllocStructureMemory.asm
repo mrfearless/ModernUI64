@@ -53,7 +53,7 @@ MUI_ALIGN
 ; On return eax contains the pointer to the new structure item or -1 if there 
 ; was a problem alloc'ing memory.
 ;------------------------------------------------------------------------------
-MUIAllocStructureMemory PROC FRAME USES RBX qwPtrStructMem:QWORD, TotalItems:QWORD, ItemSize:QWORD
+MUIAllocStructureMemory PROC FRAME USES RBX PtrStructMem:POINTER, TotalItems:MUIVALUE, ItemSize:MUIVALUE
     LOCAL StructDataOffset:QWORD
     LOCAL StructSize:QWORD
     LOCAL StructData:QWORD
@@ -63,7 +63,7 @@ MUIAllocStructureMemory PROC FRAME USES RBX qwPtrStructMem:QWORD, TotalItems:QWO
         Invoke GlobalAlloc, GMEM_FIXED+GMEM_ZEROINIT, ItemSize ;
         .IF rax != NULL
             mov StructData, rax
-            mov rbx, qwPtrStructMem
+            mov rbx, PtrStructMem
             mov [rbx], rax ; save pointer to memory alloc'd for structure
             mov StructDataOffset, 0 ; save offset for new entry
             ;IFDEF DEBUG32
@@ -78,7 +78,7 @@ MUIAllocStructureMemory PROC FRAME USES RBX qwPtrStructMem:QWORD, TotalItems:QWO
         .ENDIF
     .ELSE
         
-        .IF qwPtrStructMem != NULL
+        .IF PtrStructMem != NULL
         
             ; calc new size to grow structure and offset to new entry
             mov rax, TotalItems
@@ -90,7 +90,7 @@ MUIAllocStructureMemory PROC FRAME USES RBX qwPtrStructMem:QWORD, TotalItems:QWO
             sub rax, rbx
             mov StructDataOffset, rax ; save offset for new entry
             
-            mov rbx, qwPtrStructMem ; get value from addr of passed dword dwPtrStructMem into eax, this is our pointer to previous mem location of structure
+            mov rbx, PtrStructMem ; get value from addr of passed dword dwPtrStructMem into eax, this is our pointer to previous mem location of structure
             mov rax, [rbx]
             mov StructData, rax
             ;IFDEF DEBUG32
@@ -107,7 +107,7 @@ MUIAllocStructureMemory PROC FRAME USES RBX qwPtrStructMem:QWORD, TotalItems:QWO
                 Invoke GlobalLock, rax
                 mov StructData, rax
                 
-                mov rbx, qwPtrStructMem
+                mov rbx, PtrStructMem
                 mov [rbx], rax ; save new pointer to memory alloc'd for structure back to dword address passed as dwPtrStructMem
             .ELSE
                 IFDEF DEBUG64

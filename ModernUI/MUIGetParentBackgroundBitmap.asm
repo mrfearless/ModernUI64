@@ -39,7 +39,7 @@ MUI_ALIGN
 ; size. For use in setting background of child to 'transparent'
 ; Returns in eax hBitmap or NULL
 ;------------------------------------------------------------------------------
-MUIGetParentBackgroundBitmap PROC FRAME hControl:QWORD
+MUIGetParentBackgroundBitmap PROC FRAME hWin:MUIWND
     LOCAL rcWin:RECT
     LOCAL rcWnd:RECT
     LOCAL parWnd:QWORD
@@ -50,12 +50,12 @@ MUIGetParentBackgroundBitmap PROC FRAME hControl:QWORD
 	LOCAL qwWidth:QWORD
 	LOCAL qwHeight:QWORD      
 
-    Invoke GetParent, hControl; // Get the parent window.
+    Invoke GetParent, hWin; // Get the parent window.
     mov parWnd, rax
     Invoke GetDC, parWnd; // Get its DC.
     mov parDc, rax 
     ;Invoke UpdateWindow, hWnd
-    Invoke GetWindowRect, hControl, Addr rcWnd;
+    Invoke GetWindowRect, hWin, Addr rcWnd;
     Invoke ScreenToClient, parWnd, Addr rcWnd; // Convert to the parent's co-ordinates
     Invoke GetClipBox, parDc, Addr rcWin
     ; Copy from parent DC.

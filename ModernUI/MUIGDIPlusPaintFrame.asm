@@ -75,42 +75,42 @@ MUI_ALIGN
 ; - MUIPFS_RIGHT
 ; - MUIPFS_ALL
 ;------------------------------------------------------------------------------
-MUIGDIPlusPaintFrame PROC FRAME pGraphics:QWORD, lpFrameGdipRect:QWORD, qwFrameColor:QWORD, qwFrameStyle:QWORD
+MUIGDIPlusPaintFrame PROC FRAME pGraphics:GPGRAPHICS, lpFrameGdipRect:LPGPRECT, FrameColor:MUICOLORARGB, FrameStyle:MUIPFS
     LOCAL pPen:QWORD
     
-    .IF dword ptr qwFrameColor != -1
-        .IF qwFrameStyle != MUIPFS_NONE
-            mov rax, qwFrameStyle
+    .IF FrameColor != -1
+        .IF FrameStyle != MUIPFS_NONE
+            mov rax, FrameStyle
             and rax, MUIPFS_ALL
             .IF rax == MUIPFS_ALL
                 ;--------------------------------------------------------------
                 ; Paint entire frame
                 ;--------------------------------------------------------------
-                Invoke GdipCreatePen1, dword ptr qwFrameColor, FP4(1.0), UnitPixel, Addr pPen
+                Invoke GdipCreatePen1, dword ptr FrameColor, FP4(1.0), UnitPixel, Addr pPen
                 Invoke GdipDrawRectangleI, pGraphics, pPen, [lpFrameGdipRect].GDIPRECT.left, [lpFrameGdipRect].GDIPRECT.top, [lpFrameGdipRect].GDIPRECT.right, [lpFrameGdipRect].GDIPRECT.bottom
                 Invoke GdipDeletePen, pPen
             .ELSE
                 ;--------------------------------------------------------------
                 ; Paint only certain parts of the frame
                 ;--------------------------------------------------------------
-                Invoke GdipCreatePen1, dword ptr qwFrameColor, FP4(1.0), UnitPixel, Addr pPen
+                Invoke GdipCreatePen1, dword ptr FrameColor, FP4(1.0), UnitPixel, Addr pPen
                 
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_TOP
                 .IF rax == MUIPFS_TOP
                     Invoke GdipDrawLine, pGraphics, pPen, [lpFrameGdipRect].GDIPRECT.left, [lpFrameGdipRect].GDIPRECT.top, [lpFrameGdipRect].GDIPRECT.right, [lpFrameGdipRect].GDIPRECT.top
                 .ENDIF
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_RIGHT
                 .IF rax == MUIPFS_RIGHT
                     Invoke GdipDrawLine, pGraphics, pPen, [lpFrameGdipRect].GDIPRECT.right, [lpFrameGdipRect].GDIPRECT.top, [lpFrameGdipRect].GDIPRECT.right, [lpFrameGdipRect].GDIPRECT.bottom
                 .ENDIF
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_BOTTOM
                 .IF rax == MUIPFS_BOTTOM
                     Invoke GdipDrawLine, pGraphics, pPen, [lpFrameGdipRect].GDIPRECT.left, [lpFrameGdipRect].GDIPRECT.bottom, [lpFrameGdipRect].GDIPRECT.right, [lpFrameGdipRect].GDIPRECT.bottom
                 .ENDIF
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_LEFT
                 .IF rax == MUIPFS_LEFT
                     Invoke GdipDrawLine, pGraphics, pPen, [lpFrameGdipRect].GDIPRECT.left, [lpFrameGdipRect].GDIPRECT.top, [lpFrameGdipRect].GDIPRECT.left, [lpFrameGdipRect].GDIPRECT.bottom
@@ -139,42 +139,42 @@ MUI_ALIGN
 ; - MUIPFS_RIGHT
 ; - MUIPFS_ALL
 ;------------------------------------------------------------------------------
-MUIGDIPlusPaintFrameI PROC FRAME pGraphics:QWORD, lpFrameRectI:QWORD, qwFrameColor:QWORD, qwFrameStyle:QWORD
+MUIGDIPlusPaintFrameI PROC FRAME pGraphics:GPGRAPHICS, lpFrameRectI:LPRECT, FrameColor:MUICOLORARGB, FrameStyle:MUIPFS
     LOCAL pPen:QWORD
     
-    .IF dword ptr qwFrameColor != -1
-        .IF qwFrameStyle != MUIPFS_NONE
-            mov rax, qwFrameStyle
+    .IF FrameColor != -1
+        .IF FrameStyle != MUIPFS_NONE
+            mov rax, FrameStyle
             and rax, MUIPFS_ALL
             .IF rax == MUIPFS_ALL
                 ;--------------------------------------------------------------
                 ; Paint entire frame
                 ;--------------------------------------------------------------
-                Invoke GdipCreatePen1, dword ptr qwFrameColor, FP4(1.0), UnitPixel, Addr pPen
+                Invoke GdipCreatePen1, dword ptr FrameColor, FP4(1.0), UnitPixel, Addr pPen
                 Invoke GdipDrawRectangleI, pGraphics, pPen, [lpFrameRectI].RECT.left, [lpFrameRectI].RECT.top, [lpFrameRectI].RECT.right, [lpFrameRectI].RECT.bottom
                 Invoke GdipDeletePen, pPen
             .ELSE
                 ;--------------------------------------------------------------
                 ; Paint only certain parts of the frame
                 ;--------------------------------------------------------------
-                Invoke GdipCreatePen1, dword ptr qwFrameColor, FP4(1.0), UnitPixel, Addr pPen
+                Invoke GdipCreatePen1, dword ptr FrameColor, FP4(1.0), UnitPixel, Addr pPen
                 
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_TOP
                 .IF rax == MUIPFS_TOP
                     Invoke GdipDrawLineI, pGraphics, pPen, [lpFrameRectI].RECT.left, [lpFrameRectI].RECT.top, [lpFrameRectI].RECT.right, [lpFrameRectI].RECT.top
                 .ENDIF
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_RIGHT
                 .IF rax == MUIPFS_RIGHT
                     Invoke GdipDrawLineI, pGraphics, pPen, [lpFrameRectI].RECT.right, [lpFrameRectI].RECT.top, [lpFrameRectI].RECT.right, [lpFrameRectI].RECT.bottom
                 .ENDIF
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_BOTTOM
                 .IF rax == MUIPFS_BOTTOM
                     Invoke GdipDrawLineI, pGraphics, pPen, [lpFrameRectI].RECT.left, [lpFrameRectI].RECT.bottom, [lpFrameRectI].RECT.right, [lpFrameRectI].RECT.bottom
                 .ENDIF
-                mov rax, qwFrameStyle
+                mov rax, FrameStyle
                 and rax, MUIPFS_LEFT
                 .IF rax == MUIPFS_LEFT
                     Invoke GdipDrawLineI, pGraphics, pPen, [lpFrameRectI].RECT.left, [lpFrameRectI].RECT.top, [lpFrameRectI].RECT.left, [lpFrameRectI].RECT.bottom

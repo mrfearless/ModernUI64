@@ -46,7 +46,7 @@ MUI_ALIGN
 ; Convert normal RECT structure to GDIPRECT structure.
 ; Pass Addr of RECT struct (to convert from) & Addr of GDIPRECT Struct to convert to
 ;-------------------------------------------------------------------------------------
-MUIGDIPlusRectToGdipRect PROC FRAME USES RBX RDX lpRect:QWORD, lpGdipRect:QWORD
+MUIGDIPlusRectToGdipRect PROC FRAME USES RBX RDX lpRect:LPRECT, lpGdipRect:LPGPRECT
     mov rbx, lpRect
     mov rdx, lpGdipRect
     finit

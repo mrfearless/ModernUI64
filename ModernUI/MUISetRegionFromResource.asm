@@ -29,7 +29,7 @@ includelib gdi32.lib
 
 include ModernUI.inc
 
-EXTERNDEF MUILoadRegionFromResource :PROTO :QWORD,:QWORD,:QWORD,:QWORD
+EXTERNDEF MUILoadRegionFromResource :PROTO hInst:HINSTANCE, idRgnRes:RESID, lpRegionData:POINTER, lpSizeRegionData:LPMUIVALUE
 
 .CODE
 
@@ -40,7 +40,7 @@ MUI_ALIGN
 ; idRgnRes if lpdwCopyRgn != NULL a copy of region handle is provided (for any
 ; future calls to FrameRgn for example)
 ;------------------------------------------------------------------------------
-MUISetRegionFromResource PROC FRAME USES RBX hWin:QWORD, idRgnRes:QWORD, lpqwCopyRgn:QWORD, bRedraw:QWORD
+MUISetRegionFromResource PROC FRAME USES RBX hWin:MUIWND, idRgnRes:RESID, lpCopyRgnHandle:LPMUIVALUE, bRedraw:BOOL
     LOCAL hinstance:QWORD
     LOCAL ptrRegionData:QWORD
     LOCAL qwRegionDataSize:QWORD
@@ -56,9 +56,9 @@ MUISetRegionFromResource PROC FRAME USES RBX hWin:QWORD, idRgnRes:QWORD, lpqwCop
     
     Invoke MUILoadRegionFromResource, hinstance, idRgnRes, Addr ptrRegionData, Addr qwRegionDataSize
     .IF rax == FALSE
-        .IF lpqwCopyRgn != NULL
+        .IF lpCopyRgnHandle != NULL
             mov rax, NULL
-            mov rbx, lpqwCopyRgn
+            mov rbx, lpCopyRgnHandle
             mov [rbx], rax
         .ENDIF
         mov rax, FALSE    
@@ -69,9 +69,9 @@ MUISetRegionFromResource PROC FRAME USES RBX hWin:QWORD, idRgnRes:QWORD, lpqwCop
     Invoke ExtCreateRegion, NULL, dword ptr qwRegionDataSize, ptrRegionData
     mov hRgn, rax
     .IF rax == NULL
-        .IF lpqwCopyRgn != NULL
+        .IF lpCopyRgnHandle != NULL
             mov rax, NULL
-            mov rbx, lpqwCopyRgn
+            mov rbx, lpCopyRgnHandle
             mov [rbx], rax
         .ENDIF
         mov rax, FALSE
@@ -79,10 +79,10 @@ MUISetRegionFromResource PROC FRAME USES RBX hWin:QWORD, idRgnRes:QWORD, lpqwCop
     .ENDIF
     Invoke SetWindowRgn, hWin, hRgn, dword ptr bRedraw
     
-    .IF lpqwCopyRgn != NULL
+    .IF lpCopyRgnHandle != NULL
         Invoke ExtCreateRegion, NULL, dword ptr qwRegionDataSize, ptrRegionData
         mov hRgn, rax
-        mov rbx, lpqwCopyRgn
+        mov rbx, lpCopyRgnHandle
         mov [ebx], rax
     .ENDIF
 

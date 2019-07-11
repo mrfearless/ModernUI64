@@ -41,7 +41,7 @@ MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; Start Double Buffering for GDI+
 ;------------------------------------------------------------------------------
-MUIGDIPlusDoubleBufferStart PROC FRAME USES RBX hWin:QWORD, pGraphics:QWORD, lpBitmapHandle:QWORD, lpGraphicsBuffer:QWORD
+MUIGDIPlusDoubleBufferStart PROC FRAME USES RBX hWin:MUIWND, pGraphics:GPGRAPHICS, lpBitmapHandle:LPGPIMAGE, lpGraphicsBuffer:LPGPGRAPHICS
     LOCAL rect:RECT
     LOCAL pBuffer:QWORD
     LOCAL pBitmap:QWORD
@@ -70,13 +70,13 @@ MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; Finish Double Buffering for GDI+ & copy finished pGraphicsBuffer to pGraphics (HDC)
 ;------------------------------------------------------------------------------
-MUIGDIPlusDoubleBufferFinish PROC FRAME hWin:QWORD, pGraphics:QWORD, hBitmap:QWORD, pGraphicsBuffer:QWORD
+MUIGDIPlusDoubleBufferFinish PROC FRAME hWin:MUIWND, pGraphics:GPGRAPHICS, pBitmap:GPIMAGE, pGraphicsBuffer:GPGRAPHICS
     LOCAL rect:RECT
     
     Invoke GetClientRect, hWin, Addr rect
-    Invoke GdipDrawImageRectI, pGraphics, hBitmap, 0, 0, rect.right, rect.bottom
+    Invoke GdipDrawImageRectI, pGraphics, pBitmap, 0, 0, rect.right, rect.bottom
     Invoke GdipDeleteGraphics, pGraphicsBuffer   
-    invoke GdipDisposeImage, hBitmap
+    invoke GdipDisposeImage, pBitmap
     xor eax, eax
     ret
 MUIGDIPlusDoubleBufferFinish ENDP

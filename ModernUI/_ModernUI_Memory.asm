@@ -36,16 +36,16 @@ MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; Allocs memory for the properties of a control
 ;------------------------------------------------------------------------------
-MUIAllocMemProperties PROC FRAME hControl:QWORD, cbWndExtraOffset:QWORD, qwSize:QWORD
+MUIAllocMemProperties PROC FRAME hWin:MUIWND, cbWndExtraOffset:MUIPROPERTIES, SizeToAllocate:MUIVALUE
     LOCAL pMem:QWORD
-    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, qwSize
+    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, SizeToAllocate
     .IF rax == NULL
         mov rax, FALSE
         ret
     .ENDIF
     mov pMem, rax
     
-    Invoke SetWindowLongPtr, hControl, cbWndExtraOffset, pMem
+    Invoke SetWindowLongPtr, hWin, cbWndExtraOffset, pMem
     
     mov rax, TRUE
     ret
@@ -56,11 +56,11 @@ MUI_ALIGN
 ;------------------------------------------------------------------------------
 ; Frees memory for the properties of a control
 ;------------------------------------------------------------------------------
-MUIFreeMemProperties PROC FRAME hControl:QWORD, cbWndExtraOffset:QWORD
-    Invoke GetWindowLongPtr, hControl, cbWndExtraOffset
+MUIFreeMemProperties PROC FRAME hWin:MUIWND, cbWndExtraOffset:MUIPROPERTIES
+    Invoke GetWindowLongPtr, hWin, cbWndExtraOffset
     .IF rax != NULL
         invoke GlobalFree, rax
-        Invoke SetWindowLongPtr, hControl, cbWndExtraOffset, 0
+        Invoke SetWindowLongPtr, hWin, cbWndExtraOffset, 0
         mov rax, TRUE
     .ELSE
         mov rax, FALSE

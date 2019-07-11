@@ -86,12 +86,12 @@ Group=Assembly,Resources
 10=
 11=
 [AutoLoad]
-AutoLoad=2,4,1,5
+AutoLoad=2
 [Size]
-5=0,0,0,0,162
-4=0,0,0,0,7064
-1=0,0,0,0,1991
-2=0,0,0,0,1693
+5=0,0,0,0,406
+4=0,0,0,0,2648
+1=0,0,0,0,3989
+2=0,0,0,0,113
 [RADebugBP]
 4=
 2=
@@ -101,7 +101,7 @@ AutoLoad=2,4,1,5
 1="MUILoadPngFromResource"
 2="ImageType"
 [VersionControl]
-Settings=1279
+Settings=1148
 Milestones=129
 MilestoneEvery=10
 MilestoneEveryCurrent=0
@@ -110,7 +110,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=12
 MilestoneOnDateTimeYear=2019
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=3
@@ -134,7 +134,7 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=3171406
+PTimer=3530426
 [Collapse]
 4=
 1=
