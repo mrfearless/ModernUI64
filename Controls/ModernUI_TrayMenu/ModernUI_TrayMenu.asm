@@ -1688,7 +1688,6 @@ _MUI_TM_IconText PROC FRAME lpszText:QWORD, lpszFont:QWORD, qwTextColorRGB:QWORD
     LOCAL hFont:QWORD
     LOCAL hFontOld:QWORD
 
-    
     Invoke lstrlen, lpszText
     mov lentext, eax
     
@@ -1715,7 +1714,7 @@ _MUI_TM_IconText PROC FRAME lpszText:QWORD, lpszFont:QWORD, qwTextColorRGB:QWORD
     mov hbrBkgnd, rax
     Invoke FillRect, hMemDC, Addr cbox, hbrBkgnd
     Invoke DeleteObject, hbrBkgnd
-    ;Invoke GetStockObject, DEFAULT_GUI_FONT
+
     .IF lpszFont == NULL
         lea rax, szMUITrayMenuFont
     .ELSE
@@ -1725,9 +1724,7 @@ _MUI_TM_IconText PROC FRAME lpszText:QWORD, lpszFont:QWORD, qwTextColorRGB:QWORD
     mov hFont, rax
     Invoke SelectObject, hMemDC, hFont
     mov hFontOld, rax    
-    
-    
-    ;Invoke SelectObject, hMemDC, eax
+
     Invoke SetBkColor, hMemDC, MUI_RGBCOLOR(72,72,72) ;RGBCOLOR(0,0,0)
     Invoke SetTextColor, hMemDC, dword ptr qwTextColorRGB ;RGBCOLOR(118,198,238) ;RGBCOLOR(255,255,255)
     Invoke DrawText, hMemDC, lpszText, lentext, Addr cbox, DT_SINGLELINE or DT_VCENTER or DT_CENTER
@@ -1745,9 +1742,9 @@ _MUI_TM_IconText PROC FRAME lpszText:QWORD, lpszFont:QWORD, qwTextColorRGB:QWORD
     Invoke BitBlt, hdcMem2, 0, 0, cbox.right, cbox.bottom, hMemDC, 0, 0, SRCCOPY
     
     ;// Clean up
+    Invoke SelectObject, hdcMem2, hbmMaskOld
+    Invoke DeleteObject, hbmMaskOld
     Invoke DeleteDC, hdcMem2
-    Invoke DeleteDC, hMemDC
-    Invoke DeleteDC, hdc    
     
     mov ii.fIcon, TRUE
     mov ii.xHotspot, 0
@@ -1761,30 +1758,20 @@ _MUI_TM_IconText PROC FRAME lpszText:QWORD, lpszFont:QWORD, qwTextColorRGB:QWORD
     Invoke CreateIconIndirect, Addr ii
     mov hAlphaCursor, rax
 
-    Invoke DeleteObject, hFont
-    Invoke DeleteObject, hFontOld
+    Invoke SelectObject, hMemDC, hBitmapOld
+    Invoke DeleteObject, hBitmapOld
     Invoke DeleteObject, hBitmap
+    
+    Invoke SelectObject, hMemDC, hFontOld
+    Invoke DeleteObject, hFontOld
+    Invoke DeleteObject, hFont
+    
+    ;Invoke SelectObject, hdcMem2, hbmMaskOld
+    ;Invoke DeleteObject, hbmMaskOld
     Invoke DeleteObject, hbmMask
-    Invoke DeleteObject, hbmMaskOld
-    Invoke DeleteObject, hbrBkgnd
-
-;    ;Invoke SelectObject, hdcMem2, hbmMaskOld ; deselect mask
-;    ;Invoke DeleteObject, eax
-;    Invoke DeleteObject, hbmMask
-;    Invoke DeleteDC, hdcMem2    
-;    
-;    ;Invoke SelectObject, hMemDC, hBitmapOld ; deselect bitmap
-;    ;Invoke DeleteObject, eax
-;    ;Invoke SelectObject, hMemDC, hFontOld ; deselect font
-;    ;Invoke DeleteObject, eax
-;    Invoke DeleteDC, hMemDC
-;    Invoke DeleteObject, hBitmap
-;    Invoke DeleteObject, hFont
-;    Invoke DeleteObject, hbrBkgnd
-;    Invoke DeleteObject, hbmMaskOld
-;    Invoke DeleteObject, hBitmapOld
-;    Invoke DeleteObject, hFontOld
-;    Invoke DeleteDC, hdc
+    
+    Invoke DeleteDC, hMemDC
+    Invoke DeleteDC, hdc
 
     mov rax, hAlphaCursor
     ret
