@@ -1,0 +1,163 @@
+include windows.inc
+include CommCtrl.inc
+include shellapi.inc
+
+includelib user32.lib
+includelib kernel32.lib
+includelib gdi32.lib
+includelib comctl32.lib
+includelib shell32.lib
+
+include ModernUI.inc
+includelib ModernUI.lib
+
+include ModernUI_CaptionBar.inc
+includelib ModernUI_CaptionBar.lib
+
+include ModernUI_Spinner.inc
+includelib ModernUI_Spinner.lib
+
+;-----------------------------------------------------------------------------------------
+; MUISpinner1 Prototypes
+;-----------------------------------------------------------------------------------------
+
+
+
+.CONST
+;-----------------------------------------------------------------------------------------
+; MUISpinner1 Constants
+;-----------------------------------------------------------------------------------------
+ICO_MAIN                EQU 100
+BMP_BACKIMAGE           EQU 101
+
+BMP_SPIN1               EQU 201 ; "Images/FramesSpinners/squares-circle-grey 1.bmp"
+BMP_SPIN2               EQU 202 ; "Images/FramesSpinners/squares-circle-grey 2.bmp"
+BMP_SPIN3               EQU 203 ; "Images/FramesSpinners/squares-circle-grey 3.bmp"
+BMP_SPIN4               EQU 204 ; "Images/FramesSpinners/squares-circle-grey 4.bmp"
+BMP_SPIN5               EQU 205 ; "Images/FramesSpinners/squares-circle-grey 5.bmp"
+BMP_SPIN6               EQU 206 ; "Images/FramesSpinners/squares-circle-grey 6.bmp"
+BMP_SPIN7               EQU 207 ; "Images/FramesSpinners/squares-circle-grey 7.bmp"
+BMP_SPIN8               EQU 208 ; "Images/FramesSpinners/squares-circle-grey 8.bmp"
+
+PNG_SPIN2               EQU 402 ; "Images/SingleImageSpinners/small_12fadelines_spinner.png" - small segment fading
+PNG_SPIN3               EQU 403 ; "Images/SingleImageSpinners/fadedcircle_spinner64x64.png" - faded circle
+PNG_SPIN4               EQU 404 ; "Images/SingleImageSpinners/green_3recyclearrows_spinner64x64.png" - 3 recycle green arrows
+PNG_SPIN5               EQU 405 ; "Images/SingleImageSpinners/brokenwheel_12faded_spinner64x64.png" - 12 segments fading
+PNG_SPIN6               EQU 406 ; "Images/SingleImageSpinners/blue_circlearrows64x64.png" - blue with arrows
+PNG_SPIN7               EQU 407 ; "Images/SingleImageSpinners/large_gear_spinner64x64.png" - large gear
+PNG_SPIN8               EQU 408 ; "Images/SingleImageSpinners/green_3arrows_spinner48x48.png" - 3 green arrows
+PNG_SPIN7B              EQU 409 ; "Images/SingleImageSpinners/small_gear_spinner32x322.png" - small gear
+
+PNG_CLOCK1              EQU 501 ; "Images/FramesSpinners/832/832 01.png"
+PNG_CLOCK2              EQU 502 ; 
+PNG_CLOCK3              EQU 503 ; 
+PNG_CLOCK4              EQU 504 ; 
+PNG_CLOCK5              EQU 505 ; 
+PNG_CLOCK6              EQU 506 ; 
+PNG_CLOCK7              EQU 507 ; 
+PNG_CLOCK8              EQU 508 ; 
+PNG_CLOCK9              EQU 509 ; 
+PNG_CLOCK10             EQU 510 ; 
+PNG_CLOCK11             EQU 511 ; 
+PNG_CLOCK12             EQU 512 ; 
+PNG_CLOCK13             EQU 513 ; 
+PNG_CLOCK14             EQU 514 ; 
+PNG_CLOCK15             EQU 515 ; 
+PNG_CLOCK16             EQU 516 ; 
+PNG_CLOCK17             EQU 517 ; 
+PNG_CLOCK18             EQU 518 ; 
+PNG_CLOCK19             EQU 519 ; 
+PNG_CLOCK20             EQU 520 ; 
+PNG_CLOCK21             EQU 521 ; 
+PNG_CLOCK22             EQU 522 ; 
+PNG_CLOCK23             EQU 523 ; 
+PNG_CLOCK24             EQU 524 ; "Images/FramesSpinners/832/832 24.png"
+
+BMP_CLOCK_SPRITESHEET   EQU 600 ; "Images/SpritesheetSpinners/clock_grey_spritesheet1782x81.bmp"
+PNG_CLOCK_SPRITESHEET   EQU 601 ; "Images/SpritesheetSpinners/clock_spritesheet1782x81.png"
+PNG_INFINITY_SPRITESHEET EQU 602 ; "Images/SpritesheetSpinners/infinity_spritesheet1280x39.png"
+PNG_SEARCH_SPRITESHEET  EQU 603 ; "Images/SpritesheetSpinners/green_searcharrow_spritesheet1152x64.png"
+
+; Main Dialog
+IDD_DIALOG              EQU 1000
+IDC_CAPTIONBAR          EQU 1001
+
+IDC_SPINNER1            EQU 1101
+IDC_SPINNER2            EQU 1102
+IDC_SPINNER3            EQU 1103
+IDC_SPINNER4            EQU 1104
+IDC_SPINNER5            EQU 1105
+IDC_SPINNER6            EQU 1106
+IDC_SPINNER7            EQU 1107
+IDC_SPINNER8            EQU 1108
+IDC_SPINNER9            EQU 1109
+IDC_SPINNER7B           EQU 1110
+
+IDC_SPINNERSPRITE1      EQU 1121
+IDC_SPINNERSPRITE2      EQU 1122
+IDC_SPINNERSPRITE3      EQU 1123
+IDC_SPINNERSPRITE4      EQU 1124
+
+
+; Main Menu 
+IDM_MENU                EQU 10000
+IDM_FILE_EXIT           EQU 10001
+IDM_HELP_ABOUT          EQU 10101
+
+
+
+.DATA
+;-----------------------------------------------------------------------------------------
+; MUISpinner1 Initialized Data
+;-----------------------------------------------------------------------------------------
+align 01
+ClassName				DB 'DLGCLASS',0
+AppName					DB 'ModernUI_Spinner Control Examples',0
+AboutMsg				DB 'Copyright © fearless 2019',0
+
+bSpinner1Pause          DQ FALSE
+bSpinner2Pause          DQ FALSE
+bSpinner3Pause          DQ FALSE
+bSpinner4Pause          DQ FALSE
+bSpinner5Pause          DQ FALSE
+bSpinner6Pause          DQ FALSE
+bSpinner7Pause          DQ FALSE
+bSpinner8Pause          DQ FALSE
+bSpinner9Pause          DQ FALSE
+bSpinner7bPause         DQ FALSE
+bSpinnerSprite1Pause    DQ FALSE
+bSpinnerSprite2Pause    DQ FALSE
+bSpinnerSprite3Pause    DQ FALSE
+bSpinnerSprite4Pause    DQ FALSE
+
+
+
+.DATA?
+;-----------------------------------------------------------------------------------------
+; MUISpinner1 Uninitialized Data
+;-----------------------------------------------------------------------------------------
+align 08
+icc 					INITCOMMONCONTROLSEX <>
+hInstance				HINSTANCE ?
+CommandLine				LPSTR ?
+hWnd					HWND ?
+hCaptionBar             DQ ?
+hSpinner1               DQ ?
+hSpinner2               DQ ?
+hSpinner3               DQ ?
+hSpinner4               DQ ?
+hSpinner5               DQ ?
+hSpinner6               DQ ?
+hSpinner7               DQ ?
+hSpinner7b              DQ ?
+hSpinner8               DQ ?
+hSpinner9               DQ ?
+hSpinnerSprite1         DQ ?
+hSpinnerSprite2         DQ ?
+hSpinnerSprite3         DQ ?
+hSpinnerSprite4         DQ ?
+hBackImage              DQ ?
+
+
+
+

@@ -10,6 +10,11 @@
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;
+;
+; NOTE: GDI+ in x64 shows some fuzzyness with images and image manipulation and results in loaded png images being cut off or slightly
+; mishaped. Recommend any use of spinners uses BMP or ICO for frames and Spritesheets. Avoid png spritesheets and single image rotate
+; spinners that use GDI+ and rotation to achive spinner look
+;
 ;======================================================================================================================================
 .686
 .MMX
@@ -24,18 +29,30 @@ option stackbase : rsp
 _WIN64 EQU 1
 WINVER equ 0501h
 
-DEBUG64 EQU 1
+;DEBUG64 EQU 1
+;
+;IFDEF DEBUG64
+;    PRESERVEXMMREGS equ 1
+;    includelib \UASM\lib\x64\Debug64.lib
+;    DBG64LIB equ 1
+;    DEBUGEXE textequ <'\UASM\bin\DbgWin.exe'>
+;    include \UASM\include\debug64.inc
+;    .DATA
+;    RDBG_DbgWin	DB DEBUGEXE,0
+;    .CODE
+;ENDIF
 
-IFDEF DEBUG64
-    PRESERVEXMMREGS equ 1
-    includelib \UASM\lib\x64\Debug64.lib
-    DBG64LIB equ 1
-    DEBUGEXE textequ <'\UASM\bin\DbgWin.exe'>
-    include \UASM\include\debug64.inc
-    .DATA
-    RDBG_DbgWin	DB DEBUGEXE,0
-    .CODE
-ENDIF
+
+    FP8 MACRO value
+    LOCAL vname
+    .data
+    align 4
+      vname REAL8 value
+    .code
+    EXITM <vname>
+    ENDM
+
+
 
 include windows.inc
 includelib user32.lib
@@ -249,9 +266,9 @@ MUISpinnerCreate PROC FRAME hWndParent:QWORD, xpos:QWORD, ypos:QWORD, controlwid
 	
     mov rax, qwStyle
     mov qwNewStyle, rax
-    and rax, WS_CHILD or WS_CLIPCHILDREN
-    .IF rax != WS_CHILD or WS_CLIPCHILDREN
-        or qwNewStyle, WS_CHILD or WS_CLIPCHILDREN
+    and rax, WS_CHILD or WS_CLIPCHILDREN or WS_VISIBLE
+    .IF rax != WS_CHILD or WS_CLIPCHILDREN or WS_VISIBLE
+        or qwNewStyle, WS_CHILD or WS_CLIPCHILDREN or WS_VISIBLE
     .ENDIF
     
     Invoke CreateWindowEx, NULL, Addr szMUISpinnerClass, NULL, dword ptr qwNewStyle, dword ptr xpos, dword ptr ypos, dword ptr controlwidth, dword ptr controlheight, hWndParent, qwResourceID, hinstance, NULL
@@ -272,7 +289,7 @@ _MUI_SpinnerWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lPa
     
     mov eax, uMsg
     .IF eax == WM_NCCREATE
-        mov rbx, lParam
+        ;mov rbx, lParam
 		; sets text of our control, delete if not required.
         ;Invoke SetWindowText, hWin, (CREATESTRUCT PTR [rbx]).lpszName	
         mov rax, TRUE
@@ -308,7 +325,7 @@ _MUI_SpinnerWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lPa
         ret
 
     .ELSEIF eax== WM_SETCURSOR
-        Invoke GetWindowLong, hWin, GWL_STYLE
+        Invoke GetWindowLongPtr, hWin, GWL_STYLE
         and rax, MUISPNS_HAND
         .IF rax == MUISPNS_HAND
             invoke LoadCursor, NULL, IDC_HAND
@@ -326,7 +343,7 @@ _MUI_SpinnerWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lPa
 		Invoke GetParent, hWin
 		Invoke PostMessage, rax, WM_COMMAND, rbx, hWin
 
-   .ELSEIF rax == WM_MOUSEMOVE
+   .ELSEIF eax == WM_MOUSEMOVE
 		Invoke MUISetIntProperty, hWin, @SpinnerMouseOver, TRUE
 		.IF rax != TRUE
 		    Invoke InvalidateRect, hWin, NULL, TRUE
@@ -423,10 +440,10 @@ _MUI_SpinnerInit PROC FRAME hWin:QWORD
     ; get style and check it is our default at least
     Invoke GetWindowLongPtr, hWin, GWL_STYLE
     mov qwStyle, rax
-    and rax, WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
-    .IF rax != WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
+    and rax, WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_VISIBLE
+    .IF rax != WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_VISIBLE
         mov rax, qwStyle
-        or rax, WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN
+        or rax, WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_VISIBLE
         mov qwStyle, rax
         Invoke SetWindowLongPtr, hWin, GWL_STYLE, qwStyle
     .ENDIF
@@ -437,7 +454,7 @@ _MUI_SpinnerInit PROC FRAME hWin:QWORD
     .IF rax == -1 ; if background was NULL then try a color as default
         Invoke GetSysColor, COLOR_WINDOW
     .ENDIF
-    Invoke MUISetExtProperty, hWin, @SpinnerBackColor, rax ;MUI_RGBCOLOR(255,255,255)
+    Invoke MUISetExtProperty, hWin, @SpinnerBackColor, eax ;MUI_RGBCOLOR(255,255,255)
     ;Invoke MUISetExtProperty, hWin, @SpinnerBackColor, MUI_RGBCOLOR(255,255,255)
     Invoke MUISetExtProperty, hWin, @SpinnerSpeed, SPINNER_TIME_INTERVAL
     
@@ -502,12 +519,18 @@ _MUI_SpinnerCleanup PROC FRAME USES RBX hWin:QWORD
                 mov rax, qwImageType
                 .IF rax == MUISPIT_BMP
                     ;PrintText 'Deleteing bitmap'
-                    Invoke DeleteObject, hImage
-                .ELSEIF eax == MUISPIT_ICO
-                    Invoke DestroyIcon, hImage
-                .ELSEIF eax == MUISPIT_PNG
+                    .IF hImage != NULL
+                        Invoke DeleteObject, hImage
+                    .ENDIF
+                .ELSEIF rax == MUISPIT_ICO
+                    .IF hImage != NULL
+                        Invoke DestroyIcon, hImage
+                    .ENDIF
+                .ELSEIF rax == MUISPIT_PNG
                     IFDEF MUI_USEGDIPLUS
-                    Invoke GdipDisposeImage, hImage
+                    .IF hImage != NULL
+                        Invoke GdipDisposeImage, hImage
+                    .ENDIF
                     ENDIF
                 .ENDIF
             .ENDIF
@@ -671,6 +694,10 @@ _MUI_SpinnerPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:Q
     LOCAL rect:RECT
     LOCAL pt:POINT
     
+    IFDEF DEBUG64
+    ;PrintText '_MUI_SpinnerPaintImages'
+    ENDIF
+    
     Invoke MUIGetIntProperty, hWin, @SpinnerImageType
     .IF rax == 0
         ret
@@ -682,10 +709,10 @@ _MUI_SpinnerPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:Q
         ret
     .ENDIF
     mov hImage, rax
-
+    ;PrintQWORD rax
     
     Invoke CopyRect, Addr rect, lpRect
-    Invoke MUIGetImageSize, hImage, ImageType, Addr ImageWidth, Addr ImageHeight
+    Invoke MUIGetImageSize, hImage, qwImageType, Addr ImageWidth, Addr ImageHeight
     
     mov eax, rect.right
     shr eax, 1
@@ -706,6 +733,14 @@ _MUI_SpinnerPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:Q
     .ENDIF
     mov pt.y, eax
     
+    ;mov eax, pt.x
+    ;PrintQWORD rax
+    ;mov eax, pt.y
+    ;PrintQWORD rax
+    ;mov rax, ImageWidth
+    ;PrintQWORD rax
+    ;mov rax, ImageHeight
+    ;PrintQWORD rax
     
     mov rax, qwImageType
     .IF rax == MUISPIT_BMP ; bitmap
@@ -714,7 +749,9 @@ _MUI_SpinnerPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:Q
         mov hdcMem, rax
         Invoke SelectObject, hdcMem, hImage
         mov hbmOld, rax
-
+        
+        Invoke SetBrushOrgEx, hdcMem, 0, 0, NULL
+        
         Invoke BitBlt, hdcDest, pt.x, pt.y, dword ptr ImageWidth, dword ptr ImageHeight, hdcMem, 0, 0, SRCCOPY
 
         Invoke SelectObject, hdcMem, hbmOld
@@ -740,7 +777,7 @@ _MUI_SpinnerPaintImages PROC FRAME USES RBX hWin:QWORD, hdcMain:QWORD, hdcDest:Q
         Invoke GdipSetSmoothingMode, pGraphicsBuffer, SmoothingModeAntiAlias
         Invoke GdipSetInterpolationMode, pGraphics, InterpolationModeHighQualityBicubic
         Invoke GdipSetInterpolationMode, pGraphicsBuffer, InterpolationModeHighQualityBicubic
-        
+
         Invoke GdipDrawImageI, pGraphicsBuffer, hImage, 0, 0
         Invoke GdipDrawImageRectI, pGraphics, pBitmap, pt.x, pt.y, dword ptr ImageWidth, dword ptr ImageHeight
         .IF pBitmap != NULL
@@ -1075,7 +1112,7 @@ MUISpinnerAddFrame PROC FRAME USES RBX hControl:QWORD, qwImageType:QWORD, hImage
     LOCAL pCurrentFrame:QWORD
     LOCAL qwSize:QWORD
 
-    IFDEF DEBUG32
+    IFDEF DEBUG64
     ;PrintText 'MUISpinnerAddFrame'
     ENDIF
 
@@ -1107,7 +1144,7 @@ MUISpinnerAddFrame PROC FRAME USES RBX hControl:QWORD, qwImageType:QWORD, hImage
     mov rbx, pCurrentFrame
     mov rax, hImage
     mov [rbx], rax
-    
+    ;PrintQWORD rax
     Invoke MUISetIntProperty, hControl, @SpinnerImageType, qwImageType
     inc TotalFrames
     Invoke MUISetIntProperty, hControl, @SpinnerTotalFrames, TotalFrames
@@ -1265,16 +1302,16 @@ MUISpinnerAddImage PROC FRAME hControl:QWORD, hImage:QWORD, qwNoFramesToCreate:Q
 
     ; calc slice of pie required for each frame
     finit
-    fld FP4(360.0)
+    fld dword ptr FP4(360.0)
     fild qwNoFramesToCreate
     fdiv
     fstp slice
     
     ; init angle at 0 
     .IF bReverse == TRUE
-        fld FP4(360.0)
+        fld dword ptr FP4(360.0)
     .ELSE
-        fld FP4(0.0)
+        fld dword ptr FP4(0.0)
     .ENDIF
     fstp fAngle
     
@@ -1291,13 +1328,13 @@ MUISpinnerAddImage PROC FRAME hControl:QWORD, hImage:QWORD, qwNoFramesToCreate:Q
         .ENDIF
         
         finit
-        fld fAngle
+        fld dword ptr fAngle
         .IF bReverse == TRUE
             fsub slice
         .ELSE
             fadd slice
         .ENDIF
-        fstp fAngle
+        fstp dword ptr fAngle
         
         inc nFrame
         mov rax, nFrame
@@ -1368,6 +1405,12 @@ MUISpinnerAddSpriteSheet PROC FRAME USES RCX RDX hControl:QWORD, qwSpriteCount:Q
     LOCAL pGraphics:QWORD
     LOCAL pGraphicsFrame:QWORD
     LOCAL pFrame:QWORD
+    LOCAL fxzero:REAL4
+    LOCAL fyzero:REAL4
+    LOCAL fx:REAL4
+    LOCAL fy:REAL4
+    LOCAL fFrameWidth:REAL4
+    LOCAL fFrameHeight:REAL4
     
     IFDEF DEBUG32
     ;PrintText 'MUISpinnerAddSpriteSheet'
@@ -1380,16 +1423,27 @@ MUISpinnerAddSpriteSheet PROC FRAME USES RCX RDX hControl:QWORD, qwSpriteCount:Q
     
     Invoke MUIGetImageSize, hImageSpriteSheet, qwImageType, Addr ImageWidth, Addr ImageHeight
     
+;    mov rax, ImageWidth
+;    PrintQWORD rax
+;    mov rax, ImageHeight
+;    PrintQWORD rax    
+    
     ;--------------------------------------------------------------------------
     ; Calc frame width
     ;--------------------------------------------------------------------------
     xor rdx, rdx
     mov rax, ImageWidth
     mov rcx, qwSpriteCount
-    div rcx
+    div ecx
     mov FrameWidth, rax
     mov rax, ImageHeight
     mov FrameHeight, rax
+    
+;    mov rax, FrameWidth
+;    PrintQWORD rax
+;    mov rax, FrameHeight
+;    PrintQWORD rax   
+
 
     Invoke GetDC, hControl
     mov hdc, rax
@@ -1445,10 +1499,16 @@ MUISpinnerAddSpriteSheet PROC FRAME USES RCX RDX hControl:QWORD, qwSpriteCount:Q
             .ELSEIF rax == MUISPIT_PNG
                 Invoke GdipCreateBitmapFromGraphics, FrameWidth, FrameHeight, pGraphics, Addr pFrame
                 Invoke GdipGetImageGraphicsContext, pFrame, Addr pGraphicsFrame
+                
+                Invoke GdipSetPixelOffsetMode, pGraphics, PixelOffsetModeHighQuality
                 Invoke GdipSetPixelOffsetMode, pGraphicsFrame, PixelOffsetModeHighQuality
+                Invoke GdipSetPageUnit, pGraphics, UnitPixel
                 Invoke GdipSetPageUnit, pGraphicsFrame, UnitPixel
+                Invoke GdipSetSmoothingMode, pGraphics, SmoothingModeAntiAlias
                 Invoke GdipSetSmoothingMode, pGraphicsFrame, SmoothingModeAntiAlias
+                Invoke GdipSetInterpolationMode, pGraphics, InterpolationModeHighQualityBicubic
                 Invoke GdipSetInterpolationMode, pGraphicsFrame, InterpolationModeHighQualityBicubic
+
                 Invoke GdipDrawImageRectRectI, pGraphicsFrame, hImageSpriteSheet, 0, 0, dword ptr FrameWidth, dword ptr FrameHeight, dword ptr x, dword ptr y, dword ptr FrameWidth, dword ptr FrameHeight, UnitPixel, NULL, NULL, NULL
                 Invoke MUISpinnerAddFrame, hControl, MUISPIT_PNG, pFrame
                 .IF pGraphicsFrame != NULL
@@ -1478,11 +1538,33 @@ MUISpinnerAddSpriteSheet PROC FRAME USES RCX RDX hControl:QWORD, qwSpriteCount:Q
             .ELSEIF rax == MUISPIT_PNG
                 Invoke GdipCreateBitmapFromGraphics, FrameWidth, FrameHeight, pGraphics, Addr pFrame
                 Invoke GdipGetImageGraphicsContext, pFrame, Addr pGraphicsFrame
+                
+                Invoke GdipSetPixelOffsetMode, pGraphics, PixelOffsetModeHighQuality
                 Invoke GdipSetPixelOffsetMode, pGraphicsFrame, PixelOffsetModeHighQuality
+                Invoke GdipSetPageUnit, pGraphics, UnitPixel
                 Invoke GdipSetPageUnit, pGraphicsFrame, UnitPixel
+                Invoke GdipSetSmoothingMode, pGraphics, SmoothingModeAntiAlias
                 Invoke GdipSetSmoothingMode, pGraphicsFrame, SmoothingModeAntiAlias
+                Invoke GdipSetInterpolationMode, pGraphics, InterpolationModeHighQualityBicubic
                 Invoke GdipSetInterpolationMode, pGraphicsFrame, InterpolationModeHighQualityBicubic
+                
+;                finit
+;                fld FP4(0.0)
+;                fstp fxzero
+;                fld FP4(0.0)
+;                fstp fyzero
+;                fild FrameHeight
+;                fstp fFrameHeight
+;                fild FrameWidth
+;                fstp fFrameWidth
+;                fild x
+;                fstp fx
+;                fild y
+;                fstp fy
+;                Invoke GdipDrawImageRectRect, pGraphicsFrame, hImageSpriteSheet, fxzero, fyzero, fFrameWidth, fFrameHeight, fx, fy, fFrameWidth, fFrameHeight, UnitPixel, NULL, NULL, NULL
+                
                 Invoke GdipDrawImageRectRectI, pGraphicsFrame, hImageSpriteSheet, 0, 0, dword ptr FrameWidth, dword ptr FrameHeight, dword ptr x, dword ptr y, dword ptr FrameWidth, dword ptr FrameHeight, UnitPixel, NULL, NULL, NULL
+                
                 Invoke MUISpinnerAddFrame, hControl, MUISPIT_PNG, pFrame
                 .IF pGraphicsFrame != NULL
                     Invoke GdipDeleteGraphics, pGraphicsFrame
@@ -1753,32 +1835,125 @@ _MUI_SpinnerRotateCenterImage PROC FRAME hImage:QWORD, fAngle:REAL4
     Invoke GdipCreateBitmapFromGraphics, qwImageWidth, qwImageHeight, pGraphics, Addr pBitmap 
     Invoke GdipGetImageGraphicsContext, pBitmap, Addr pGraphicsBuffer
     
+    Invoke GdipSetPixelOffsetMode, pGraphics, PixelOffsetModeHighQuality
     Invoke GdipSetPixelOffsetMode, pGraphicsBuffer, PixelOffsetModeHighQuality
+    Invoke GdipSetPageUnit, pGraphics, UnitPixel
     Invoke GdipSetPageUnit, pGraphicsBuffer, UnitPixel
+    Invoke GdipSetSmoothingMode, pGraphics, SmoothingModeAntiAlias
     Invoke GdipSetSmoothingMode, pGraphicsBuffer, SmoothingModeAntiAlias
+    Invoke GdipSetInterpolationMode, pGraphics, InterpolationModeHighQualityBicubic
     Invoke GdipSetInterpolationMode, pGraphicsBuffer, InterpolationModeHighQualityBicubic
 
     ;---------------------------------------------------------------------------------
     ; Check if angle is 180, if it is then do a flip instead of rotating
     ; (fixes the speed wobble issue when 180.0 is the angle)
     ;---------------------------------------------------------------------------------
-    finit           ; init fpu
-    fld fAngle
-    fcom FP4(180.0) ; compare ST(0) with the value of the real4_var variable: 180.0
-    fstsw ax        ; copy the Status Word containing the result to AX
-    fwait           ; insure the previous instruction is completed
-    sahf            ; transfer the condition codes to the CPU's flag register
-    fstp st(0)
-    jz angle_is_180
-    jmp other_angle
-    
-angle_is_180:
-    ;Invoke GdipDrawImageRectRectI, pGraphicsBuffer, hImage, 0, 0, qwImageWidth, qwImageHeight, 0, 0, qwImageWidth, qwImageHeight, UnitPixel, NULL, NULL, NULL
-    Invoke GdipDrawImage, pGraphicsBuffer, hImage, 0, 0
-    Invoke GdipImageRotateFlip, pBitmap, Rotate180FlipNone
-    jmp tidyup
-
-other_angle:
+;    finit           ; init fpu
+;    fld fAngle
+;    fcom FP4(180.0) ; compare ST(0) with the value of the real4_var variable: 180.0
+;    fstsw ax        ; copy the Status Word containing the result to AX
+;    fwait           ; insure the previous instruction is completed
+;    sahf            ; transfer the condition codes to the CPU's flag register
+;    fstp st(0)
+;    ;ffree st(0)
+;    jz angle_is_180
+;    jmp angle_is_not_180
+;    
+;angle_is_180:
+;    ;Invoke GdipDrawImageRectRectI, pGraphicsBuffer, hImage, 0, 0, dwImageWidth, dwImageHeight, 0, 0, dwImageWidth, dwImageHeight, UnitPixel, NULL, NULL, NULL
+;    Invoke GdipDrawImage, pGraphicsBuffer, hImage, 0, 0
+;    Invoke GdipImageRotateFlip, pBitmap, Rotate180FlipNone
+;    jmp tidyup
+;
+;angle_is_not_180:
+;
+;    ;---------------------------------------------------------------------------------
+;    ; Check if angle is 90, if it is then do a flip instead of rotating
+;    ;---------------------------------------------------------------------------------
+;    finit           ; init fpu
+;    fld fAngle
+;    fcom FP4(90.0) ; compare ST(0) with the value of the real4_var variable: 180.0
+;    fstsw ax        ; copy the Status Word containing the result to AX
+;    fwait           ; insure the previous instruction is completed
+;    sahf            ; transfer the condition codes to the CPU's flag register
+;    fstp st(0)
+;    ;ffree st(0)
+;    jz angle_is_90
+;    jmp angle_is_not_90
+;    
+;angle_is_90:
+;    ;Invoke GdipDrawImageRectRectI, pGraphicsBuffer, hImage, 0, 0, dwImageWidth, dwImageHeight, 0, 0, dwImageWidth, dwImageHeight, UnitPixel, NULL, NULL, NULL
+;    Invoke GdipDrawImage, pGraphicsBuffer, hImage, 0, 0
+;    Invoke GdipImageRotateFlip, pBitmap, Rotate90FlipNone
+;    jmp tidyup
+;
+;angle_is_not_90:
+;
+;    ;---------------------------------------------------------------------------------
+;    ; Check if angle is 270, if it is then do a flip instead of rotating
+;    ;---------------------------------------------------------------------------------
+;    finit           ; init fpu
+;    fld fAngle
+;    fcom FP4(270.0) ; compare ST(0) with the value of the real4_var variable: 180.0
+;    fstsw ax        ; copy the Status Word containing the result to AX
+;    fwait           ; insure the previous instruction is completed
+;    sahf            ; transfer the condition codes to the CPU's flag register
+;    fstp st(0)
+;    ;ffree st(0)
+;    jz angle_is_270
+;    jmp angle_is_not_270
+;    
+;angle_is_270:
+;    ;Invoke GdipDrawImageRectRectI, pGraphicsBuffer, hImage, 0, 0, dwImageWidth, dwImageHeight, 0, 0, dwImageWidth, dwImageHeight, UnitPixel, NULL, NULL, NULL
+;    Invoke GdipDrawImage, pGraphicsBuffer, hImage, 0, 0
+;    Invoke GdipImageRotateFlip, pBitmap, Rotate270FlipNone
+;    jmp tidyup
+;
+;angle_is_not_270:
+;
+;    ;---------------------------------------------------------------------------------
+;    ; Check if angle is 360, if it is then do a flip instead of rotating
+;    ;---------------------------------------------------------------------------------
+;    finit           ; init fpu
+;    fld fAngle
+;    fcom FP4(360.0) ; compare ST(0) with the value of the real4_var variable: 180.0
+;    fstsw ax        ; copy the Status Word containing the result to AX
+;    fwait           ; insure the previous instruction is completed
+;    sahf            ; transfer the condition codes to the CPU's flag register
+;    fstp st(0)
+;    ;ffree st(0)
+;    jz angle_is_360
+;    jmp angle_is_not_360
+;    
+;angle_is_360:
+;    ;Invoke GdipDrawImageRectRectI, pGraphicsBuffer, hImage, 0, 0, dwImageWidth, dwImageHeight, 0, 0, dwImageWidth, dwImageHeight, UnitPixel, NULL, NULL, NULL
+;    Invoke GdipDrawImage, pGraphicsBuffer, hImage, 0, 0
+;    Invoke GdipImageRotateFlip, pBitmap, RotateNoneFlipNone
+;    jmp tidyup
+;
+;angle_is_not_360:
+;
+;    ;---------------------------------------------------------------------------------
+;    ; Check if angle is 0, if it is then do a flip instead of rotating
+;    ;---------------------------------------------------------------------------------
+;    finit           ; init fpu
+;    fld fAngle
+;    fcom FP4(0.0)   ; compare ST(0) with the value of the real4_var variable: 180.0
+;    fstsw ax        ; copy the Status Word containing the result to AX
+;    fwait           ; insure the previous instruction is completed
+;    sahf            ; transfer the condition codes to the CPU's flag register
+;    fstp st(0)
+;    ;ffree st(0)
+;    jz angle_is_0
+;    jmp angle_is_not_0
+;    
+;angle_is_0:
+;    ;Invoke GdipDrawImageRectRectI, pGraphicsBuffer, hImage, 0, 0, dwImageWidth, dwImageHeight, 0, 0, dwImageWidth, dwImageHeight, UnitPixel, NULL, NULL, NULL
+;    Invoke GdipDrawImage, pGraphicsBuffer, hImage, 0, 0
+;    Invoke GdipImageRotateFlip, pBitmap, RotateNoneFlipNone
+;    jmp tidyup
+;
+;angle_is_not_0:
 
     ;---------------------------------------------------------------------------------
     ; Do the actual rotation, calc Translate x, y position for GdipTranslateMatrix to
@@ -1813,7 +1988,7 @@ other_angle:
     fld yneg
     fistp qwY
     
-    finit
+    ;finit
     
     ;Invoke GdipTranslateWorldTransform, pGraphicsBuffer, x, y, MatrixOrderPrepend ;%MatrixOrderAppend)
     ;Invoke GdipRotateWorldTransform, pGraphicsBuffer, fAngle, MatrixOrderPrepend;MatrixOrderAppend;%MatrixOrderPrepend)
@@ -1824,7 +1999,7 @@ other_angle:
     Invoke GdipRotateMatrix, matrix, fAngle, MatrixOrderPrepend
     Invoke GdipSetWorldTransform, pGraphicsBuffer, matrix
     
-    ;Invoke GdipDrawImageRectRectI, pGraphicsBuffer, hImage, qwX, qwY, qwImageWidth, qwImageHeight, 0, 0, qwImageWidth, qwImageHeight, UnitPixel, NULL, NULL, NULL    
+    ;Invoke GdipDrawImageRectRectI, pGraphicsBuffer, hImage, dword ptr qwX, dword ptr qwY, dword ptr qwImageWidth, dword ptr qwImageHeight, 0, 0, dword ptr qwImageWidth, dword ptr qwImageHeight, UnitPixel, NULL, NULL, NULL    
     
     Invoke GdipDrawImage, pGraphicsBuffer, hImage, xneg, yneg
     Invoke GdipResetWorldTransform, pGraphicsBuffer
