@@ -41,31 +41,36 @@
 ;------------------------------------------------------------------------------
 ; ModernUI_TrayMenu Prototypes
 ;------------------------------------------------------------------------------
-MUITrayMenuRegister         PROTO                                                                ; Use 'ModernUI_TrayMenu' as class in RadASM custom class control
-MUITrayMenuCreate           PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD         ; hWndParent, hTrayMenuIcon, lpszTooltip, qwMenuType, qwMenu, qwOptions, hWndExtra
-MUITrayMenuSetProperty      PROTO :QWORD, :QWORD, :QWORD                                         ; hModernUI_TrayMenu, qwProperty, qwPropertyValue
-MUITrayMenuGetProperty      PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, qwProperty
-MUITrayMenuAssignMenu       PROTO :QWORD, :QWORD, :QWORD                                         ; hModernUI_TrayMenu, qwMenuType, qwMenu
+MUITrayMenuRegister         PROTO                                                   ; Use 'ModernUI_TrayMenu' as class in RadASM custom class control
+MUITrayMenuCreate           PROTO :QWORD,:QWORD,:QWORD,:QWORD,:QWORD,:QWORD,:QWORD  ; hWndParent, hTrayMenuIcon, lpszTooltip, qwMenuType, qwMenu, qwOptions, hWndExtra
+MUITrayMenuSetProperty      PROTO :QWORD,:QWORD,:QWORD                              ; hModernUI_TrayMenu, qwProperty, qwPropertyValue
+MUITrayMenuGetProperty      PROTO :QWORD,:QWORD                                     ; hModernUI_TrayMenu, qwProperty
+MUITrayMenuAssignMenu       PROTO :QWORD,:QWORD,:QWORD                              ; hModernUI_TrayMenu, qwMenuType, qwMenu
 
 ; Tray Menu Item Functions
-MUITrayMenuSetTrayIcon      PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, hTrayIcon
-MUITrayMenuSetTooltipText   PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, lpszTooltip
-MUITrayMenuEnableMenuItem   PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, MenuItemID
-MUITrayMenuDisableMenuItem  PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayMenu, MenuItemID
-MUITrayMenuChangeMenuItemState PROTO :QWORD, :QWORD, :QWORD                                      ; hModernUI_TrayMenu, MenuItemID, MenuItemState
-MUITrayMenuSetMenuItemText  PROTO :QWORD, :QWORD, :QWORD                                         ; hModernUI_TrayMenu, MenuItemID, lpszMenuItemText
-MUITrayMenuHideTrayIcon     PROTO :QWORD                                                         ; hModernUI_TrayMenu
-MUITrayMenuShowTrayIcon     PROTO :QWORD                                                         ; hModernUI_TrayMenu
-MUITrayMenuShowNotification PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD                         ; hModernUI_TrayMenu, lpszNotificationMessage, lpszNotificationTitle, qwTimeout, qwStyle
-MUITrayMenuSetTrayIconText  PROTO :QWORD, :QWORD, :QWORD, :QWORD                                 ; hModernUI_TrayIcon, lpszText, lpszFont, qwTextColorRGB
+MUITrayMenuSetTrayIcon      PROTO :QWORD,:QWORD                                     ; hModernUI_TrayMenu, hTrayIcon
+MUITrayMenuSetTooltipText   PROTO :QWORD,:QWORD                                     ; hModernUI_TrayMenu, lpszTooltip
+MUITrayMenuEnableMenuItem   PROTO :QWORD,:QWORD                                     ; hModernUI_TrayMenu, MenuItemID
+MUITrayMenuDisableMenuItem  PROTO :QWORD,:QWORD                                     ; hModernUI_TrayMenu, MenuItemID
+MUITrayMenuChangeMenuItemState PROTO :QWORD,:QWORD,:QWORD                           ; hModernUI_TrayMenu, MenuItemID, MenuItemState
+MUITrayMenuSetMenuItemText  PROTO :QWORD,:QWORD,:QWORD                              ; hModernUI_TrayMenu, MenuItemID, lpszMenuItemText
+MUITrayMenuHideTrayIcon     PROTO :QWORD                                            ; hModernUI_TrayMenu
+MUITrayMenuShowTrayIcon     PROTO :QWORD                                            ; hModernUI_TrayMenu
+MUITrayMenuShowNotification PROTO :QWORD,:QWORD,:QWORD,:QWORD,:QWORD                ; hModernUI_TrayMenu, lpszNotificationMessage, lpszNotificationTitle, qwTimeout, qwStyle
+MUITrayMenuSetTrayIconText  PROTO :QWORD,:QWORD,:QWORD,:QWORD                       ; hModernUI_TrayIcon, lpszText, hFontIconText, qwTextColorRGB
+
+MUITrayMenuMinimizeToTray   PROTO :QWORD                                            ; hModernUI_TrayMenu
+MUITrayMenuRestoreFromTray  PROTO :QWORD                                            ; hModernUI_TrayMenu
 
 ; Tray Icon Functions (standalone - no menu)
-MUITrayIconCreate           PROTO :QWORD, :QWORD, :QWORD, :QWORD                                 ; hWndParent, qwTrayIconResID, hTrayIcon, lpszTooltip - Returns in eax hModernUI_TrayIcon
-MUITrayIconDestroy          PROTO :QWORD                                                         ; hModernUI_TrayIcon
-MUITrayIconSetTrayIcon      PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayIcon, hTrayIcon
-MUITrayIconSetTooltipText   PROTO :QWORD, :QWORD                                                 ; hModernUI_TrayIcon, lpszTooltip
-MUITrayIconShowNotification PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD                         ; hModernUI_TrayIcon, lpszNotificationMessage, lpszNotificationTitle, qwTimeout, qwStyle
+MUITrayIconCreate           PROTO :QWORD,:QWORD,:QWORD,:QWORD                       ; hWndParent, qwTrayIconResID, hTrayIcon, lpszTooltip - Returns in eax hModernUI_TrayIcon
+MUITrayIconDestroy          PROTO :QWORD                                            ; hModernUI_TrayIcon
+MUITrayIconSetTrayIcon      PROTO :QWORD,:QWORD                                     ; hModernUI_TrayIcon, hTrayIcon
+MUITrayIconSetTooltipText   PROTO :QWORD,:QWORD                                     ; hModernUI_TrayIcon, lpszTooltip
+MUITrayIconShowNotification PROTO :QWORD,:QWORD,:QWORD,:QWORD,:QWORD                ; hModernUI_TrayIcon, lpszNotificationMessage, lpszNotificationTitle, qwTimeout, qwStyle
+MUITrayIconSetTrayIconText  PROTO :QWORD,:QWORD,:QWORD,:QWORD                       ; hModernUI_TrayIcon, lpszText, hFontIconText, dwTextColorRGB
 
+MUITrayCreateIconText       PROTO :QWORD,:QWORD,:QWORD                              ; lpszText, hFontIconText, qwTextColorRGB
 
 ;------------------------------------------------------------------------------
 ; ModernUI_TrayMenu Structures
@@ -97,7 +102,7 @@ MUITMT_NOMENUEVER           EQU 3 ; Specified that no menu is ever added to the 
 MUITMS_DEFAULT              EQU 0 ; default 
 MUITMS_MINONCLOSE           EQU 1 ; minimizes window when close clicked
 MUITMS_HIDEIFMIN            EQU 2 ; hide window when minimized
-
+MUITMS_HWNDEXTRA            EQU 4 ; use hWndExtra as window to process for hiding/showing
 
 ; Tray Menu Notification Icon
 MUITMNI_NONE                EQU 0 ; No icon.
