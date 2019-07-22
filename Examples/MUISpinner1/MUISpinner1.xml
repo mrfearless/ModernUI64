@@ -40,4 +40,16 @@
             />
         </dependentAssembly>
     </dependency>
+    <dependency>
+        <dependentAssembly>
+            <assemblyIdentity 
+                type="win32" 
+                name="Microsoft.Windows.GdiPlus"
+                version="1.0.7601.0" 
+                processorArchitecture="*"
+                publicKeyToken="6595b64144ccf1df" 
+                language="*" 
+            />
+        </dependentAssembly>
+    </dependency>
 </assembly>

@@ -306,7 +306,6 @@ WndProc proc FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
         Invoke MUISpinnerSetProperty, hSpinnerSprite4, @SpinnerSpeed, 100
         Invoke MUISpinnerEnable, hSpinnerSprite4
         
-        
     ;---------------------------------------------------------------------------------
     ; Handle painting of our dialog with our specified background and border color to 
     ; mimic new Modern style UI feel
