@@ -1,0 +1,11 @@
+;------------------------------------------------------------------------------
+; ModernUI_Animation Control
+;
+; http://github.com/mrfearless/ModernUI64
+;
+; Paste this text at the end of \Radasm\Uasm64\Uasm64ApiStruct.api to add to Radasm
+;
+;------------------------------------------------------------------------------
+MUI_ANIMATION_FRAME,qwFrameType,qwFrameImage,qwFrameTime,lParam
+NM_ANIMATION_FRAME,qwFrameIndex,qwFrameType,qwFrameImage,qwFrameTime,lParam
+NM_ANIMATION,hdr:NMHDR,item:MUI_ANIMATION_FRAME
