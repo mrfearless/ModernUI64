@@ -165,6 +165,7 @@ _MUI_TRAYMENU_PROPERTIES                STRUCT
     NID                                 DQ ? ; ptr to NOTIFYICONDATA struct
     qwTrayMenuIconVisible               DQ ?
     qwTrayIconVisible                   DQ ?
+    qwParent                            DQ ?
 _MUI_TRAYMENU_PROPERTIES                ENDS
 
 
@@ -177,7 +178,7 @@ TRAYMENU_SUBCLASS_ID                    EQU 0A0B0C0D0h
 @TrayMenuNID                            EQU 0
 @TrayMenuIconVisible                    EQU 8
 @TrayIconVisible                        EQU 16
-
+@TrayParent                             EQU 24
 ; External public properties
 
 
@@ -352,6 +353,7 @@ MUITrayMenuCreate PROC FRAME hWndParent:QWORD, hTrayMenuIcon:QWORD, lpszTooltip:
             Invoke MUISetExtProperty, hControl, @TrayMenuExtraWndHandle, hWndExtra
         .ENDIF
         
+        Invoke MUISetIntProperty, hControl, @TrayParent, hWndParent
 ;        .IF qwMenuType != NULL
 ;            Invoke MUISetExtProperty, hControl, @TrayMenuType, qwMenuType
 ;        .ENDIF
@@ -377,8 +379,6 @@ MUI_ALIGN
 ; _MUI_TrayMenuWndProc - Main processing window for our control
 ;------------------------------------------------------------------------------
 _MUI_TrayMenuWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
-    LOCAL TE:TRACKMOUSEEVENT
-    LOCAL wp:WINDOWPLACEMENT
     
     mov eax,uMsg
     .IF eax == WM_NCCREATE
@@ -1101,6 +1101,9 @@ MUITrayMenuShowTrayIcon PROC FRAME hControl:QWORD
             mov rax, FALSE
             ret
         .ENDIF
+        
+        Invoke MUIGetIntProperty, hControl, @TrayParent
+        mov hParent, rax
         
         ;Invoke GetParent, hControl
         ;mov hParent, rax

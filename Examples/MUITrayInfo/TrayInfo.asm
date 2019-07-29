@@ -11,18 +11,18 @@ option stackbase : rsp
 _WIN64 EQU 1
 WINVER equ 0501h
 
-DEBUG64 EQU 1
-
-IFDEF DEBUG64
-    PRESERVEXMMREGS equ 1
-    includelib \UASM\lib\x64\Debug64.lib
-    DBG64LIB equ 1
-    DEBUGEXE textequ <'\UASM\bin\DbgWin.exe'>
-    include \UASM\include\debug64.inc
-    .DATA
-    RDBG_DbgWin	DB DEBUGEXE,0
-    .CODE
-ENDIF
+;DEBUG64 EQU 1
+;
+;IFDEF DEBUG64
+;    PRESERVEXMMREGS equ 1
+;    includelib \UASM\lib\x64\Debug64.lib
+;    DBG64LIB equ 1
+;    DEBUGEXE textequ <'\UASM\bin\DbgWin.exe'>
+;    include \UASM\include\debug64.inc
+;    .DATA
+;    RDBG_DbgWin	DB DEBUGEXE,0
+;    .CODE
+;ENDIF
 
 include TrayInfo.inc
 include Menu.asm
@@ -181,7 +181,7 @@ WndProc proc FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
         .ELSEIF rax == IDC_CHECKCPU ; ModernUI_Checkbox
             Invoke MUICheckboxGetState, hChkCPU
             .IF rax == FALSE
-              mov g_IconCPU, ICONS_CPU_HIDE
+                mov g_IconCPU, ICONS_CPU_HIDE
                 Invoke KillTimer, hWin, TIMER_CPU
                 Invoke MUITrayMenuHideTrayIcon, hMUITMCPU
             .ELSE
@@ -440,7 +440,7 @@ GetCPULoad PROC FRAME USES RBX RDX lpszPercent:QWORD
         mov rax, 0
     .ENDIF
     mov percent, rax    
-    
+
     ; if percentage is 0-9 then show a decimal place, otherwise dont
 ;    .IF sdword ptr percent < 10
 ;        fild preresult
