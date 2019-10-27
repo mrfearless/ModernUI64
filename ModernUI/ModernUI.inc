@@ -53,6 +53,7 @@ LPMUIVALUE                      TYPEDEF PTR MUIVALUE; Pointer to MUIVALUE
 MUIIT                           TYPEDEF QWORD       ; Image type
 MUIIL                           TYPEDEF QWORD       ; Image location
 MUIPFS                          TYPEDEF QWORD       ; Paint frame style
+MUIPGS                          TYPEDEF QWORD       ; Paint gradient style
 MUIIMAGE                        TYPEDEF QWORD       ; HBITMAP, HICON or GPIMAGE
 LPMUIIMAGE                      TYPEDEF PTR MUIIMAGE; Pointer to MUIIMAGE
 MUICOLORRGB                     TYPEDEF QWORD       ; COLORREF color value using MUI_RGBCOLOR macro
@@ -79,6 +80,7 @@ LPMUIVALUE                      TYPEDEF PTR MUIVALUE; Pointer to MUIVALUE
 MUIIT                           TYPEDEF DWORD       ; Image type
 MUIIL                           TYPEDEF DWORD       ; Image location
 MUIPFS                          TYPEDEF DWORD       ; Paint frame style
+MUIPGS                          TYPEDEF DWORD       ; Paint gradient style
 MUIIMAGE                        TYPEDEF DWORD       ; HBITMAP, HICON or GPIMAGE
 LPMUIIMAGE                      TYPEDEF PTR MUIIMAGE; Pointer to MUIIMAGE
 MUICOLORRGB                     TYPEDEF DWORD       ; COLORREF color value using MUI_RGBCOLOR macro
@@ -173,6 +175,12 @@ MUIPFS_RIGHT                    EQU 8
 MUIPFS_ALL                      EQU MUIPFS_LEFT + MUIPFS_TOP + MUIPFS_BOTTOM + MUIPFS_RIGHT
 
 ;------------------------------------------
+; MUIGDIPaintGradient Gradient Style Enum MUIPGS
+;------------------------------------------
+MUIPGS_HORZ                     EQU 0
+MUIPGS_VERT                     EQU 1
+
+;------------------------------------------
 ; Color Macros
 ;------------------------------------------
 MUI_ARGBCOLOR MACRO alpha, red, green, blue
@@ -240,6 +248,9 @@ MUIGDIStretchImage              PROTO hImage:MUIIMAGE, ImageHandleType:MUIIT, lp
 MUIGDIRotateCenterBitmap        PROTO hWin:MUIWND, hBitmap:HBITMAP, Angle:MUIVALUE, BackColor:MUICOLORRGB
 MUIGDIPaintFill                 PROTO hdc:HDC, lpFillRect:LPRECT, FillColor:MUICOLORRGB
 MUIGDIPaintFrame                PROTO hdc:HDC, lpFrameRect:LPRECT, FrameColor:MUICOLORRGB, FrameStyle:MUIPFS
+MUIGDIPaintBrush                PROTO hdc:HDC, lpBrushRect:LPRECT, hBrushBitmap:HBITMAP, qwBrushOrgX:MUIVALUE, qwBrushOrgY:MUIVALUE
+MUIGDIPaintGradient             PROTO hdc:HDC, lpGradientRect:LPRECT, GradientColorFrom:MUICOLORRGB, GradientColorTo:MUICOLORRGB, HorzVertGradient:MUIPGS
+MUIGDICreateBitmapMask          PROTO hBitmap:HBITMAP, TransparentColor:MUICOLORRGB
 
 ; ModernUI GDIPlus Functions:
 MUIGDIPlusStart                 PROTO

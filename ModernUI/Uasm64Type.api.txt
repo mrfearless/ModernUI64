@@ -15,6 +15,7 @@ LPMUIVALUE,8,A pointer to a MUIVALUE value
 MUIIT,8,Image type enum
 MUIIL,8,Image location enum
 MUIPFS,8,Paint frame style enum for the FrameStyle parameter of the MUIGDIPaintFrame function
+MUIPGS,8,Paint gradient style enum for HorzVertGradient parameter of the MUIGDIPaintGradient function
 MUIIMAGE,8,A bitmap (HBITMAP), icon (HICON) or a GDI+ image (GPIMAGE)
 LPMUIIMAGE,8,Pointer to a image (MUIIMAGE) handle
 MUICOLORRGB,8,COLORREF color value using MUI_RGBCOLOR macro

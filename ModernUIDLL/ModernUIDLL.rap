@@ -86,11 +86,11 @@ Group=Assembly,Resources
 10=
 11=
 [AutoLoad]
-AutoLoad=2
+AutoLoad=2,4,5,1
 [Size]
 5=0,0,0,0,406
-4=0,0,0,0,2648
-1=0,0,0,0,3989
+4=0,0,0,0,2035
+1=0,0,0,0,2054
 2=0,0,0,0,113
 [RADebugBP]
 4=
@@ -110,7 +110,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=12
+MilestoneOnDateDate=27
 MilestoneOnDateTimeYear=2019
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=3
@@ -134,7 +134,7 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=3530426
+PTimer=5055180
 [Collapse]
 4=
 1=

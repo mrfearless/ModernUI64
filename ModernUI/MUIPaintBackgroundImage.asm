@@ -84,7 +84,7 @@ MUIPaintBackgroundImage PROC FRAME USES RBX hWin:MUIWND, BackColor:MUICOLORRGB, 
     ;----------------------------------------------------------
     ; Paint Border
     ;----------------------------------------------------------
-    .IF BorderColor != 0
+    .IF BorderColor != -1
         Invoke MUIGDIPaintFrame, hdcMem, Addr rect, BorderColor, MUIPFS_ALL
     .ENDIF
     
