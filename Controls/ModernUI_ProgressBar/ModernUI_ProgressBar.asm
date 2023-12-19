@@ -2,9 +2,7 @@
 ;
 ; ModernUI x64 Control - ModernUI_ProgressBar x64
 ;
-; Copyright (c) 2019 by fearless
-;
-; All Rights Reserved
+; Copyright (c) 2023 by fearless
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;
@@ -150,6 +148,9 @@ ALIGN 4
 szMUIProgressBarClass           DB 'ModernUI_ProgressBar',0     ; Class name for creating our ModernUI_ProgressBar control
 szMUIProgressBarFont            DB 'Segoe UI',0                 ; Font used for ModernUI_ProgressBar text
 hMUIProgressBarFont             DQ 0                            ; Handle to ModernUI_ProgressBar font (segoe ui)
+
+szMUIPBPercentSign              DB "%",0
+szMUIPBSpace                    DB " ",0
 
 hextbl                          DB '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
 
@@ -408,7 +409,7 @@ _MUI_ProgressBarInit PROC FRAME hWin:QWORD
         Invoke CreateFontIndirect, Addr ncm.lfMessageFont
         mov hFont, rax
         Invoke GetObject, hFont, SIZEOF lfnt, Addr lfnt
-        mov lfnt.lfHeight, -12d
+        mov lfnt.lfHeight, -10d
         mov lfnt.lfWeight, FW_BOLD
         Invoke CreateFontIndirect, Addr lfnt
         mov hMUIProgressBarFont, rax
@@ -617,7 +618,7 @@ _MUI_ProgressBarPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, qwText
     Invoke MUIGetExtProperty, hWin, @ProgressBarPercent
     mov qwPercent, rax
     Invoke _MUI_ProgressBarQwordToAscii, qwPercent, Addr szPercentText, 10d, FALSE, FALSE
-    Invoke lstrcat, Addr szPercentText, CTEXT("%")
+    Invoke lstrcat, Addr szPercentText, Addr szMUIPBPercentSign ;CTEXT("%")
     Invoke lstrlen, Addr szPercentText
     mov qwLenPercentText, rax
     
@@ -633,7 +634,7 @@ _MUI_ProgressBarPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, qwText
     Invoke SelectObject, hdc, hFont
     mov hFontOld, rax
     
-    Invoke GetTextExtentPoint32, hdc, CTEXT(" "), 1, Addr szspace
+    Invoke GetTextExtentPoint32, hdc, Addr szMUIPBSpace, 1, Addr szspace ; CTEXT(" ")
     Invoke GetTextExtentPoint32, hdc, Addr szPercentText, dword ptr qwLenPercentText, Addr sz
     mov eax, sz.cx_
     .IF rax <= qwWidth

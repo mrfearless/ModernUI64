@@ -193,7 +193,7 @@ InitGUI PROC FRAME hWin:QWORD
     ; ------------------------------------------------------------------------
     ; ModernUI_SmartPanel
     ; ------------------------------------------------------------------------
-    Invoke MUISmartPanelCreate, hWin, 2, 98, 457, 545, IDC_SMARTPANEL, MUISPS_SLIDEPANELS_NORMAL or MUISPS_SPS_SKIPBETWEEN
+    Invoke MUISmartPanelCreate, hWin, 2, 98, 457, 545, IDC_SMARTPANEL, MUISPS_SLIDEPANELS_FAST or MUISPS_SPS_SKIPBETWEEN 
     mov hMUISmartPanel, rax
     ; Register child panels to use with ModernUI_SmartPanel:
     Invoke MUISmartPanelRegisterPanel, hMUISmartPanel, IDD_Panel1, Addr Panel1Proc
@@ -208,12 +208,12 @@ InitGUI PROC FRAME hWin:QWORD
     ; hCurrentPanel (for use with IsDialogMessage)
     Invoke MUISmartPanelSetCurrentPanel, hMUISmartPanel, 1, FALSE
     Invoke MUISmartPanelSetIsDlgMsgVar, hMUISmartPanel, Addr hCurrentPanel
-    ;Invoke MUISmartPanelSetProperty, hMUISmartPanel, @SmartPanelPanelsColor, MUI_RGBCOLOR(45,45,48)
+    Invoke MUISmartPanelSetProperty, hMUISmartPanel, @SmartPanelPanelsColor, MUI_RGBCOLOR(45,45,48)
 
     ;-----------------------------------------------------------------------------------------------------
     ; ModernUI_Text: Community Edition 2018
     ;-----------------------------------------------------------------------------------------------------        
-    Invoke MUITextCreate, hWin, Addr szRSHeader, 17, 70, 457, 30, IDC_TEXTRSHEADER, MUITS_13PT or MUITS_FONT_BOLD or MUITS_FONT_SEGOE 
+    Invoke MUITextCreate, hWin, Addr szRSHeader, 17, 65, 431, 30, IDC_TEXTRSHEADER, MUITS_13PT or MUITS_FONT_BOLD or MUITS_FONT_SEGOE 
     mov hMUITextRSHeader, rax
     Invoke MUITextSetProperty, hMUITextRSHeader, @TextColor, MUI_RGBCOLOR(179,179,179)
     Invoke MUITextSetProperty, hMUITextRSHeader, @TextColorAlt, MUI_RGBCOLOR(179,179,179)

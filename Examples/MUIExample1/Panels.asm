@@ -115,7 +115,7 @@ Panel1Proc PROC FRAME hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
         ;-----------------------------------------------------------------------------------------------------
         ; ModernUI_Text: Confirm Cancellation of installer
         ;-----------------------------------------------------------------------------------------------------        
-        Invoke MUITextCreate, hWin, Addr szConfirmCancel, 3, 250, 450, 80, IDC_TEXTCONFIRMCANCEL, MUITS_ALIGN_CENTER or MUITS_11PT or MUITS_FONT_BOLD or MUITS_FONT_SEGOE 
+        Invoke MUITextCreate, hWin, Addr szConfirmCancel, 3, 250, 450, 80, IDC_TEXTCONFIRMCANCEL, MUITS_11PT or MUITS_FONT_BOLD or MUITS_ALIGN_CENTER or MUITS_FONT_SEGOE
         mov hMUITextConfirmCancel, rax
         Invoke MUITextSetProperty, hMUITextConfirmCancel, @TextColor, MUI_RGBCOLOR(179,179,179)
         Invoke MUITextSetProperty, hMUITextConfirmCancel, @TextColorAlt, MUI_RGBCOLOR(179,179,179)
@@ -161,14 +161,14 @@ Panel1Proc PROC FRAME hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
     ;-----------------------------------------------------------------------------------------------------
     ; ModernUI - Color background and border
     ;-----------------------------------------------------------------------------------------------------
-    .ELSEIF eax == WM_ERASEBKGND
-        mov rax, 1
-        ret
-
-    .ELSEIF eax == WM_PAINT
-        invoke MUIPaintBackground, hWin, MUI_RGBCOLOR(45,45,48), 0
-        mov rax, 0
-        ret
+;    .ELSEIF eax == WM_ERASEBKGND
+;        mov rax, 1
+;        ret
+;
+;    .ELSEIF eax == WM_PAINT
+;        invoke MUIPaintBackground, hWin, MUI_RGBCOLOR(45,45,48), -1
+;        mov rax, 0
+;        ret
     ;-----------------------------------------------------------------------------------------------------
 
     .ELSEIF eax==WM_CLOSE
@@ -209,8 +209,9 @@ Panel2Proc PROC FRAME hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
         ;-----------------------------------------------------------------------------------------------------
         ; ModernUI_Text: Installing...
         ;-----------------------------------------------------------------------------------------------------        
-        Invoke MUITextCreate, hWin, Addr szInstalling, 15, 20, 379, 80, IDC_TEXTINSTALLING, MUITS_11PT or MUITS_FONT_SEGOE
+        Invoke MUITextCreate, hWin, Addr szInstalling, 15, 20, 379, 80, IDC_TEXTINSTALLING, MUITS_10PT or MUITS_FONT_SEGOE
         mov hMUITextInstalling, rax
+        ;PrintDec rax
         Invoke MUITextSetProperty, hMUITextInstalling, @TextColor, MUI_RGBCOLOR(179,179,179)
         Invoke MUITextSetProperty, hMUITextInstalling, @TextColorAlt, MUI_RGBCOLOR(179,179,179)
         Invoke MUITextSetProperty, hMUITextInstalling, @TextBackColor, MUI_RGBCOLOR(45,45,48)
@@ -253,14 +254,14 @@ Panel2Proc PROC FRAME hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
     ;-----------------------------------------------------------------------------------------------------
     ; ModernUI - Color background and border
     ;-----------------------------------------------------------------------------------------------------
-    .ELSEIF eax == WM_ERASEBKGND
-        mov rax, 1
-        ret
-
-    .ELSEIF eax == WM_PAINT
-        invoke MUIPaintBackground, hWin, MUI_RGBCOLOR(45,45,48), 0
-        mov rax, 0
-        ret
+;    .ELSEIF eax == WM_ERASEBKGND
+;        mov rax, 1
+;        ret
+;
+;    .ELSEIF eax == WM_PAINT
+;        invoke MUIPaintBackground, hWin, MUI_RGBCOLOR(45,45,48), -1
+;        mov rax, 0
+;        ret
     ;-----------------------------------------------------------------------------------------------------
 
     .ELSEIF eax==WM_CLOSE
@@ -311,7 +312,7 @@ Panel3Proc PROC FRAME hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
         ;-----------------------------------------------------------------------------------------------------
         ; ModernUI_Text: Choose components
         ;-----------------------------------------------------------------------------------------------------        
-        Invoke MUITextCreate, hWin, Addr szChooseComponents, 15, 20, 379, 80, IDC_TEXTCHOOSE, MUITS_11PT or MUITS_FONT_SEGOE
+        Invoke MUITextCreate, hWin, Addr szChooseComponents, 15, 20, 379, 80, IDC_TEXTCHOOSE, MUITS_10PT or MUITS_FONT_SEGOE
         mov hMUITextChoose, rax
         Invoke MUITextSetProperty, hMUITextChoose, @TextColor, MUI_RGBCOLOR(179,179,179)
         Invoke MUITextSetProperty, hMUITextChoose, @TextColorAlt, MUI_RGBCOLOR(179,179,179)
@@ -336,14 +337,14 @@ Panel3Proc PROC FRAME hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
     ;-----------------------------------------------------------------------------------------------------
     ; ModernUI - Color background and border
     ;-----------------------------------------------------------------------------------------------------
-    .ELSEIF eax == WM_ERASEBKGND
-        mov rax, 1
-        ret
-
-    .ELSEIF eax == WM_PAINT
-        invoke MUIPaintBackground, hWin, MUI_RGBCOLOR(45,45,48), 0
-        mov rax, 0
-        ret
+;    .ELSEIF eax == WM_ERASEBKGND
+;        mov rax, 1
+;        ret
+;
+;    .ELSEIF eax == WM_PAINT
+;        invoke MUIPaintBackground, hWin, MUI_RGBCOLOR(45,45,48), -1
+;        mov rax, 0
+;        ret
     ;-----------------------------------------------------------------------------------------------------
 
     .ELSEIF eax==WM_CLOSE
@@ -384,7 +385,7 @@ Panel4Proc PROC FRAME hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
         ;-----------------------------------------------------------------------------------------------------
         ; ModernUI_Text: Installation completed
         ;-----------------------------------------------------------------------------------------------------        
-        Invoke MUITextCreate, hWin, Addr szFinished, 15, 20, 379, 80, IDC_TEXTFINISHED, MUITS_11PT or MUITS_FONT_SEGOE
+        Invoke MUITextCreate, hWin, Addr szFinished, 15, 20, 379, 80, IDC_TEXTFINISHED, MUITS_10PT or MUITS_FONT_SEGOE
         mov hMUITextFinished, rax
         Invoke MUITextSetProperty, hMUITextFinished, @TextColor, MUI_RGBCOLOR(179,179,179)
         Invoke MUITextSetProperty, hMUITextFinished, @TextColorAlt, MUI_RGBCOLOR(179,179,179)
@@ -407,14 +408,14 @@ Panel4Proc PROC FRAME hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
     ;-----------------------------------------------------------------------------------------------------
     ; ModernUI - Color background and border
     ;-----------------------------------------------------------------------------------------------------
-    .ELSEIF eax == WM_ERASEBKGND
-        mov rax, 1
-        ret
-
-    .ELSEIF eax == WM_PAINT
-        invoke MUIPaintBackground, hWin, MUI_RGBCOLOR(45,45,48), 0
-        mov rax, 0
-        ret
+;    .ELSEIF eax == WM_ERASEBKGND
+;        mov rax, 1
+;        ret
+;
+;    .ELSEIF eax == WM_PAINT
+;        invoke MUIPaintBackground, hWin, MUI_RGBCOLOR(45,45,48), -1
+;        mov rax, 0
+;        ret
     ;-----------------------------------------------------------------------------------------------------
 
     .ELSEIF eax==WM_CLOSE

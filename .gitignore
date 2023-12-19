@@ -4,6 +4,8 @@ bak/
 *.obj
 *.pdb
 *.ilk
+*.err
+*.res
 *.exp
 notes.txt
 ModernUI/Bak/*.*

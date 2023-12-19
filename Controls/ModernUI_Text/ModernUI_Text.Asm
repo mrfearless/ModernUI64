@@ -2,9 +2,7 @@
 ;
 ; ModernUI x64 Control - ModernUI_Text x64
 ;
-; Copyright (c) 2019 by fearless
-;
-; All Rights Reserved
+; Copyright (c) 2023 by fearless
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;
@@ -62,9 +60,9 @@ WINVER equ 0501h
 ;MUI_UNICODE TEXTEQU <UNICODE>
 IFDEF MUI_UNICODE
 UNICODE EQU 1
-% ECHO MUI_UNICODE BUILD
+% ECHO ModernUI_Text MUI_UNICODE BUILD
 ELSE
-ECHO ANSI BUILD
+ECHO ModernUI_Text ANSI BUILD
 ENDIF
 ;------------------------------------------
 
@@ -105,19 +103,21 @@ _MUI_TextWndProc				PROTO :HWND, :UINT, :WPARAM, :LPARAM
 _MUI_TextInit                   PROTO :QWORD
 _MUI_TextPaint                  PROTO :QWORD
 _MUI_TextPaintBackground        PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD
+_MUI_TextPaintBrush             PROTO :QWORD, :QWORD, :QWORD
 _MUI_TextPaintText              PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD
 _MUI_TextCheckMultiline         PROTO :QWORD, :QWORD
 _MUI_TextSetFontFamilySize      PROTO :QWORD, :QWORD
 
-_MUI_TextCheckSetFont           PROTO :QWORD, :QWORD
-
 _MUI_TextGetFontTableHandle     PROTO :QWORD, :QWORD
 _MUI_TextSetFontTableHandle     PROTO :QWORD, :QWORD, :QWORD
+
+_MUI_TextCheckSetFont           PROTO :QWORD, :QWORD
 
 _MUI_TextUTF8Encode             PROTO :QWORD
 _MUI_TextUTF8Decode             PROTO :QWORD
 _MUI_TextUTF8Free               PROTO :QWORD
 
+_MUI_TextUpdateBrushOrg         PROTO :QWORD
 
 ;------------------------------------------------------------------------------
 ; Structures for internal use
@@ -166,7 +166,14 @@ _MUI_TEXT_PROPERTIES            STRUCT
     qwPtrListStack              DQ ? ; Stack of list items for DTE
     qwListStackIndex            DQ ? ; Current index of list stack
     qwPtrFontSpecial            DQ ? ; Array of fonts for DTE
-    qwHyperLinkControl          DQ ? ; handle of DTE HyperLink control    
+    qwHyperLinkControl          DQ ? ; handle of DTE HyperLink control
+    qwBrushBitmap               DD ?
+    qwBrush                     DD ?
+    qwBrushOrgX                 DD ?
+    qwBrushOrgY                 DD ?
+    qwBrushOrgOriginalX         DD ?
+    qwBrushOrgOriginalY         DD ?
+    qwBrushPos                  DD ?
 _MUI_TEXT_PROPERTIES            ENDS
 
 ; Extended Internal properties
@@ -202,9 +209,12 @@ MUI_TEXT_NO_FONTTYPES           EQU 7
 MUI_TEXT_NO_FONTSIZES           EQU 16
 MUI_TEXT_FONT_ENTRIES_SIZE      EQU (MUI_TEXT_NO_FONTSIZES * SIZEOF MUI_TEXT_FONT_ENTRY)
 
-MUI_TEXT_FONTSIZE_MASK          EQU 000000000000000Fh
-MUI_TEXT_FONTTYPE_MASK          EQU 0000000000000070h
-MUI_TEXT_ALIGN_MASK             EQU 0000000000000300h
+MUI_TEXT_FONTSIZE_MASK          EQU 0000000Fh
+MUI_TEXT_FONTTYPE_MASK          EQU 00000070h
+MUI_TEXT_ALIGN_MASK             EQU 00000300h
+;MUI_TEXT_FONTSIZE_MASK          EQU 000000000000000Fh
+;MUI_TEXT_FONTTYPE_MASK          EQU 0000000000000070h
+;MUI_TEXT_ALIGN_MASK             EQU 0000000000000300h
 
 
 @@TextBufferSize                EQU 32d ; cbWndOffset+32
@@ -219,6 +229,13 @@ MUI_TEXT_ALIGN_MASK             EQU 0000000000000300h
 @TextListStackIndex             EQU 48 ; Current index of list stack
 @TextPtrFontSpecial             EQU 56 ; Array of fonts for DTE
 @TextHyperLinkControl           EQU 64 ; handle of DTE HyperLink control
+@TextBrushBitmap                EQU 72
+@TextBrush                      EQU 80
+@TextBrushOrgX                  EQU 88
+@TextBrushOrgY                  EQU 96
+@TextBrushOrgOriginalX          EQU 104
+@TextBrushOrgOriginalY          EQU 112
+@TextBrushPos                   EQU 120
 
 .DATA
 IFDEF MUI_UNICODE
@@ -424,7 +441,7 @@ MUITextRegister PROC FRAME
     	mov wc.hbrBackground, NULL
     	mov wc.style, NULL
         mov wc.cbClsExtra, 0
-    	mov wc.cbWndExtra, 40d ; cbWndExtra +0 = QWORD ptr to internal properties memory block, cbWndExtra +8 = QWORD ptr to external properties memory block
+    	mov wc.cbWndExtra, 48d ; cbWndExtra +0 = QWORD ptr to internal properties memory block, cbWndExtra +8 = QWORD ptr to external properties memory block
     	Invoke RegisterClassEx, addr wc
     .ENDIF  
     ret
@@ -509,6 +526,18 @@ _MUI_TextWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam
         mov rax, 0
         ret
         
+    .ELSEIF eax == WM_MOVE
+        Invoke GetWindowLong, hWin, 0
+        .IF rax != 0
+            Invoke MUIGetIntProperty, hWin, @TextBrush
+            .IF rax != 0
+                Invoke MUIGetIntProperty, hWin, @TextBrushPos
+                .IF rax == 0
+                    Invoke _MUI_TextUpdateBrushOrg, hWin
+                .ENDIF
+            .ENDIF
+        .ENDIF
+        
     .ELSEIF eax== WM_SETCURSOR
         Invoke GetWindowLongPtr, hWin, GWL_STYLE
         and rax, MUITS_HAND
@@ -528,21 +557,44 @@ _MUI_TextWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam
 		Invoke GetParent, hWin
 		Invoke PostMessage, rax, WM_COMMAND, rbx, hWin
 
-   .ELSEIF rax == WM_MOUSEMOVE
-        Invoke MUIGetIntProperty, hWin, @TextEnabledState
-        .IF rax == TRUE   
-    		Invoke MUISetIntProperty, hWin, @TextMouseOver , TRUE
-    		.IF rax != TRUE
-    		    ;Invoke ShowWindow, hWin, SW_HIDE
-    		    Invoke InvalidateRect, hWin, NULL, TRUE
-    		    ;Invoke ShowWindow, hWin, SW_SHOW
-    		    mov TE.cbSize, SIZEOF TRACKMOUSEEVENT
-    		    mov TE.dwFlags, TME_LEAVE
-    		    mov rax, hWin
-    		    mov TE.hwndTrack, rax
-    		    mov TE.dwHoverTime, NULL
-    		    Invoke TrackMouseEvent, Addr TE
-    		.ENDIF
+;   .ELSEIF rax == WM_MOUSEMOVE
+;        Invoke MUIGetIntProperty, hWin, @TextEnabledState
+;        .IF rax == TRUE   
+;    		Invoke MUISetIntProperty, hWin, @TextMouseOver , TRUE
+;    		.IF rax != TRUE
+;    		    ;Invoke ShowWindow, hWin, SW_HIDE
+;    		    Invoke InvalidateRect, hWin, NULL, TRUE
+;    		    ;Invoke ShowWindow, hWin, SW_SHOW
+;    		    mov TE.cbSize, SIZEOF TRACKMOUSEEVENT
+;    		    mov TE.dwFlags, TME_LEAVE
+;    		    mov rax, hWin
+;    		    mov TE.hwndTrack, rax
+;    		    mov TE.dwHoverTime, NULL
+;    		    Invoke TrackMouseEvent, Addr TE
+;    		.ENDIF
+;        .ENDIF
+
+   .ELSEIF eax == WM_MOUSEMOVE
+        Invoke GetWindowLong, hWin, GWL_STYLE
+        and rax, MUITS_HAND
+        .IF rax == MUITS_HAND   
+            Invoke MUIGetIntProperty, hWin, @TextEnabledState
+            .IF rax == TRUE   
+                Invoke MUISetIntProperty, hWin, @TextMouseOver, TRUE
+                .IF eax != TRUE
+                    ;Invoke ShowWindow, hWin, SW_HIDE
+                    Invoke InvalidateRect, hWin, NULL, TRUE
+                    ;Invoke ShowWindow, hWin, SW_SHOW
+                    mov TE.cbSize, SIZEOF TRACKMOUSEEVENT
+                    mov TE.dwFlags, TME_LEAVE
+                    mov rax, hWin
+                    mov TE.hwndTrack, rax
+                    mov TE.dwHoverTime, NULL
+                    Invoke TrackMouseEvent, Addr TE
+                .ENDIF
+            .ENDIF
+            Invoke GetParent, hWin
+            Invoke PostMessage, rax, WM_MOUSEMOVE, wParam, lParam ; pass mousemove to parent
         .ENDIF
 
     .ELSEIF eax == WM_MOUSELEAVE
@@ -558,6 +610,13 @@ _MUI_TextWndProc PROC FRAME USES RBX hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam
 		Invoke InvalidateRect, hWin, NULL, TRUE
 		Invoke LoadCursor, NULL, IDC_ARROW
 		Invoke SetCursor, rax
+
+    .ELSEIF eax == WM_ENABLE
+        Invoke MUISetIntProperty, hWin, @TextEnabledState, wParam
+        ;Invoke ShowWindow, hWin, SW_HIDE
+        Invoke InvalidateRect, hWin, NULL, TRUE
+        ;Invoke ShowWindow, hWin, SW_SHOW
+        mov rax, 0
 
     .ELSEIF eax == WM_SETTEXT
         Invoke _MUI_TextCheckMultiline, hWin, lParam
@@ -682,7 +741,7 @@ _MUI_TextInit PROC FRAME hWin:QWORD
     ;    Invoke GlobalAlloc, GMEM_FIXED or GMEM_ZEROINIT, rax
     ;.ENDIF
     .IF rax != NULL
-        Invoke MUISetIntProperty, hWin, @TextBuffer, eax
+        Invoke MUISetIntProperty, hWin, @TextBuffer, rax
     .ENDIF
 
     mov rax, qwStyle
@@ -693,7 +752,7 @@ _MUI_TextInit PROC FRAME hWin:QWORD
     
     IFDEF MUI_DRAWTEXTEXT
     ; Allocate memory for stacks if using htmlcode or bbcode tags
-    mov rax, dwStyle
+    mov rax, qwStyle
     and rax, MUITS_HTMLCODE
     .IF rax == MUITS_HTMLCODE
         mov rax, LISTSTACK_SIZE
@@ -715,7 +774,7 @@ _MUI_TextInit PROC FRAME hWin:QWORD
         Invoke MUISetIntProperty, hWin, @TextPtrFontSpecial, rax            
     .ENDIF
     
-    mov rax, dwStyle
+    mov rax, qwStyle
     and rax, MUITS_BBCODE
     .IF rax == MUITS_BBCODE
         mov rax, LISTSTACK_SIZE
@@ -738,6 +797,15 @@ _MUI_TextInit PROC FRAME hWin:QWORD
     .ENDIF
     ENDIF
     
+    mov rax, qwStyle
+    and rax, MUITS_HAND
+    .IF rax != MUITS_HAND
+        Invoke GetWindowLongPtr, hWin, GWL_EXSTYLE	
+        mov qwStyle, rax
+        or rax, WS_EX_TRANSPARENT
+        Invoke SetWindowLongPtr, hWin, GWL_EXSTYLE, qwStyle
+    .ENDIF     
+    
     ret
 _MUI_TextInit ENDP
 
@@ -749,14 +817,26 @@ MUI_ALIGN
 _MUI_TextPaint PROC FRAME hWin:QWORD
     LOCAL ps:PAINTSTRUCT 
     LOCAL rect:RECT
-    LOCAL hdc:QWORD
-    LOCAL hdcMem:QWORD
-    LOCAL hbmMem:QWORD
-    LOCAL hBitmap:QWORD
-    LOCAL hOldBitmap:QWORD
+    LOCAL hdc:HDC
+    LOCAL hdcMem:HDC
+    LOCAL hBufferBitmap:QWORD 
     LOCAL EnabledState:QWORD
     LOCAL MouseOver:QWORD
     LOCAL BackColor:QWORD
+    LOCAL hBackBrush:QWORD
+
+
+    Invoke IsWindowVisible, hWin
+    .IF rax == FALSE
+        ;PrintText 'IsWindowVisible Not Visible'
+        ret
+    .ENDIF
+    
+    Invoke GetWindowLongPtr, hWin, 0
+    .IF rax == 0
+        ;PrintText 'Property Mem Not Allocated Yet'
+        ret
+    .ENDIF
 
     Invoke BeginPaint, hWin, Addr ps
     mov hdc, rax
@@ -771,18 +851,21 @@ _MUI_TextPaint PROC FRAME hWin:QWORD
     mov MouseOver, rax
     Invoke MUIGetExtProperty, hWin, @TextBackColor
     mov BackColor, rax
+    Invoke MUIGetIntProperty, hWin, @TextBrush
+    mov hBackBrush, rax  
+
+    IFDEF DEBUG64
+    PrintText 'hBackBrush'
+    PrintDec rax
+    PrintText 'BackColor'
+    mov rax, BackColor
+    ENDIF
 
     .IF BackColor != -1 ; Not Transparent, background color is specified
-
         ;----------------------------------------------------------
         ; Setup Double Buffering
         ;----------------------------------------------------------
-        Invoke CreateCompatibleDC, hdc
-        mov hdcMem, rax
-        Invoke CreateCompatibleBitmap, hdc, rect.right, rect.bottom
-        mov hbmMem, rax
-        Invoke SelectObject, hdcMem, hbmMem
-        mov hOldBitmap, rax
+        Invoke MUIGDIDoubleBufferStart, hWin, hdc, Addr hdcMem, Addr rect, Addr hBufferBitmap
     
         ;----------------------------------------------------------
         ; Background
@@ -800,23 +883,49 @@ _MUI_TextPaint PROC FRAME hWin:QWORD
         Invoke BitBlt, hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY
     
         ;----------------------------------------------------------
-        ; Cleanup
+        ; Finish Double Buffering & Cleanup
         ;----------------------------------------------------------
-        .IF hOldBitmap != 0
-            Invoke SelectObject, hdcMem, hOldBitmap
-            Invoke DeleteObject, hOldBitmap
-        .ENDIF
-        Invoke SelectObject, hdcMem, hbmMem
-        Invoke DeleteObject, hbmMem
-        Invoke DeleteDC, hdcMem
+        Invoke MUIGDIDoubleBufferFinish, hdcMem, hBufferBitmap, 0, 0, 0, 0
 
     .ELSE ; Text on Transparent Background
     
-        ;----------------------------------------------------------
-        ; Text
-        ;----------------------------------------------------------    
-        Invoke _MUI_TextPaintText, hWin, hdc, Addr rect, EnabledState, MouseOver
-    
+        .IF hBackBrush == 0
+        
+            ;PrintText 'Text on Transparent Background'
+            ;------------------------------------------------------
+            ; Text
+            ;------------------------------------------------------    
+            Invoke _MUI_TextPaintText, hWin, hdc, Addr rect, EnabledState, MouseOver
+        
+        .ELSE
+            
+            ;------------------------------------------------------
+            ; Setup Double Buffering
+            ;------------------------------------------------------
+            Invoke MUIGDIDoubleBufferStart, hWin, hdc, Addr hdcMem, Addr rect, Addr hBufferBitmap
+            
+            ;------------------------------------------------------
+            ; Paint background brush
+            ;------------------------------------------------------
+            Invoke _MUI_TextPaintBrush, hWin, hdcMem, Addr rect
+            
+            ;------------------------------------------------------
+            ; Text
+            ;------------------------------------------------------
+            Invoke _MUI_TextPaintText, hWin, hdcMem, Addr rect, EnabledState, MouseOver
+
+            ;------------------------------------------------------
+            ; BitBlt from hdcMem back to hdc
+            ;------------------------------------------------------
+            Invoke BitBlt, hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY
+        
+            ;------------------------------------------------------
+            ; Finish Double Buffering & Cleanup
+            ;------------------------------------------------------
+            Invoke MUIGDIDoubleBufferFinish, hdcMem, hBufferBitmap, 0, 0, 0, 0
+
+        .ENDIF
+        
     .ENDIF
     
     Invoke EndPaint, hWin, Addr ps
@@ -851,23 +960,51 @@ _MUI_TextPaintBackground PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnable
         ret
     .ENDIF
 
-    Invoke GetStockObject, DC_BRUSH
-    mov hBrush, rax
-    Invoke SelectObject, hdc, rax
-    mov hOldBrush, rax
-    Invoke SetDCBrushColor, hdc, dword ptr BackColor
-    Invoke FillRect, hdc, lpRect, hBrush
+    Invoke MUIGDIPaintFill, hdc, lpRect, BackColor
 
-    .IF hOldBrush != 0
-        Invoke SelectObject, hdc, hOldBrush
-        Invoke DeleteObject, hOldBrush
-    .ENDIF     
-    .IF hBrush != 0
-        Invoke DeleteObject, hBrush
-    .ENDIF      
+;    Invoke GetStockObject, DC_BRUSH
+;    mov hBrush, rax
+;    Invoke SelectObject, hdc, rax
+;    mov hOldBrush, rax
+;    Invoke SetDCBrushColor, hdc, dword ptr BackColor
+;    Invoke FillRect, hdc, lpRect, hBrush
+;
+;    .IF hOldBrush != 0
+;        Invoke SelectObject, hdc, hOldBrush
+;        Invoke DeleteObject, hOldBrush
+;    .ENDIF     
+;    .IF hBrush != 0
+;        Invoke DeleteObject, hBrush
+;    .ENDIF      
     ret
 _MUI_TextPaintBackground ENDP
 
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; _MUI_TextPaintBrush
+;------------------------------------------------------------------------------
+_MUI_TextPaintBrush PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD
+    LOCAL hBackBrush:QWORD
+    LOCAL hOldBrush:QWORD
+    LOCAL qwXOrg:QWORD
+    LOCAL qwYOrg:QWORD
+    LOCAL rect:RECT
+    
+    Invoke MUIGetIntProperty, hWin, @TextBrush
+    .IF rax == 0
+        ret
+    .ENDIF
+    mov hBackBrush, rax
+
+    Invoke MUIGetIntProperty, hWin, @TextBrushOrgX
+    mov qwXOrg, rax
+    Invoke MUIGetIntProperty, hWin, @TextBrushOrgY
+    mov qwYOrg, rax
+
+    Invoke MUIGDIPaintBrush, hdc, lpRect, hBackBrush, qwXOrg, qwYOrg
+
+    ret
+_MUI_TextPaintBrush ENDP
 
 MUI_ALIGN
 ;------------------------------------------------------------------------------
@@ -881,14 +1018,27 @@ _MUI_TextPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState
     LOCAL LenText:QWORD    
     LOCAL qwTextStyle:QWORD
     LOCAL qwStyle:QWORD
+    LOCAL bUTF8:DWORD
     LOCAL rect:RECT
     LOCAL lpMUITextBuffer:QWORD
     LOCAL lpMUITextUTF8Buffer:QWORD
+    
+    IFDEF DEBUG64
+    PrintText '_MUI_TextPaintText'
+    ENDIF
     
     Invoke CopyRect, Addr rect, lpRect
 
     Invoke GetWindowLongPtr, hWin, GWL_STYLE
     mov qwStyle, rax
+
+    mov rax, qwStyle
+    and rax, MUITS_UTF8
+    .IF rax == MUITS_UTF8
+        mov bUTF8, TRUE
+    .ELSE
+        mov bUTF8, FALSE
+    .ENDIF    
 
     Invoke MUIGetIntProperty, hWin, @TextBuffer
     .IF rax == FALSE
@@ -927,13 +1077,31 @@ _MUI_TextPaintText PROC FRAME hWin:QWORD, hdc:QWORD, lpRect:QWORD, bEnabledState
     .ENDIF  
     mov TextColor, rax
     
+    IFDEF DEBUG64
+    PrintText '_MUI_TextPaintText:TextColor'
+    PrintDec rax
+    ENDIF
+    
     .IF lpMUITextBuffer != 0
         Invoke GetWindowText, hWin, lpMUITextBuffer, MUI_TEXT_MAX_CHARS ; length of string is returned in eax
+    .ELSE
+        mov rax, 0
     .ENDIF
     mov LenText, rax
     
+    IFDEF DEBUG64
+    PrintText '_MUI_TextPaintText:LenText'
+    PrintDec rax
+    ENDIF
+    
     Invoke SelectObject, hdc, hFont
     mov hOldFont, rax
+
+    IFDEF DEBUG64
+    PrintText '_MUI_TextPaintText:hFont'
+    mov rax, hFont
+    PrintDec rax
+    ENDIF
 
     .IF BackColor != -1 ; transaprent
         Invoke SetBkMode, hdc, OPAQUE
@@ -991,6 +1159,9 @@ _MUI_TextCheckMultiline PROC FRAME USES RBX hWin:QWORD, lpszText:QWORD
     Invoke lstrlen, lpszText
     mov lenText, rax
     
+    Invoke GetWindowLongPtr, hWin, GWL_STYLE
+    mov qwStyle, rax  
+    
     mov bMultiline, FALSE
     mov rbx, lpszText
     mov Cnt, 0
@@ -1024,8 +1195,7 @@ _MUI_TextCheckMultiline PROC FRAME USES RBX hWin:QWORD, lpszText:QWORD
         mov rax, Cnt
     .ENDW
 
-    Invoke GetWindowLongPtr, hWin, GWL_STYLE
-    mov qwStyle, rax  
+
     mov rax, qwStyle
     .IF bMultiline == FALSE
         or rax, MUITS_SINGLELINE
@@ -1048,13 +1218,13 @@ MUI_ALIGN
 _MUI_TextSetFontFamilySize PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
     LOCAL MUITextFont:QWORD
     LOCAL hFont:QWORD
-    LOCAL qwFontHeight:QWORD
-    LOCAL qwFontWeight:QWORD
-    LOCAL qwFontFamily:QWORD
-    LOCAL qwFontSize:QWORD
-    LOCAL bFontBold:QWORD
-    LOCAL bFontItalic:QWORD
-    LOCAL bFontUnderline:QWORD
+    LOCAL dwFontHeight:DWORD
+    LOCAL dwFontWeight:DWORD
+    LOCAL dwFontFamily:DWORD
+    LOCAL dwFontSize:DWORD
+    LOCAL bFontBold:DWORD
+    LOCAL bFontItalic:DWORD
+    LOCAL bFontUnderline:DWORD
     LOCAL ncm:NONCLIENTMETRICS
     LOCAL lfnt:LOGFONT       
 
@@ -1068,27 +1238,27 @@ _MUI_TextSetFontFamilySize PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
     ; Get font family
     ;--------------------------------
     mov rax, qwStyle
-    and rax, MUI_TEXT_FONTTYPE_MASK
-    mov qwFontFamily, rax
+    and eax, MUI_TEXT_FONTTYPE_MASK
+    mov dwFontFamily, eax
     
-    .IF rax == MUITS_FONT_DIALOG
+    .IF eax == MUITS_FONT_DIALOG
         Invoke GetParent, hWin
         Invoke SendMessage, rax, WM_GETFONT, 0, 0 ; hope parent is the dialog or container that has a font being used.
         mov hFont, rax
         Invoke MUISetExtProperty, hWin, @TextFont, hFont
     .ELSE
-        mov rax, qwFontFamily
-        .IF rax == MUITS_FONT_SEGOE
+        mov eax, dwFontFamily
+        .IF eax == MUITS_FONT_SEGOE
             lea rax, szMUITextFontSegoe
-        .ELSEIF rax == MUITS_FONT_TAHOMA
+        .ELSEIF eax == MUITS_FONT_TAHOMA
             lea rax, szMUITextFontTahoma
-        .ELSEIF rax == MUITS_FONT_ARIAL
+        .ELSEIF eax == MUITS_FONT_ARIAL
             lea rax, szMUITextFontArial
-        .ELSEIF rax == MUITS_FONT_TIMES
+        .ELSEIF eax == MUITS_FONT_TIMES
             lea rax, szMUITextFontTimes
-        .ELSEIF rax == MUITS_FONT_COURIER
+        .ELSEIF eax == MUITS_FONT_COURIER
             lea rax, szMUITextFontCourier
-        .ELSEIF rax == MUITS_FONT_VERDANA    
+        .ELSEIF eax == MUITS_FONT_VERDANA    
             lea rax, szMUITextFontVerdana
         .ELSE
             lea rax, szMUITextFontSegoe
@@ -1099,67 +1269,67 @@ _MUI_TextSetFontFamilySize PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
         ; Get font size
         ;--------------------------------        
         mov rax, qwStyle
-        and rax, MUI_TEXT_FONTSIZE_MASK
-        mov qwFontSize, rax
-       .IF rax == MUITS_7PT
+        and eax, MUI_TEXT_FONTSIZE_MASK
+        mov dwFontSize, eax
+       .IF eax == MUITS_7PT
             Invoke MUIPointSizeToLogicalUnit, hWin, 7
-        .ELSEIF rax == MUITS_8PT ; 8pt
+        .ELSEIF eax == MUITS_8PT ; 8pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 8
-        .ELSEIF rax == MUITS_9PT
+        .ELSEIF eax == MUITS_9PT
             Invoke MUIPointSizeToLogicalUnit, hWin, 9
-         .ELSEIF rax == MUITS_10PT ; 10pt
+         .ELSEIF eax == MUITS_10PT ; 10pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 10
-        .ELSEIF rax == MUITS_11PT; 11pt 
+        .ELSEIF eax == MUITS_11PT; 11pt 
             Invoke MUIPointSizeToLogicalUnit, hWin, 11
-        .ELSEIF rax == MUITS_12PT; 12pt
+        .ELSEIF eax == MUITS_12PT; 12pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 12
-         .ELSEIF rax == MUITS_13PT; 13pt 
+         .ELSEIF eax == MUITS_13PT; 13pt 
             Invoke MUIPointSizeToLogicalUnit, hWin, 13
-        .ELSEIF rax == MUITS_14PT ; 14pt
+        .ELSEIF eax == MUITS_14PT ; 14pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 14
-         .ELSEIF rax == MUITS_15PT ; 15pt 
+         .ELSEIF eax == MUITS_15PT ; 15pt 
             Invoke MUIPointSizeToLogicalUnit, hWin, 15
-        .ELSEIF rax == MUITS_16PT ; 16pt
+        .ELSEIF eax == MUITS_16PT ; 16pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 16
-        .ELSEIF rax == MUITS_18PT ; 18pt
+        .ELSEIF eax == MUITS_18PT ; 18pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 18
-        .ELSEIF rax == MUITS_20PT ; 20pt
+        .ELSEIF eax == MUITS_20PT ; 20pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 20
-        .ELSEIF rax == MUITS_22PT ; 22pt
+        .ELSEIF eax == MUITS_22PT ; 22pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 22
-        .ELSEIF rax == MUITS_24PT ; 24pt
+        .ELSEIF eax == MUITS_24PT ; 24pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 24
-        .ELSEIF rax == MUITS_28PT ; 28pt
+        .ELSEIF eax == MUITS_28PT ; 28pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 28
-        .ELSEIF rax == MUITS_32PT ; 32pt
+        .ELSEIF eax == MUITS_32PT ; 32pt
             Invoke MUIPointSizeToLogicalUnit, hWin, 32
         .ELSE
             Invoke MUIPointSizeToLogicalUnit, hWin, 8
         .ENDIF
-        mov qwFontHeight, rax
+        mov dwFontHeight, eax
         
         ;--------------------------------
         ; Get font bold, italic, underline
         ;--------------------------------
         mov rax, qwStyle
-        and rax, MUITS_FONT_BOLD
-        .IF rax == MUITS_FONT_BOLD
+        and eax, MUITS_FONT_BOLD
+        .IF eax == MUITS_FONT_BOLD
             mov bFontBold, TRUE
-            mov qwFontWeight, FW_BOLD
+            mov dwFontWeight, FW_BOLD
         .ELSE
             mov bFontBold, FALSE
-            mov qwFontWeight, FW_NORMAL
+            mov dwFontWeight, FW_NORMAL
         .ENDIF
         mov rax, qwStyle
-        and rax, MUITS_FONT_ITALIC
-        .IF rax == MUITS_FONT_ITALIC
+        and eax, MUITS_FONT_ITALIC
+        .IF eax == MUITS_FONT_ITALIC
             mov bFontItalic, TRUE
         .ELSE
             mov bFontItalic, FALSE
         .ENDIF
         mov rax, qwStyle
-        and rax, MUITS_FONT_UNDERLINE
-        .IF rax == MUITS_FONT_UNDERLINE
+        and eax, MUITS_FONT_UNDERLINE
+        .IF eax == MUITS_FONT_UNDERLINE
             mov bFontUnderline, TRUE
         .ELSE
             mov bFontUnderline, FALSE
@@ -1172,7 +1342,7 @@ _MUI_TextSetFontFamilySize PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
         mov hFont, rax
         .IF rax == 0
             ;PrintText 'New Font'
-            Invoke CreateFont, dword ptr qwFontHeight, 0,0,0, dword ptr qwFontWeight, dword ptr bFontItalic, dword ptr bFontUnderline,0,0,0,0, PROOF_QUALITY, FF_DONTCARE, MUITextFont
+            Invoke CreateFont, dwFontHeight, 0,0,0, dwFontWeight, bFontItalic, bFontUnderline, 0,0,0,0, PROOF_QUALITY, FF_DONTCARE, MUITextFont
             mov hFont, rax
             
             ; Add error checking in case font doesnt exist
@@ -1183,13 +1353,13 @@ _MUI_TextSetFontFamilySize PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
                 ; copy to lfMessageFont to lfnt and set values 
                 lea rbx, ncm.lfMessageFont
                 Invoke RtlMoveMemory, Addr lfnt, rbx, SIZEOF LOGFONT
-                mov rax, qwFontHeight
+                mov eax, dwFontHeight
                 mov lfnt.lfHeight, eax
-                mov rax, qwFontWeight
+                mov eax, dwFontWeight
                 mov lfnt.lfWeight, eax
-                mov rax, bFontItalic
+                mov eax, bFontItalic
                 mov lfnt.lfItalic, al
-                mov rax, bFontUnderline
+                mov eax, bFontUnderline
                 mov lfnt.lfUnderline, al
                 Invoke CreateFontIndirect, Addr lfnt
                 mov hFont, rax
@@ -1218,12 +1388,12 @@ MUI_ALIGN
 ; bold or italic or underline (or combination)
 ;------------------------------------------------------------------------------
 _MUI_TextGetFontTableHandle PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
-    LOCAL qwFontSizeValue:QWORD
-    LOCAL qwFontTypeValue:QWORD
-    LOCAL qwFontTypeIndex:QWORD
-    LOCAL bFontBold:QWORD
-    LOCAL bFontItalic:QWORD
-    LOCAL bFontUnderline:QWORD
+    LOCAL dwFontSizeValue:DWORD
+    LOCAL dwFontTypeValue:DWORD
+    LOCAL dwFontTypeIndex:DWORD
+    LOCAL bFontBold:DWORD
+    LOCAL bFontItalic:DWORD
+    LOCAL bFontUnderline:DWORD
     LOCAL OffsetTextFont:QWORD
     LOCAL OffsetTextFontSize:QWORD
     LOCAL ptrTextFontEntry:QWORD
@@ -1234,46 +1404,46 @@ _MUI_TextGetFontTableHandle PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD
     .ENDIF
     
     mov rax, qwStyle
-    and rax, MUITS_FONT_BOLD
-    .IF rax == MUITS_FONT_BOLD
+    and eax, MUITS_FONT_BOLD
+    .IF eax == MUITS_FONT_BOLD
         mov bFontBold, TRUE
     .ELSE
         mov bFontBold, FALSE
     .ENDIF
 
     mov rax, qwStyle
-    and rax, MUITS_FONT_ITALIC
-    .IF rax == MUITS_FONT_ITALIC
+    and eax, MUITS_FONT_ITALIC
+    .IF eax == MUITS_FONT_ITALIC
         mov bFontItalic, TRUE
     .ELSE
         mov bFontItalic, FALSE
     .ENDIF
 
     mov rax, qwStyle
-    and rax, MUITS_FONT_UNDERLINE
-    .IF rax == MUITS_FONT_UNDERLINE
+    and eax, MUITS_FONT_UNDERLINE
+    .IF eax == MUITS_FONT_UNDERLINE
         mov bFontUnderline, TRUE
     .ELSE
         mov bFontUnderline, FALSE
     .ENDIF
 
     mov rax, qwStyle
-    and rax, MUI_TEXT_FONTSIZE_MASK
-    mov qwFontSizeValue, rax
+    and eax, MUI_TEXT_FONTSIZE_MASK
+    mov dwFontSizeValue, eax
 
     ; text font entry is (index * MUI_TEXT_FONT_ENTRIES_SIZE) + (sizevalue * MUI_TEXT_FONT_ENTRY)
 
     mov rax, qwStyle
-    and rax, MUI_TEXT_FONTTYPE_MASK
-    mov qwFontTypeValue, rax
-    shr rax, 4
-    mov qwFontTypeIndex, rax
+    and eax, MUI_TEXT_FONTTYPE_MASK
+    mov dwFontTypeValue, eax
+    shr eax, 4
+    mov dwFontTypeIndex, eax
     mov rbx, MUI_TEXT_FONT_ENTRIES_SIZE
     mul rbx
     mov OffsetTextFont, rax
 
     mov rbx, SIZEOF MUI_TEXT_FONT_ENTRY
-    mov rax, qwFontSizeValue
+    mov eax, dwFontSizeValue
     mul rbx
     mov OffsetTextFontSize, rax
     
@@ -1325,12 +1495,12 @@ MUI_ALIGN
 ; bold or italic or underline (or combination)
 ;------------------------------------------------------------------------------
 _MUI_TextSetFontTableHandle PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD, hFont:QWORD
-    LOCAL qwFontSizeValue:QWORD
-    LOCAL qwFontTypeValue:QWORD
-    LOCAL qwFontTypeIndex:QWORD
-    LOCAL bFontBold:QWORD
-    LOCAL bFontItalic:QWORD
-    LOCAL bFontUnderline:QWORD
+    LOCAL dwFontSizeValue:DWORD
+    LOCAL dwFontTypeValue:DWORD
+    LOCAL dwFontTypeIndex:DWORD
+    LOCAL bFontBold:DWORD
+    LOCAL bFontItalic:DWORD
+    LOCAL bFontUnderline:DWORD
     LOCAL OffsetTextFont:QWORD
     LOCAL OffsetTextFontSize:QWORD
     LOCAL ptrTextFontEntry:QWORD
@@ -1341,46 +1511,46 @@ _MUI_TextSetFontTableHandle PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD, hFont
     .ENDIF
     
     mov rax, qwStyle
-    and rax, MUITS_FONT_BOLD
-    .IF rax == MUITS_FONT_BOLD
+    and eax, MUITS_FONT_BOLD
+    .IF eax == MUITS_FONT_BOLD
         mov bFontBold, TRUE
     .ELSE
         mov bFontBold, FALSE
     .ENDIF
 
     mov rax, qwStyle
-    and rax, MUITS_FONT_ITALIC
-    .IF rax == MUITS_FONT_ITALIC
+    and eax, MUITS_FONT_ITALIC
+    .IF eax == MUITS_FONT_ITALIC
         mov bFontItalic, TRUE
     .ELSE
         mov bFontItalic, FALSE
     .ENDIF
 
     mov rax, qwStyle
-    and rax, MUITS_FONT_UNDERLINE
-    .IF rax == MUITS_FONT_UNDERLINE
+    and eax, MUITS_FONT_UNDERLINE
+    .IF eax == MUITS_FONT_UNDERLINE
         mov bFontUnderline, TRUE
     .ELSE
         mov bFontUnderline, FALSE
     .ENDIF
 
     mov rax, qwStyle
-    and rax, MUI_TEXT_FONTSIZE_MASK
-    mov qwFontSizeValue, rax
+    and eax, MUI_TEXT_FONTSIZE_MASK
+    mov dwFontSizeValue, eax
 
     ; text font entry is (index * MUI_TEXT_FONT_ENTRIES_SIZE) + (sizevalue * MUI_TEXT_FONT_ENTRY)
 
     mov rax, qwStyle
-    and rax, MUI_TEXT_FONTTYPE_MASK
-    mov qwFontTypeValue, rax
-    shr rax, 4
-    mov qwFontTypeIndex, rax
+    and eax, MUI_TEXT_FONTTYPE_MASK
+    mov dwFontTypeValue, eax
+    shr eax, 4
+    mov dwFontTypeIndex, eax
     mov rbx, MUI_TEXT_FONT_ENTRIES_SIZE
     mul rbx
     mov OffsetTextFont, rax
 
     mov rbx, SIZEOF MUI_TEXT_FONT_ENTRY
-    mov rax, qwFontSizeValue
+    mov eax, dwFontSizeValue
     mul rbx
     mov OffsetTextFontSize, rax
     
@@ -1421,7 +1591,28 @@ _MUI_TextSetFontTableHandle PROC FRAME USES RBX hWin:QWORD, qwStyle:QWORD, hFont
     ret
 _MUI_TextSetFontTableHandle ENDP
 
+MUI_ALIGN
+;-------------------------------------------------------------------------------------
+; Check if font set via MUITextSetProperty is acutally a font, if it isnt return FALSE
+;-------------------------------------------------------------------------------------
+_MUI_TextCheckSetFont PROC FRAME hWin:QWORD, hFont:QWORD
+    LOCAL lfnt:LOGFONT 
+    
+    .IF hWin == 0 || hFont == 0
+        mov rax, FALSE
+        ret
+    .ENDIF
+    
+    Invoke GetObject, hFont, SIZEOF lfnt, Addr lfnt
+    .IF rax == NULL
+        mov rax, FALSE
+        ret
+    .ENDIF
+    
+    mov rax, TRUE
+    ret
 
+_MUI_TextCheckSetFont ENDP
 
 
 MUI_ALIGN
@@ -1505,6 +1696,44 @@ _MUI_TextUTF8Free PROC FRAME lpString:QWORD
     ret
 _MUI_TextUTF8Free ENDP
 
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; _MUI_TextUpdateBrushOrg - Updates brush org for relative brush after a 
+; control has moved
+;------------------------------------------------------------------------------
+_MUI_TextUpdateBrushOrg PROC FRAME hWin:QWORD
+    LOCAL rect:RECT
+    LOCAL x:QWORD
+    LOCAL y:QWORD
+    LOCAL qwBrushOrgX:QWORD
+    LOCAL qwBrushOrgY:QWORD
+    
+    Invoke MUIGetIntProperty, hWin, @TextBrushOrgOriginalX
+    mov qwBrushOrgX, rax
+
+    Invoke MUIGetIntProperty, hWin, @TextBrushOrgOriginalY
+    mov qwBrushOrgY, rax
+    
+    Invoke MUIGetParentRelativeWindowRect, hWin, Addr rect
+    
+    xor rax, rax
+    mov eax, rect.left
+    sub eax, dword ptr qwBrushOrgX
+    neg eax
+    mov x, rax
+    
+    xor rax, rax
+    mov eax, rect.top
+    sub eax, dword ptr qwBrushOrgY
+    neg eax
+    mov y, rax
+
+    Invoke MUISetIntProperty, hWin, @TextBrushOrgX, x
+    Invoke MUISetIntProperty, hWin, @TextBrushOrgY, y
+    Invoke InvalidateRect, hWin, NULL, FALSE
+    ret
+_MUI_TextUpdateBrushOrg ENDP
+
 
 MUI_ALIGN
 ;-------------------------------------------------------------------------------------
@@ -1537,28 +1766,96 @@ MUITextSetBufferSize PROC FRAME hWin:QWORD, qwSize:QWORD
     ret
 MUITextSetBufferSize ENDP
 
+MUI_ALIGN
+;------------------------------------------------------------------------------
+; MUITextSetBackBrush - Set a background brush for text - used for text
+; that have @TextBackColor set to -1 for transparency type effect.
+; dwBrushPos: 0 = brush position is relative to control's position, and adjusted
+; by x and y (typically 0,0 tho) - if brush image is set to parent's 0,0 then 
+; control will capture and paint the part of the brush that is relative to it's 
+; background position. Otherwise if dwBrushPos = 1 then its an absolute position 
+; in a brush/bitmap
+;
+; If dwBrushPos is relative, then sizing/moving will readjust the brush offset
+; to use for background
+;------------------------------------------------------------------------------
+MUITextSetBackBrush PROC FRAME hControl:QWORD, hBrush:QWORD, qwBrushOrgX:QWORD, qwBrushOrgY:QWORD, qwBrushPos:QWORD
+    LOCAL rect:RECT
+    LOCAL x:QWORD
+    LOCAL y:QWORD
+    
+    mov rax, qwBrushPos
+    .IF rax == 0 ; brush position is relative to control's position, and adjusted by x and y 
+        Invoke MUIGetParentRelativeWindowRect, hControl, Addr rect
+        
+        xor rax, rax
+        mov eax, rect.left
+        sub eax, dword ptr qwBrushOrgX
+        neg eax
+        mov x, rax
+        
+        xor rax, rax
+        mov eax, rect.top
+        sub eax, dword ptr qwBrushOrgY
+        neg eax
+        mov y, rax
+        
+    .ELSE ; brush position is absolute, but adjusted by x and y as specified
+        
+        xor rax, rax
+        mov eax, dword ptr qwBrushOrgX
+        neg eax
+        mov x, rax
+        
+        xor rax, rax
+        mov eax, dword ptr qwBrushOrgY
+        neg eax
+        mov y, rax
+        
+    .ENDIF
+    
+    Invoke MUISetIntProperty, hControl, @TextBrush, hBrush
+    Invoke MUISetIntProperty, hControl, @TextBrushOrgOriginalX, qwBrushOrgX
+    Invoke MUISetIntProperty, hControl, @TextBrushOrgOriginalY, qwBrushOrgY
+    Invoke MUISetIntProperty, hControl, @TextBrushOrgX, x
+    Invoke MUISetIntProperty, hControl, @TextBrushOrgY, y
+    Invoke MUISetIntProperty, hControl, @TextBrushPos, qwBrushPos
+    Invoke InvalidateRect, hControl, NULL, FALSE
+    ret
+MUITextSetBackBrush ENDP
 
 MUI_ALIGN
-;-------------------------------------------------------------------------------------
-; Check if font set via MUITextSetProperty is acutally a font, if it isnt return FALSE
-;-------------------------------------------------------------------------------------
-_MUI_TextCheckSetFont PROC FRAME hWin:QWORD, hFont:QWORD
-    LOCAL lfnt:LOGFONT 
+;------------------------------------------------------------------------------
+; MUITextLoadBackBrush
+;------------------------------------------------------------------------------
+MUITextLoadBackBrush PROC FRAME hControl:QWORD, idResBitmap:QWORD, qwBrushOrgX:QWORD, qwBrushOrgY:QWORD, qwBrushPos:QWORD
+    LOCAL hinstance:QWORD
+    LOCAL hBrushBitmap:QWORD
+    LOCAL hBrush:QWORD
     
-    .IF hWin == 0 || hFont == 0
+    .IF idResBitmap == NULL
         mov rax, FALSE
         ret
     .ENDIF
     
-    Invoke GetObject, hFont, SIZEOF lfnt, Addr lfnt
-    .IF rax == NULL
-        mov rax, FALSE
-        ret
+    Invoke MUIGetExtProperty, hControl, @TextDllInstance
+    .IF rax == 0
+        Invoke GetModuleHandle, NULL
     .ENDIF
+    mov hinstance, rax
     
-    mov rax, TRUE
+    Invoke LoadBitmap, hinstance, idResBitmap
+    mov hBrushBitmap, rax
+    Invoke MUISetIntProperty, hControl, @TextBrushBitmap, hBrushBitmap
+    
+    Invoke CreatePatternBrush, hBrushBitmap
+    mov hBrush, rax
+    
+    Invoke MUITextSetBackBrush, hControl, hBrush, qwBrushOrgX, qwBrushOrgY, qwBrushPos
+    
     ret
-_MUI_TextCheckSetFont ENDP
+MUITextLoadBackBrush ENDP
+
 
 
 IFDEF MUI_DRAWTEXTEXT

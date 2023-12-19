@@ -2,9 +2,7 @@
 ;
 ; ModernUI x64 Control - ModernUI_Text x64
 ;
-; Copyright (c) 2019 by fearless
-;
-; All Rights Reserved
+; Copyright (c) 2023 by fearless
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;
@@ -39,15 +37,14 @@
 ;------------------------------------------------------------------------------
 ; ModernUI_Text Prototypes
 ;------------------------------------------------------------------------------
-MUITextRegister         PROTO                                                                   ; Use 'ModernUI_Text' as class in RadASM custom class control
-MUITextCreate           PROTO :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD, :QWORD    ; hWndParent, lpszText, xpos, ypos, qwWidth, qwHeight, qwResourceID, qwStyle
-MUITextSetProperty      PROTO :QWORD, :QWORD, :QWORD                                            ; hModernUI_Text, qwProperty, qwPropertyValue
-MUITextGetProperty      PROTO :QWORD, :QWORD                                                    ; hModernUI_Text, qwProperty
+MUITextRegister         PROTO ; Use 'ModernUI_Text' as class in RadASM custom class control
+MUITextCreate           PROTO hWndParent:QWORD, lpszText:QWORD, xpos:QWORD, ypos:QWORD, qwWidth:QWORD, qwHeight:QWORD, qwResourceID:QWORD, qwStyle:QWORD
+MUITextSetProperty      PROTO hModernUI_Text:QWORD, qwProperty:QWORD, qwPropertyValue:QWORD
+MUITextGetProperty      PROTO hModernUI_Text:QWORD, qwProperty:QWORD
 MUITextSetBufferSize    PROTO :QWORD, :QWORD
 
-;------------------------------------------------------------------------------
-; ModernUI_Text Structures
-;------------------------------------------------------------------------------
+MUITextSetBackBrush     PROTO hModernUI_Text:QWORD, hBrush:QWORD, qwBrushOrgX:QWORD, qwBrushOrgY:QWORD, qwBrushPos:QWORD
+MUITextLoadBackBrush    PROTO hModernUI_Text:QWORD, idResBitmap:QWORD, qwBrushOrgX:QWORD, qwBrushOrgY:QWORD, qwBrushPos:QWORD
 
 
 .CONST
@@ -115,20 +112,25 @@ MUITS_BBCODE            EQU (MUITS_LORUMIPSUM or MUITS_ALIGN_JUSTIFY or MUITS_FO
 @TextBackColor          EQU 32      ; COLORREF, -1 = transparent
 @TextBackColorAlt       EQU 40      ; COLORREF
 @TextBackColorDisabled  EQU 48      ; COLORREF
+@TextDllInstance        EQU 56      ; QWORD
+
+; Text Brush Position:
+MUITBP_RELATIVE         EQU 0
+MUITBP_ABSOLUTE         EQU 1
 
 ;------------------------------------------------------------------------------
 ; ModernUI_DrawTextEXT Properties: Use MUITextSetPropertyEx / MUITextGetPropertyEx
 ;------------------------------------------------------------------------------
 @TextExtFont            EQU 0       ; hFont
-@TextExtCodeTextColor   EQU 56      ; COLORREF
-@TextExtCodeBackColor   EQU 64      ; COLORREF
-@TextExtQuoteTextColor  EQU 72      ; COLORREF
-@TextExtQuoteBackColor  EQU 80      ; COLORREF
-@TextExtLinkTextColor   EQU 88      ; COLORREF
-@TextExtLinkUnderline   EQU 96      ; DWORD. Text Link Style
-@TextExtHelpTextColor   EQU 104     ; COLORREF
-@TextExtHelpUnderline   EQU 112     ; DWORD. Text Help Style
-@TextExtHorzRuleColor   EQU 120     ; COLORREF
+@TextExtCodeTextColor   EQU 64      ; COLORREF
+@TextExtCodeBackColor   EQU 72      ; COLORREF
+@TextExtQuoteTextColor  EQU 80      ; COLORREF
+@TextExtQuoteBackColor  EQU 88      ; COLORREF
+@TextExtLinkTextColor   EQU 96      ; COLORREF
+@TextExtLinkUnderline   EQU 104     ; DWORD. Text Link Style
+@TextExtHelpTextColor   EQU 112     ; COLORREF
+@TextExtHelpUnderline   EQU 120     ; DWORD. Text Help Style
+@TextExtHorzRuleColor   EQU 128     ; COLORREF
 
 
 ; TextExt Link Style:

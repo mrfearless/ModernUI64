@@ -2,9 +2,7 @@
 ;
 ; ModernUI Control x64 - ModernUI_Animation x64
 ;
-; Copyright (c) 2019 by fearless
-;
-; All Rights Reserved
+; Copyright (c) 2023 by fearless
 ;
 ; http://github.com/mrfearless/ModernUI64
 ;

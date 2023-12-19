@@ -5,6 +5,13 @@
 ;
 ; Paste this text at the end of \Radasm\Uasm64\Uasm64Type.api to add to Radasm
 ;
+; To add types to uasm64.ini c6 section: 
+;
+; ^LPGDIPRECT ^LPGPGRAPHICS ^LPGPIMAGE ^LPGPRECT ^LPHBITMAP ^LPHDC ^LPMUIIMAGE 
+; ^LPMUIVALUE ^MUILPVALUE ^MUILPSTRING ^LPRECT ^MUICOLORARGB ^MUICOLORRGB ^MUIIL 
+; ^MUIIMAGE ^MUIIT ^MUIPFS ^MUIPROPERTIES ^MUIPROPERTY ^MUIPROPERTYVALUE 
+; ^MUIVALUE ^MUIWND
+;
 ;------------------------------------------------------------------------------
 MUIWND,8,Alias for HWND window handle for a ModernUI control handle, typically defined as hWin
 MUIPROPERTIES,8,Enum for cbWndExtraOffset parameter of MUIAllocMemProperties and MUIFreeMemProperties functions
@@ -12,6 +19,8 @@ MUIPROPERTY,8,Enum for a specific ModernUI Control’s property, using the Propert
 MUIPROPERTYVALUE,8,Value of specific ModernUI Control’s property, using the PropertyValue parameter of MUISetIntProperty or MUISetExtProperty functions
 MUIVALUE,8,A value, a constant or typically an unsigned integer used in certain ModernUI function parameters
 LPMUIVALUE,8,A pointer to a MUIVALUE value
+MUILPVALUE,8,A pointer to a MUIVALUE value
+MUILPSTRING,8,Pointer to zero terminated string
 MUIIT,8,Image type enum
 MUIIL,8,Image location enum
 MUIPFS,8,Paint frame style enum for the FrameStyle parameter of the MUIGDIPaintFrame function

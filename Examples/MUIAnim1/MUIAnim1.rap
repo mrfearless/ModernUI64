@@ -5,6 +5,8 @@ Description=MUIAnim1
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
+Ver.rc=1
+Debug=0
 [Files]
 1=MUIAnim1.Asm
 2=MUIAnim1.Inc
@@ -38,7 +40,7 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 3=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /MACHINE:X64 /LIBPATH:"$L" /OUT:"$5",3,4
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
+6=*.obj,O,$B\UASM64.EXE /c -win64 -Zp8  /win64 /D_WIN64 /Cp /nologo /W2 /I"$I",*.asm
 7=0,0,"$E\x64\x64dbg",5
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\UASM64.EXE /c -win64 -Zp8 /Zi /win64 /D_WIN64 /Cp /nologo /W2 /Zi /Zd /nologo /I"$I",2
@@ -54,10 +56,10 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 4=,201,7,Images\onoff 2-horz.png
 [StringTable]
 [VerInf]
-FV=1.0.0.0
-FileVersion=1.0.0.0
-PV=1.0.0.0
-ProductVersion=1.0.0.0
+FV=1.0.0.1
+FileVersion=1.0.0.1
+PV=1.0.0.1
+ProductVersion=1.0.0.1
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -84,13 +86,13 @@ AutoLoad=2,1
 Settings=1279
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=0
+MilestoneEveryCurrent=1
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=23
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2019
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=23
@@ -114,13 +116,13 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=451592
+PTimer=680650
 [Collapse]
 2=
 1=
 [Size]
 2=0,0,0,0,5238
-1=0,0,0,0,3293
+1=0,0,0,0,2974
 [GroupExpand]
 GroupExpand=1,0,1,0
 [BookMark]

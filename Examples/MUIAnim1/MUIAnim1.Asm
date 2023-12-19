@@ -11,7 +11,7 @@ option stackbase : rsp
 _WIN64 EQU 1
 WINVER equ 0501h
 
-DEBUG64 EQU 1
+;DEBUG64 EQU 1
 
 IFDEF DEBUG64
     PRESERVEXMMREGS equ 1
@@ -102,6 +102,11 @@ WndProc proc FRAME hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
     
     mov eax, uMsg
 	.IF eax == WM_INITDIALOG
+	    
+	    IFDEF DEBUG64
+	    PrintText 'MUIAnim'
+	    ENDIF
+	    
         ;-----------------------------------------------------------------------------
         ; ModernUI_CaptionBar
         ;-----------------------------------------------------------------------------

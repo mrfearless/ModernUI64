@@ -19,6 +19,8 @@ unsigned int MUI_EXPORT MUITextSetProperty(HWND hModernUI_Text, QWORD qwProperty
 unsigned int MUI_EXPORT MUITextGetProperty(HWND hModernUI_Text, QWORD qwProperty);
 bool MUI_EXPORT MUITextSetBufferSize(HWND hModernUI_Text, QWORD qwBufferSize);
 
+bool MUI_EXPORT MUITextSetBackBrush(HWND hModernUI_Text, HBRUSH hBrush, QWORD qwBrushOrgX, QWORD qwBrushOrgY, QWORD qwBrushPos);
+bool MUI_EXPORT MUITextLoadBackBrush(HWND hModernUI_Text, QWORD idResBitmap, QWORD wBrushOrgX, QWORD qwBrushOrgY, QWORD qwBrushPos);
 
 //------------------------------------------
 // ModernUI_Text Styles
@@ -84,20 +86,25 @@ MUITS_BBCODE            (MUITS_LORUMIPSUM or MUITS_ALIGN_JUSTIFY or MUITS_FONT_B
 #define TextBackColor          32      // COLORREF, -1 = transparent
 #define TextBackColorAlt       40      // COLORREF
 #define TextBackColorDisabled  48      // COLORREF
+#define TextDllInstance        56      // QWORD
+
+// Text Brush Position:
+#define MUITBP_RELATIVE         0
+#define MUITBP_ABSOLUTE         1
 
 //------------------------------------------------------------------------------
 // ModernUI_DrawTextEXT Properties: Use MUITextSetPropertyEx / MUITextGetPropertyEx
 //------------------------------------------------------------------------------
 #define TextExtFont            0       // hFont
-#define TextExtCodeTextColor   56      // COLORREF
-#define TextExtCodeBackColor   64      // COLORREF
-#define TextExtQuoteTextColor  72      // COLORREF
-#define TextExtQuoteBackColor  80      // COLORREF
-#define TextExtLinkTextColor   88      // COLORREF
-#define TextExtLinkUnderline   96      // DWORD. Text Link Style
-#define TextExtHelpTextColor   104      // COLORREF
-#define TextExtHelpUnderline   112      // DWORD. Text Help Style
-#define TextExtHorzRuleColor   120      // COLORREF
+#define TextExtCodeTextColor   64      // COLORREF
+#define TextExtCodeBackColor   72      // COLORREF
+#define TextExtQuoteTextColor  80      // COLORREF
+#define TextExtQuoteBackColor  88      // COLORREF
+#define TextExtLinkTextColor   96      // COLORREF
+#define TextExtLinkUnderline   104     // QWORD. Text Link Style
+#define TextExtHelpTextColor   112     // COLORREF
+#define TextExtHelpUnderline   120     // QWORD. Text Help Style
+#define TextExtHorzRuleColor   128     // COLORREF
 
 
 // TextExt Link Style:

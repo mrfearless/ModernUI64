@@ -64,7 +64,7 @@ Group=Assembly,Misc
 7=2
 8=2
 [AutoLoad]
-AutoLoad=2
+AutoLoad=2,1,5
 [RADebugBP]
 2=
 1=
@@ -90,7 +90,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2017
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=29
@@ -114,7 +114,7 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=12192757
+PTimer=12220460
 [Collapse]
 1=527936,32772,168951812,1,163840
 2=
@@ -125,8 +125,8 @@ PTimer=12192757
 6=
 3=
 [Size]
-1=0,0,0,0,59952
-2=0,0,0,0,4963
+1=0,0,0,0,166
+2=0,0,0,0,166
 5=0,0,0,0,28337
 4=0,0,0,0,1504
 3=0,0,0,0,831

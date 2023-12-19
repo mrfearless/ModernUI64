@@ -62,21 +62,21 @@ Group=Assembly,Misc
 6=2
 7=2
 [AutoLoad]
-AutoLoad=2
+AutoLoad=2,1,4
 [RADebugBP]
 2=
 1=
 [Find]
-1="dw"
-2="@"
-3="EQU "
-4="DWORD"
-5=";-------------------------------------------------------------------------------------"
-6=";--------------------------------------------------------------------------------------------------------------------------------------"
-7="ebx"
-8="eax"
-9="GetWindowLong"
-10="SetWindowLong"
+1="MUI_UNICODE"
+2="dw"
+3="@"
+4="EQU "
+5="DWORD"
+6=";-------------------------------------------------------------------------------------"
+7=";--------------------------------------------------------------------------------------------------------------------------------------"
+8="ebx"
+9="eax"
+10="GetWindowLong"
 [VersionControl]
 Settings=1278
 Milestones=129
@@ -87,7 +87,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=19
 MilestoneOnDateTimeYear=2018
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=5
@@ -111,9 +111,9 @@ ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
 [PTimer]
-PTimer=7102788
+PTimer=13255765
 [Collapse]
-1=1073750340,268468736,402653328,3
+1=18942212,2129952,67648,238592
 2=
 4=
 7=
@@ -121,9 +121,9 @@ PTimer=7102788
 6=
 3=
 [Size]
-1=0,0,0,0,61986
-2=0,0,0,0,147
-4=0,0,0,0,4429
+1=0,0,0,0,2450
+2=0,0,0,0,2275
+4=0,0,0,0,1138
 3=0,0,0,0,552
 7=0,0,0,0,201
 5=0,0,0,0,201
